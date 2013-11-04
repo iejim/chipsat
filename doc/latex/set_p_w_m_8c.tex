@@ -1,0 +1,153 @@
+\hypertarget{set_p_w_m_8c}{\section{pwm/set\-P\-W\-M.c \-File \-Reference}
+\label{set_p_w_m_8c}\index{pwm/set\-P\-W\-M.\-c@{pwm/set\-P\-W\-M.\-c}}
+}
+{\ttfamily \#include $<$stdio.\-h$>$}\*
+{\ttfamily \#include $<$string.\-h$>$}\*
+{\ttfamily \#include $<$stdlib.\-h$>$}\*
+{\ttfamily \#include $<$sys/types.\-h$>$}\*
+{\ttfamily \#include $<$sys/stat.\-h$>$}\*
+{\ttfamily \#include $<$fcntl.\-h$>$}\*
+{\ttfamily \#include $<$stdint.\-h$>$}\*
+{\ttfamily \#include $<$sys/mman.\-h$>$}\*
+{\ttfamily \#include $<$unistd.\-h$>$}\*
+\-Include dependency graph for set\-P\-W\-M.\-c\-:\nopagebreak
+\begin{figure}[H]
+\begin{center}
+\leavevmode
+\includegraphics[width=350pt]{set_p_w_m_8c__incl}
+\end{center}
+\end{figure}
+\subsection*{\-Defines}
+\begin{DoxyCompactItemize}
+\item 
+\#define \hyperlink{set_p_w_m_8c_a322c03575b214dad5f9e8105017ebff4}{\-C\-M\-\_\-\-P\-E\-R\-\_\-\-R\-E\-G\-\_\-\-S\-T\-A\-R\-T}~0x44e00000
+\item 
+\#define \hyperlink{set_p_w_m_8c_ad99e8b7c4c7dd31ae94b872789dc05c6}{\-C\-M\-\_\-\-P\-E\-R\-\_\-\-R\-E\-G\-\_\-\-L\-E\-N\-G\-T\-H}~1024
+\item 
+\#define \hyperlink{set_p_w_m_8c_a7c30f10373deece9b3c4832214254f6b}{\-C\-M\-\_\-\-P\-E\-R\-\_\-\-E\-P\-W\-M\-S\-S0\-\_\-\-C\-L\-K\-C\-T\-R\-L\-\_\-\-O\-F\-F\-S\-E\-T}~0xd4
+\item 
+\#define \hyperlink{set_p_w_m_8c_a9a1ff71a677c19daab7a07548b594890}{\-C\-M\-\_\-\-P\-E\-R\-\_\-\-E\-P\-W\-M\-S\-S1\-\_\-\-C\-L\-K\-C\-T\-R\-L\-\_\-\-O\-F\-F\-S\-E\-T}~0xcc
+\item 
+\#define \hyperlink{set_p_w_m_8c_a4c44b717268ed38c31160ad166365f98}{\-C\-M\-\_\-\-P\-E\-R\-\_\-\-E\-P\-W\-M\-S\-S2\-\_\-\-C\-L\-K\-C\-T\-R\-L\-\_\-\-O\-F\-F\-S\-E\-T}~0xd8
+\item 
+\#define \hyperlink{set_p_w_m_8c_a1a7412a14f779cf6e360c37dd138b544}{\-P\-W\-M\-\_\-\-C\-L\-O\-C\-K\-\_\-\-E\-N\-A\-B\-L\-E}~0x2
+\item 
+\#define \hyperlink{set_p_w_m_8c_a1ad5533b9833271a0afe1665b2091de6}{\-P\-W\-M\-\_\-\-C\-L\-O\-C\-K\-\_\-\-D\-I\-S\-A\-B\-L\-E}~0x0
+\item 
+\#define \hyperlink{set_p_w_m_8c_a11821146334673886675fbb9ff645579}{\-P\-W\-M\-\_\-\-L\-I\-S\-T\-\_\-\-M\-A\-X}~3
+\end{DoxyCompactItemize}
+\subsection*{\-Functions}
+\begin{DoxyCompactItemize}
+\item 
+void \hyperlink{set_p_w_m_8c_ad64a1abe6d3f1789825c8ddada15f260}{print\-\_\-usage} (const char $\ast$message)
+\item 
+int \hyperlink{set_p_w_m_8c_a3c04138a5bfe5d72780bb7e82a18e627}{main} (int argc, char $\ast$$\ast$argv)
+\end{DoxyCompactItemize}
+\subsection*{\-Variables}
+\begin{DoxyCompactItemize}
+\item 
+int \hyperlink{set_p_w_m_8c_a5dbabbd7e1d5ecc67eb4680bf18e6b72}{\-P\-W\-M\-\_\-\-O\-F\-F\-S\-E\-T\-S} \mbox{[}\hyperlink{set_p_w_m_8c_a11821146334673886675fbb9ff645579}{\-P\-W\-M\-\_\-\-L\-I\-S\-T\-\_\-\-M\-A\-X}\mbox{]}
+\end{DoxyCompactItemize}
+
+
+\subsection{\-Define \-Documentation}
+\hypertarget{set_p_w_m_8c_a7c30f10373deece9b3c4832214254f6b}{\index{set\-P\-W\-M.\-c@{set\-P\-W\-M.\-c}!\-C\-M\-\_\-\-P\-E\-R\-\_\-\-E\-P\-W\-M\-S\-S0\-\_\-\-C\-L\-K\-C\-T\-R\-L\-\_\-\-O\-F\-F\-S\-E\-T@{\-C\-M\-\_\-\-P\-E\-R\-\_\-\-E\-P\-W\-M\-S\-S0\-\_\-\-C\-L\-K\-C\-T\-R\-L\-\_\-\-O\-F\-F\-S\-E\-T}}
+\index{\-C\-M\-\_\-\-P\-E\-R\-\_\-\-E\-P\-W\-M\-S\-S0\-\_\-\-C\-L\-K\-C\-T\-R\-L\-\_\-\-O\-F\-F\-S\-E\-T@{\-C\-M\-\_\-\-P\-E\-R\-\_\-\-E\-P\-W\-M\-S\-S0\-\_\-\-C\-L\-K\-C\-T\-R\-L\-\_\-\-O\-F\-F\-S\-E\-T}!setPWM.c@{set\-P\-W\-M.\-c}}
+\subsubsection[{\-C\-M\-\_\-\-P\-E\-R\-\_\-\-E\-P\-W\-M\-S\-S0\-\_\-\-C\-L\-K\-C\-T\-R\-L\-\_\-\-O\-F\-F\-S\-E\-T}]{\setlength{\rightskip}{0pt plus 5cm}\#define {\bf \-C\-M\-\_\-\-P\-E\-R\-\_\-\-E\-P\-W\-M\-S\-S0\-\_\-\-C\-L\-K\-C\-T\-R\-L\-\_\-\-O\-F\-F\-S\-E\-T}~0xd4}}\label{set_p_w_m_8c_a7c30f10373deece9b3c4832214254f6b}
+
+
+\-Definition at line 13 of file set\-P\-W\-M.\-c.
+
+\hypertarget{set_p_w_m_8c_a9a1ff71a677c19daab7a07548b594890}{\index{set\-P\-W\-M.\-c@{set\-P\-W\-M.\-c}!\-C\-M\-\_\-\-P\-E\-R\-\_\-\-E\-P\-W\-M\-S\-S1\-\_\-\-C\-L\-K\-C\-T\-R\-L\-\_\-\-O\-F\-F\-S\-E\-T@{\-C\-M\-\_\-\-P\-E\-R\-\_\-\-E\-P\-W\-M\-S\-S1\-\_\-\-C\-L\-K\-C\-T\-R\-L\-\_\-\-O\-F\-F\-S\-E\-T}}
+\index{\-C\-M\-\_\-\-P\-E\-R\-\_\-\-E\-P\-W\-M\-S\-S1\-\_\-\-C\-L\-K\-C\-T\-R\-L\-\_\-\-O\-F\-F\-S\-E\-T@{\-C\-M\-\_\-\-P\-E\-R\-\_\-\-E\-P\-W\-M\-S\-S1\-\_\-\-C\-L\-K\-C\-T\-R\-L\-\_\-\-O\-F\-F\-S\-E\-T}!setPWM.c@{set\-P\-W\-M.\-c}}
+\subsubsection[{\-C\-M\-\_\-\-P\-E\-R\-\_\-\-E\-P\-W\-M\-S\-S1\-\_\-\-C\-L\-K\-C\-T\-R\-L\-\_\-\-O\-F\-F\-S\-E\-T}]{\setlength{\rightskip}{0pt plus 5cm}\#define {\bf \-C\-M\-\_\-\-P\-E\-R\-\_\-\-E\-P\-W\-M\-S\-S1\-\_\-\-C\-L\-K\-C\-T\-R\-L\-\_\-\-O\-F\-F\-S\-E\-T}~0xcc}}\label{set_p_w_m_8c_a9a1ff71a677c19daab7a07548b594890}
+
+
+\-Definition at line 14 of file set\-P\-W\-M.\-c.
+
+\hypertarget{set_p_w_m_8c_a4c44b717268ed38c31160ad166365f98}{\index{set\-P\-W\-M.\-c@{set\-P\-W\-M.\-c}!\-C\-M\-\_\-\-P\-E\-R\-\_\-\-E\-P\-W\-M\-S\-S2\-\_\-\-C\-L\-K\-C\-T\-R\-L\-\_\-\-O\-F\-F\-S\-E\-T@{\-C\-M\-\_\-\-P\-E\-R\-\_\-\-E\-P\-W\-M\-S\-S2\-\_\-\-C\-L\-K\-C\-T\-R\-L\-\_\-\-O\-F\-F\-S\-E\-T}}
+\index{\-C\-M\-\_\-\-P\-E\-R\-\_\-\-E\-P\-W\-M\-S\-S2\-\_\-\-C\-L\-K\-C\-T\-R\-L\-\_\-\-O\-F\-F\-S\-E\-T@{\-C\-M\-\_\-\-P\-E\-R\-\_\-\-E\-P\-W\-M\-S\-S2\-\_\-\-C\-L\-K\-C\-T\-R\-L\-\_\-\-O\-F\-F\-S\-E\-T}!setPWM.c@{set\-P\-W\-M.\-c}}
+\subsubsection[{\-C\-M\-\_\-\-P\-E\-R\-\_\-\-E\-P\-W\-M\-S\-S2\-\_\-\-C\-L\-K\-C\-T\-R\-L\-\_\-\-O\-F\-F\-S\-E\-T}]{\setlength{\rightskip}{0pt plus 5cm}\#define {\bf \-C\-M\-\_\-\-P\-E\-R\-\_\-\-E\-P\-W\-M\-S\-S2\-\_\-\-C\-L\-K\-C\-T\-R\-L\-\_\-\-O\-F\-F\-S\-E\-T}~0xd8}}\label{set_p_w_m_8c_a4c44b717268ed38c31160ad166365f98}
+
+
+\-Definition at line 15 of file set\-P\-W\-M.\-c.
+
+\hypertarget{set_p_w_m_8c_ad99e8b7c4c7dd31ae94b872789dc05c6}{\index{set\-P\-W\-M.\-c@{set\-P\-W\-M.\-c}!\-C\-M\-\_\-\-P\-E\-R\-\_\-\-R\-E\-G\-\_\-\-L\-E\-N\-G\-T\-H@{\-C\-M\-\_\-\-P\-E\-R\-\_\-\-R\-E\-G\-\_\-\-L\-E\-N\-G\-T\-H}}
+\index{\-C\-M\-\_\-\-P\-E\-R\-\_\-\-R\-E\-G\-\_\-\-L\-E\-N\-G\-T\-H@{\-C\-M\-\_\-\-P\-E\-R\-\_\-\-R\-E\-G\-\_\-\-L\-E\-N\-G\-T\-H}!setPWM.c@{set\-P\-W\-M.\-c}}
+\subsubsection[{\-C\-M\-\_\-\-P\-E\-R\-\_\-\-R\-E\-G\-\_\-\-L\-E\-N\-G\-T\-H}]{\setlength{\rightskip}{0pt plus 5cm}\#define {\bf \-C\-M\-\_\-\-P\-E\-R\-\_\-\-R\-E\-G\-\_\-\-L\-E\-N\-G\-T\-H}~1024}}\label{set_p_w_m_8c_ad99e8b7c4c7dd31ae94b872789dc05c6}
+
+
+\-Definition at line 12 of file set\-P\-W\-M.\-c.
+
+\hypertarget{set_p_w_m_8c_a322c03575b214dad5f9e8105017ebff4}{\index{set\-P\-W\-M.\-c@{set\-P\-W\-M.\-c}!\-C\-M\-\_\-\-P\-E\-R\-\_\-\-R\-E\-G\-\_\-\-S\-T\-A\-R\-T@{\-C\-M\-\_\-\-P\-E\-R\-\_\-\-R\-E\-G\-\_\-\-S\-T\-A\-R\-T}}
+\index{\-C\-M\-\_\-\-P\-E\-R\-\_\-\-R\-E\-G\-\_\-\-S\-T\-A\-R\-T@{\-C\-M\-\_\-\-P\-E\-R\-\_\-\-R\-E\-G\-\_\-\-S\-T\-A\-R\-T}!setPWM.c@{set\-P\-W\-M.\-c}}
+\subsubsection[{\-C\-M\-\_\-\-P\-E\-R\-\_\-\-R\-E\-G\-\_\-\-S\-T\-A\-R\-T}]{\setlength{\rightskip}{0pt plus 5cm}\#define {\bf \-C\-M\-\_\-\-P\-E\-R\-\_\-\-R\-E\-G\-\_\-\-S\-T\-A\-R\-T}~0x44e00000}}\label{set_p_w_m_8c_a322c03575b214dad5f9e8105017ebff4}
+
+
+\-Definition at line 11 of file set\-P\-W\-M.\-c.
+
+\hypertarget{set_p_w_m_8c_a1ad5533b9833271a0afe1665b2091de6}{\index{set\-P\-W\-M.\-c@{set\-P\-W\-M.\-c}!\-P\-W\-M\-\_\-\-C\-L\-O\-C\-K\-\_\-\-D\-I\-S\-A\-B\-L\-E@{\-P\-W\-M\-\_\-\-C\-L\-O\-C\-K\-\_\-\-D\-I\-S\-A\-B\-L\-E}}
+\index{\-P\-W\-M\-\_\-\-C\-L\-O\-C\-K\-\_\-\-D\-I\-S\-A\-B\-L\-E@{\-P\-W\-M\-\_\-\-C\-L\-O\-C\-K\-\_\-\-D\-I\-S\-A\-B\-L\-E}!setPWM.c@{set\-P\-W\-M.\-c}}
+\subsubsection[{\-P\-W\-M\-\_\-\-C\-L\-O\-C\-K\-\_\-\-D\-I\-S\-A\-B\-L\-E}]{\setlength{\rightskip}{0pt plus 5cm}\#define {\bf \-P\-W\-M\-\_\-\-C\-L\-O\-C\-K\-\_\-\-D\-I\-S\-A\-B\-L\-E}~0x0}}\label{set_p_w_m_8c_a1ad5533b9833271a0afe1665b2091de6}
+
+
+\-Definition at line 18 of file set\-P\-W\-M.\-c.
+
+\hypertarget{set_p_w_m_8c_a1a7412a14f779cf6e360c37dd138b544}{\index{set\-P\-W\-M.\-c@{set\-P\-W\-M.\-c}!\-P\-W\-M\-\_\-\-C\-L\-O\-C\-K\-\_\-\-E\-N\-A\-B\-L\-E@{\-P\-W\-M\-\_\-\-C\-L\-O\-C\-K\-\_\-\-E\-N\-A\-B\-L\-E}}
+\index{\-P\-W\-M\-\_\-\-C\-L\-O\-C\-K\-\_\-\-E\-N\-A\-B\-L\-E@{\-P\-W\-M\-\_\-\-C\-L\-O\-C\-K\-\_\-\-E\-N\-A\-B\-L\-E}!setPWM.c@{set\-P\-W\-M.\-c}}
+\subsubsection[{\-P\-W\-M\-\_\-\-C\-L\-O\-C\-K\-\_\-\-E\-N\-A\-B\-L\-E}]{\setlength{\rightskip}{0pt plus 5cm}\#define {\bf \-P\-W\-M\-\_\-\-C\-L\-O\-C\-K\-\_\-\-E\-N\-A\-B\-L\-E}~0x2}}\label{set_p_w_m_8c_a1a7412a14f779cf6e360c37dd138b544}
+
+
+\-Definition at line 17 of file set\-P\-W\-M.\-c.
+
+\hypertarget{set_p_w_m_8c_a11821146334673886675fbb9ff645579}{\index{set\-P\-W\-M.\-c@{set\-P\-W\-M.\-c}!\-P\-W\-M\-\_\-\-L\-I\-S\-T\-\_\-\-M\-A\-X@{\-P\-W\-M\-\_\-\-L\-I\-S\-T\-\_\-\-M\-A\-X}}
+\index{\-P\-W\-M\-\_\-\-L\-I\-S\-T\-\_\-\-M\-A\-X@{\-P\-W\-M\-\_\-\-L\-I\-S\-T\-\_\-\-M\-A\-X}!setPWM.c@{set\-P\-W\-M.\-c}}
+\subsubsection[{\-P\-W\-M\-\_\-\-L\-I\-S\-T\-\_\-\-M\-A\-X}]{\setlength{\rightskip}{0pt plus 5cm}\#define {\bf \-P\-W\-M\-\_\-\-L\-I\-S\-T\-\_\-\-M\-A\-X}~3}}\label{set_p_w_m_8c_a11821146334673886675fbb9ff645579}
+
+
+\-Definition at line 20 of file set\-P\-W\-M.\-c.
+
+
+
+\subsection{\-Function \-Documentation}
+\hypertarget{set_p_w_m_8c_a3c04138a5bfe5d72780bb7e82a18e627}{\index{set\-P\-W\-M.\-c@{set\-P\-W\-M.\-c}!main@{main}}
+\index{main@{main}!setPWM.c@{set\-P\-W\-M.\-c}}
+\subsubsection[{main}]{\setlength{\rightskip}{0pt plus 5cm}int {\bf main} (
+\begin{DoxyParamCaption}
+\item[{int}]{argc, }
+\item[{char $\ast$$\ast$}]{argv}
+\end{DoxyParamCaption}
+)}}\label{set_p_w_m_8c_a3c04138a5bfe5d72780bb7e82a18e627}
+
+
+\-Definition at line 36 of file set\-P\-W\-M.\-c.
+
+\hypertarget{set_p_w_m_8c_ad64a1abe6d3f1789825c8ddada15f260}{\index{set\-P\-W\-M.\-c@{set\-P\-W\-M.\-c}!print\-\_\-usage@{print\-\_\-usage}}
+\index{print\-\_\-usage@{print\-\_\-usage}!setPWM.c@{set\-P\-W\-M.\-c}}
+\subsubsection[{print\-\_\-usage}]{\setlength{\rightskip}{0pt plus 5cm}void {\bf print\-\_\-usage} (
+\begin{DoxyParamCaption}
+\item[{const char $\ast$}]{message}
+\end{DoxyParamCaption}
+)}}\label{set_p_w_m_8c_ad64a1abe6d3f1789825c8ddada15f260}
+
+
+\-Definition at line 28 of file set\-P\-W\-M.\-c.
+
+
+
+\subsection{\-Variable \-Documentation}
+\hypertarget{set_p_w_m_8c_a5dbabbd7e1d5ecc67eb4680bf18e6b72}{\index{set\-P\-W\-M.\-c@{set\-P\-W\-M.\-c}!\-P\-W\-M\-\_\-\-O\-F\-F\-S\-E\-T\-S@{\-P\-W\-M\-\_\-\-O\-F\-F\-S\-E\-T\-S}}
+\index{\-P\-W\-M\-\_\-\-O\-F\-F\-S\-E\-T\-S@{\-P\-W\-M\-\_\-\-O\-F\-F\-S\-E\-T\-S}!setPWM.c@{set\-P\-W\-M.\-c}}
+\subsubsection[{\-P\-W\-M\-\_\-\-O\-F\-F\-S\-E\-T\-S}]{\setlength{\rightskip}{0pt plus 5cm}int {\bf \-P\-W\-M\-\_\-\-O\-F\-F\-S\-E\-T\-S}\mbox{[}{\bf \-P\-W\-M\-\_\-\-L\-I\-S\-T\-\_\-\-M\-A\-X}\mbox{]}}}\label{set_p_w_m_8c_a5dbabbd7e1d5ecc67eb4680bf18e6b72}
+{\bfseries \-Initial value\-:}
+\begin{DoxyCode}
+ {
+  CM_PER_EPWMSS0_CLKCTRL_OFFSET / sizeof (uint32_t),
+  CM_PER_EPWMSS1_CLKCTRL_OFFSET / sizeof (uint32_t),
+  CM_PER_EPWMSS2_CLKCTRL_OFFSET / sizeof (uint32_t)
+}
+\end{DoxyCode}
+
+
+\-Definition at line 22 of file set\-P\-W\-M.\-c.
+

@@ -1,0 +1,252 @@
+\hypertarget{class_l_s_m303}{\section{\-L\-S\-M303 \-Class \-Reference}
+\label{class_l_s_m303}\index{\-L\-S\-M303@{\-L\-S\-M303}}
+}
+
+
+\-Class to manage communication to the \hyperlink{class_l_s_m303}{\-L\-S\-M303} compass via the \-I2\-C-\/bus.  
+
+
+
+
+{\ttfamily \#include $<$\-L\-S\-M303.\-h$>$}
+
+\subsection*{\-Public \-Member \-Functions}
+\begin{DoxyCompactItemize}
+\item 
+\hyperlink{class_l_s_m303_a372710f74d63e809ef08348d919a2842}{\-L\-S\-M303} (const char $\ast$i2c\-Device\-Name)
+\begin{DoxyCompactList}\small\item\em \-Constructor. \end{DoxyCompactList}\item 
+void \hyperlink{class_l_s_m303_af2c1baa290df19e7cd4667a13a68a19a}{enable} (void)
+\begin{DoxyCompactList}\small\item\em \-Puts both (accelerometer and magnetometer) into active sampling mode. \end{DoxyCompactList}\item 
+void \hyperlink{class_l_s_m303_a3baf5341cf9d7d789b81b1cec7e81f12}{write\-Acc\-Reg} (uint8\-\_\-t reg, uint8\-\_\-t value)
+\begin{DoxyCompactList}\small\item\em \-Write value to the accelerometer register reg. \end{DoxyCompactList}\item 
+uint8\-\_\-t \hyperlink{class_l_s_m303_a26ba086aec95c01c05e6b980383d1ed9}{read\-Acc\-Reg} (uint8\-\_\-t reg)
+\begin{DoxyCompactList}\small\item\em \-Read the value from accelerometer register reg. \end{DoxyCompactList}\item 
+void \hyperlink{class_l_s_m303_a70b49953d20ff311bc23dfa8c1ec7a4f}{write\-Mag\-Reg} (uint8\-\_\-t reg, uint8\-\_\-t value)
+\begin{DoxyCompactList}\small\item\em \-Write value to the magnetometer register reg. \end{DoxyCompactList}\item 
+uint8\-\_\-t \hyperlink{class_l_s_m303_a5d6d0b492501b76b7fde821036205bda}{read\-Mag\-Reg} (uint8\-\_\-t reg)
+\begin{DoxyCompactList}\small\item\em \-Read the value from magnetometer register reg. \end{DoxyCompactList}\item 
+void \hyperlink{class_l_s_m303_ac1396a51b288eadc41fd19fbd79ef68e}{read\-Acc} (void)
+\begin{DoxyCompactList}\small\item\em \-Reads the current raw acceleration vector into \hyperlink{class_l_s_m303_ad71c39fa2c1dfd978c9e93b48a6a9310}{a}. \end{DoxyCompactList}\item 
+void \hyperlink{class_l_s_m303_abc93e8d8101c6b00df2ae85c5f8ded9e}{read\-Mag} (void)
+\begin{DoxyCompactList}\small\item\em \-Reads the current raw magnetic field vector into \hyperlink{class_l_s_m303_a606cb6a86d385c4c4a9767f6b1bf2ea5}{m}. \end{DoxyCompactList}\item 
+void \hyperlink{class_l_s_m303_a9f40456878f534bba32490d19f3a64ce}{read} (void)
+\begin{DoxyCompactList}\small\item\em \-Read both (accelerometer and magnetometer) into \hyperlink{class_l_s_m303_ad71c39fa2c1dfd978c9e93b48a6a9310}{a} and \hyperlink{class_l_s_m303_a606cb6a86d385c4c4a9767f6b1bf2ea5}{m} respectively. \end{DoxyCompactList}\end{DoxyCompactItemize}
+\subsection*{\-Public \-Attributes}
+\begin{DoxyCompactItemize}
+\item 
+int \hyperlink{class_l_s_m303_ad71c39fa2c1dfd978c9e93b48a6a9310}{a} \mbox{[}3\mbox{]}
+\item 
+int \hyperlink{class_l_s_m303_a606cb6a86d385c4c4a9767f6b1bf2ea5}{m} \mbox{[}3\mbox{]}
+\end{DoxyCompactItemize}
+
+
+\subsection{\-Detailed \-Description}
+\-Class to manage communication to the \hyperlink{class_l_s_m303}{\-L\-S\-M303} compass via the \-I2\-C-\/bus. 
+
+\hyperlink{class_l_s_m303}{\-L\-S\-M303} has a 3-\/axis accelerometer and a 3-\/axis magnetometer on a single chip and the same \-I2\-C-\/bus. \-This class manages the interface to both of them and handles the read out procedure for the analog values. \-Check the data sheet for more details of the settings. 
+
+\-Definition at line 88 of file \-L\-S\-M303.\-h.
+
+
+
+\subsection{\-Constructor \& \-Destructor \-Documentation}
+\hypertarget{class_l_s_m303_a372710f74d63e809ef08348d919a2842}{\index{\-L\-S\-M303@{\-L\-S\-M303}!\-L\-S\-M303@{\-L\-S\-M303}}
+\index{\-L\-S\-M303@{\-L\-S\-M303}!LSM303@{\-L\-S\-M303}}
+\subsubsection[{\-L\-S\-M303}]{\setlength{\rightskip}{0pt plus 5cm}{\bf \-L\-S\-M303\-::\-L\-S\-M303} (
+\begin{DoxyParamCaption}
+\item[{const char $\ast$}]{i2c\-Device\-Name}
+\end{DoxyParamCaption}
+)}}\label{class_l_s_m303_a372710f74d63e809ef08348d919a2842}
+
+
+\-Constructor. 
+
+\-Sets up the accelerometer and magnetometer on the given \-I2\-C-\/bus.
+
+
+\begin{DoxyParams}{\-Parameters}
+{\em i2c\-Device\-Name} & \-Device name of the \-I2\-C-\/bus \\
+\hline
+\end{DoxyParams}
+
+
+\-Definition at line 22 of file \-L\-S\-M303.\-cpp.
+
+
+
+\subsection{\-Member \-Function \-Documentation}
+\hypertarget{class_l_s_m303_af2c1baa290df19e7cd4667a13a68a19a}{\index{\-L\-S\-M303@{\-L\-S\-M303}!enable@{enable}}
+\index{enable@{enable}!LSM303@{\-L\-S\-M303}}
+\subsubsection[{enable}]{\setlength{\rightskip}{0pt plus 5cm}void {\bf \-L\-S\-M303\-::enable} (
+\begin{DoxyParamCaption}
+\item[{void}]{}
+\end{DoxyParamCaption}
+)}}\label{class_l_s_m303_af2c1baa290df19e7cd4667a13a68a19a}
+
+
+\-Puts both (accelerometer and magnetometer) into active sampling mode. 
+
+
+
+\-Definition at line 73 of file \-L\-S\-M303.\-cpp.
+
+\hypertarget{class_l_s_m303_a9f40456878f534bba32490d19f3a64ce}{\index{\-L\-S\-M303@{\-L\-S\-M303}!read@{read}}
+\index{read@{read}!LSM303@{\-L\-S\-M303}}
+\subsubsection[{read}]{\setlength{\rightskip}{0pt plus 5cm}void {\bf \-L\-S\-M303\-::read} (
+\begin{DoxyParamCaption}
+\item[{void}]{}
+\end{DoxyParamCaption}
+)}}\label{class_l_s_m303_a9f40456878f534bba32490d19f3a64ce}
+
+
+\-Read both (accelerometer and magnetometer) into \hyperlink{class_l_s_m303_ad71c39fa2c1dfd978c9e93b48a6a9310}{a} and \hyperlink{class_l_s_m303_a606cb6a86d385c4c4a9767f6b1bf2ea5}{m} respectively. 
+
+
+
+\-Definition at line 118 of file \-L\-S\-M303.\-cpp.
+
+\hypertarget{class_l_s_m303_ac1396a51b288eadc41fd19fbd79ef68e}{\index{\-L\-S\-M303@{\-L\-S\-M303}!read\-Acc@{read\-Acc}}
+\index{read\-Acc@{read\-Acc}!LSM303@{\-L\-S\-M303}}
+\subsubsection[{read\-Acc}]{\setlength{\rightskip}{0pt plus 5cm}void {\bf \-L\-S\-M303\-::read\-Acc} (
+\begin{DoxyParamCaption}
+\item[{void}]{}
+\end{DoxyParamCaption}
+)}}\label{class_l_s_m303_ac1396a51b288eadc41fd19fbd79ef68e}
+
+
+\-Reads the current raw acceleration vector into \hyperlink{class_l_s_m303_ad71c39fa2c1dfd978c9e93b48a6a9310}{a}. 
+
+
+
+\-Definition at line 93 of file \-L\-S\-M303.\-cpp.
+
+\hypertarget{class_l_s_m303_a26ba086aec95c01c05e6b980383d1ed9}{\index{\-L\-S\-M303@{\-L\-S\-M303}!read\-Acc\-Reg@{read\-Acc\-Reg}}
+\index{read\-Acc\-Reg@{read\-Acc\-Reg}!LSM303@{\-L\-S\-M303}}
+\subsubsection[{read\-Acc\-Reg}]{\setlength{\rightskip}{0pt plus 5cm}uint8\-\_\-t {\bf \-L\-S\-M303\-::read\-Acc\-Reg} (
+\begin{DoxyParamCaption}
+\item[{uint8\-\_\-t}]{reg}
+\end{DoxyParamCaption}
+)}}\label{class_l_s_m303_a26ba086aec95c01c05e6b980383d1ed9}
+
+
+\-Read the value from accelerometer register reg. 
+
+
+\begin{DoxyParams}{\-Parameters}
+{\em reg} & \-Register address to read from \\
+\hline
+\end{DoxyParams}
+\begin{DoxyReturn}{\-Returns}
+uint8\-\_\-t \-Value read from the register reg 
+\end{DoxyReturn}
+
+
+\-Definition at line 56 of file \-L\-S\-M303.\-cpp.
+
+\hypertarget{class_l_s_m303_abc93e8d8101c6b00df2ae85c5f8ded9e}{\index{\-L\-S\-M303@{\-L\-S\-M303}!read\-Mag@{read\-Mag}}
+\index{read\-Mag@{read\-Mag}!LSM303@{\-L\-S\-M303}}
+\subsubsection[{read\-Mag}]{\setlength{\rightskip}{0pt plus 5cm}void {\bf \-L\-S\-M303\-::read\-Mag} (
+\begin{DoxyParamCaption}
+\item[{void}]{}
+\end{DoxyParamCaption}
+)}}\label{class_l_s_m303_abc93e8d8101c6b00df2ae85c5f8ded9e}
+
+
+\-Reads the current raw magnetic field vector into \hyperlink{class_l_s_m303_a606cb6a86d385c4c4a9767f6b1bf2ea5}{m}. 
+
+
+
+\-Definition at line 103 of file \-L\-S\-M303.\-cpp.
+
+\hypertarget{class_l_s_m303_a5d6d0b492501b76b7fde821036205bda}{\index{\-L\-S\-M303@{\-L\-S\-M303}!read\-Mag\-Reg@{read\-Mag\-Reg}}
+\index{read\-Mag\-Reg@{read\-Mag\-Reg}!LSM303@{\-L\-S\-M303}}
+\subsubsection[{read\-Mag\-Reg}]{\setlength{\rightskip}{0pt plus 5cm}uint8\-\_\-t {\bf \-L\-S\-M303\-::read\-Mag\-Reg} (
+\begin{DoxyParamCaption}
+\item[{uint8\-\_\-t}]{reg}
+\end{DoxyParamCaption}
+)}}\label{class_l_s_m303_a5d6d0b492501b76b7fde821036205bda}
+
+
+\-Read the value from magnetometer register reg. 
+
+
+\begin{DoxyParams}{\-Parameters}
+{\em reg} & \-Register address to read from \\
+\hline
+\end{DoxyParams}
+\begin{DoxyReturn}{\-Returns}
+uint8\-\_\-t \-Value read from the register reg 
+\end{DoxyReturn}
+
+
+\-Definition at line 51 of file \-L\-S\-M303.\-cpp.
+
+\hypertarget{class_l_s_m303_a3baf5341cf9d7d789b81b1cec7e81f12}{\index{\-L\-S\-M303@{\-L\-S\-M303}!write\-Acc\-Reg@{write\-Acc\-Reg}}
+\index{write\-Acc\-Reg@{write\-Acc\-Reg}!LSM303@{\-L\-S\-M303}}
+\subsubsection[{write\-Acc\-Reg}]{\setlength{\rightskip}{0pt plus 5cm}void {\bf \-L\-S\-M303\-::write\-Acc\-Reg} (
+\begin{DoxyParamCaption}
+\item[{uint8\-\_\-t}]{reg, }
+\item[{uint8\-\_\-t}]{value}
+\end{DoxyParamCaption}
+)}}\label{class_l_s_m303_a3baf5341cf9d7d789b81b1cec7e81f12}
+
+
+\-Write value to the accelerometer register reg. 
+
+
+\begin{DoxyParams}{\-Parameters}
+{\em reg} & \-Register address to write to \\
+\hline
+{\em value} & \-Value to write to the register reg \\
+\hline
+\end{DoxyParams}
+
+
+\-Definition at line 66 of file \-L\-S\-M303.\-cpp.
+
+\hypertarget{class_l_s_m303_a70b49953d20ff311bc23dfa8c1ec7a4f}{\index{\-L\-S\-M303@{\-L\-S\-M303}!write\-Mag\-Reg@{write\-Mag\-Reg}}
+\index{write\-Mag\-Reg@{write\-Mag\-Reg}!LSM303@{\-L\-S\-M303}}
+\subsubsection[{write\-Mag\-Reg}]{\setlength{\rightskip}{0pt plus 5cm}void {\bf \-L\-S\-M303\-::write\-Mag\-Reg} (
+\begin{DoxyParamCaption}
+\item[{uint8\-\_\-t}]{reg, }
+\item[{uint8\-\_\-t}]{value}
+\end{DoxyParamCaption}
+)}}\label{class_l_s_m303_a70b49953d20ff311bc23dfa8c1ec7a4f}
+
+
+\-Write value to the magnetometer register reg. 
+
+
+\begin{DoxyParams}{\-Parameters}
+{\em reg} & \-Register address to write to \\
+\hline
+{\em value} & \-Value to write to the register reg \\
+\hline
+\end{DoxyParams}
+
+
+\-Definition at line 61 of file \-L\-S\-M303.\-cpp.
+
+
+
+\subsection{\-Member \-Data \-Documentation}
+\hypertarget{class_l_s_m303_ad71c39fa2c1dfd978c9e93b48a6a9310}{\index{\-L\-S\-M303@{\-L\-S\-M303}!a@{a}}
+\index{a@{a}!LSM303@{\-L\-S\-M303}}
+\subsubsection[{a}]{\setlength{\rightskip}{0pt plus 5cm}int {\bf \-L\-S\-M303\-::a}\mbox{[}3\mbox{]}}}\label{class_l_s_m303_ad71c39fa2c1dfd978c9e93b48a6a9310}
+\-Raw accelerometer readings 
+
+\-Definition at line 91 of file \-L\-S\-M303.\-h.
+
+\hypertarget{class_l_s_m303_a606cb6a86d385c4c4a9767f6b1bf2ea5}{\index{\-L\-S\-M303@{\-L\-S\-M303}!m@{m}}
+\index{m@{m}!LSM303@{\-L\-S\-M303}}
+\subsubsection[{m}]{\setlength{\rightskip}{0pt plus 5cm}int {\bf \-L\-S\-M303\-::m}\mbox{[}3\mbox{]}}}\label{class_l_s_m303_a606cb6a86d385c4c4a9767f6b1bf2ea5}
+\-Magnetometer readings 
+
+\-Definition at line 92 of file \-L\-S\-M303.\-h.
+
+
+
+\-The documentation for this class was generated from the following files\-:\begin{DoxyCompactItemize}
+\item 
+include/\hyperlink{_l_s_m303_8h}{\-L\-S\-M303.\-h}\item 
+src/\hyperlink{_l_s_m303_8cpp}{\-L\-S\-M303.\-cpp}\end{DoxyCompactItemize}

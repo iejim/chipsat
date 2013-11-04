@@ -1,0 +1,201 @@
+\hypertarget{class_u_s_u_1_1_motor_control}{\section{\-U\-S\-U\-:\-:\-Motor\-Control \-Class \-Reference}
+\label{class_u_s_u_1_1_motor_control}\index{\-U\-S\-U\-::\-Motor\-Control@{\-U\-S\-U\-::\-Motor\-Control}}
+}
+
+
+\-Represents the class for motor control.  
+
+
+
+
+{\ttfamily \#include $<$motorcontrol.\-h$>$}
+
+\subsection*{\-Public \-Member \-Functions}
+\begin{DoxyCompactItemize}
+\item 
+\hyperlink{class_u_s_u_1_1_motor_control_a85b6eed3bdd71d61a690395156999888}{\-Motor\-Control} (const char $\ast$i2c\-Device=\char`\"{}/dev/i2c-\/3\char`\"{})
+\begin{DoxyCompactList}\small\item\em \-Constructor of the class. \end{DoxyCompactList}\item 
+virtual \hyperlink{class_u_s_u_1_1_motor_control_a5bc78d24ed52a012a3f81cd3b62216f3}{$\sim$\-Motor\-Control} ()
+\item 
+void \hyperlink{class_u_s_u_1_1_motor_control_a40b7e40ce5bfb7fb0dea6c0a75d1eb5e}{calculate\-Control\-Response} (\hyperlink{class_u_s_u_1_1_quaternion}{\-Quaternion} state)
+\begin{DoxyCompactList}\small\item\em \-Calculate the control response from the current state estimate. \end{DoxyCompactList}\item 
+void \hyperlink{class_u_s_u_1_1_motor_control_ad08369ed288a7816de1b3c423684f0da}{set\-Motor} (int motor, int duty\-Cycle)
+\begin{DoxyCompactList}\small\item\em \-For testing\-: sets the speed of a motor. \end{DoxyCompactList}\item 
+void \hyperlink{class_u_s_u_1_1_motor_control_a3304fd7022bf2468859a0d2edae0e2f0}{get\-Analog} (int motor, float \&a\-Out1, float \&a\-Out2)
+\begin{DoxyCompactList}\small\item\em \-For testing\-: returns the \-Analog measurements of a motor. \end{DoxyCompactList}\item 
+void \hyperlink{class_u_s_u_1_1_motor_control_a195cfcad9f3e9ca8cbde54340aad620c}{get\-Analogs} (float $\ast$a\-Out1, float $\ast$a\-Out2)
+\begin{DoxyCompactList}\small\item\em \-For testing\-: returns the \-Analog measurements of all motors. \end{DoxyCompactList}\item 
+void \hyperlink{class_u_s_u_1_1_motor_control_a16a8f713f050fffc56321f82267bc7cc}{get\-Duty\-Cycles} (int $\ast$dc)
+\begin{DoxyCompactList}\small\item\em \-For testing\-: returns the dutycycles of all motors. \end{DoxyCompactList}\end{DoxyCompactItemize}
+
+
+\subsection{\-Detailed \-Description}
+\-Represents the class for motor control. 
+
+\-It initializes the interface to the 4 motors. \-It receives the last system state estimate from the \-Kalman filter, calculates the appropiate control response and sets the speed (duty cycle) of the motors.
+
+\-T\-O\-D\-O\-: \-Get the desired state from ground station to calculate the control response. 
+
+\-Definition at line 36 of file motorcontrol.\-h.
+
+
+
+\subsection{\-Constructor \& \-Destructor \-Documentation}
+\hypertarget{class_u_s_u_1_1_motor_control_a85b6eed3bdd71d61a690395156999888}{\index{\-U\-S\-U\-::\-Motor\-Control@{\-U\-S\-U\-::\-Motor\-Control}!\-Motor\-Control@{\-Motor\-Control}}
+\index{\-Motor\-Control@{\-Motor\-Control}!USU::MotorControl@{\-U\-S\-U\-::\-Motor\-Control}}
+\subsubsection[{\-Motor\-Control}]{\setlength{\rightskip}{0pt plus 5cm}{\bf \-Motor\-Control\-::\-Motor\-Control} (
+\begin{DoxyParamCaption}
+\item[{const char $\ast$}]{i2c\-Device = {\ttfamily \char`\"{}/dev/i2c-\/3\char`\"{}}}
+\end{DoxyParamCaption}
+)}}\label{class_u_s_u_1_1_motor_control_a85b6eed3bdd71d61a690395156999888}
+
+
+\-Constructor of the class. 
+
+\-Initializes the underlying \-G\-P\-I\-O-\/class, the \-P\-W\-Ms, the 4 \-Motors and the \-A\-D\-C.
+
+
+\begin{DoxyParams}{\-Parameters}
+{\em i2c\-Device} & name of the i2c\-Device of the \-A\-D\-C \\
+\hline
+\end{DoxyParams}
+
+
+\-Definition at line 15 of file motorcontrol.\-cpp.
+
+\hypertarget{class_u_s_u_1_1_motor_control_a5bc78d24ed52a012a3f81cd3b62216f3}{\index{\-U\-S\-U\-::\-Motor\-Control@{\-U\-S\-U\-::\-Motor\-Control}!$\sim$\-Motor\-Control@{$\sim$\-Motor\-Control}}
+\index{$\sim$\-Motor\-Control@{$\sim$\-Motor\-Control}!USU::MotorControl@{\-U\-S\-U\-::\-Motor\-Control}}
+\subsubsection[{$\sim$\-Motor\-Control}]{\setlength{\rightskip}{0pt plus 5cm}{\bf \-Motor\-Control\-::$\sim$\-Motor\-Control} (
+\begin{DoxyParamCaption}
+{}
+\end{DoxyParamCaption}
+)\hspace{0.3cm}{\ttfamily  \mbox{[}virtual\mbox{]}}}}\label{class_u_s_u_1_1_motor_control_a5bc78d24ed52a012a3f81cd3b62216f3}
+
+
+\-Definition at line 31 of file motorcontrol.\-cpp.
+
+
+
+\subsection{\-Member \-Function \-Documentation}
+\hypertarget{class_u_s_u_1_1_motor_control_a40b7e40ce5bfb7fb0dea6c0a75d1eb5e}{\index{\-U\-S\-U\-::\-Motor\-Control@{\-U\-S\-U\-::\-Motor\-Control}!calculate\-Control\-Response@{calculate\-Control\-Response}}
+\index{calculate\-Control\-Response@{calculate\-Control\-Response}!USU::MotorControl@{\-U\-S\-U\-::\-Motor\-Control}}
+\subsubsection[{calculate\-Control\-Response}]{\setlength{\rightskip}{0pt plus 5cm}void {\bf \-Motor\-Control\-::calculate\-Control\-Response} (
+\begin{DoxyParamCaption}
+\item[{{\bf \-Quaternion}}]{state}
+\end{DoxyParamCaption}
+)}}\label{class_u_s_u_1_1_motor_control_a40b7e40ce5bfb7fb0dea6c0a75d1eb5e}
+
+
+\-Calculate the control response from the current state estimate. 
+
+\-T\-O\-D\-O\-: \-Doesn't do anything at the moment
+
+
+\begin{DoxyParams}{\-Parameters}
+{\em state} & the current state estimate from the \-Kalman filter \\
+\hline
+\end{DoxyParams}
+\-T\-O\-D\-O\-: \-Make some control magic
+
+\mbox{[}...\mbox{]} 
+
+\-Definition at line 39 of file motorcontrol.\-cpp.
+
+\hypertarget{class_u_s_u_1_1_motor_control_a3304fd7022bf2468859a0d2edae0e2f0}{\index{\-U\-S\-U\-::\-Motor\-Control@{\-U\-S\-U\-::\-Motor\-Control}!get\-Analog@{get\-Analog}}
+\index{get\-Analog@{get\-Analog}!USU::MotorControl@{\-U\-S\-U\-::\-Motor\-Control}}
+\subsubsection[{get\-Analog}]{\setlength{\rightskip}{0pt plus 5cm}void {\bf \-Motor\-Control\-::get\-Analog} (
+\begin{DoxyParamCaption}
+\item[{int}]{motor, }
+\item[{float \&}]{a\-Out1, }
+\item[{float \&}]{a\-Out2}
+\end{DoxyParamCaption}
+)}}\label{class_u_s_u_1_1_motor_control_a3304fd7022bf2468859a0d2edae0e2f0}
+
+
+\-For testing\-: returns the \-Analog measurements of a motor. 
+
+
+\begin{DoxyParams}{\-Parameters}
+{\em motor} & which motor \mbox{[}0..3\mbox{]} \\
+\hline
+{\em a\-Out1} & reference to a variable to store the first analog measurement \\
+\hline
+{\em a\-Out2} & reference to a variable to store the second analog measurement \\
+\hline
+\end{DoxyParams}
+
+
+\-Definition at line 51 of file motorcontrol.\-cpp.
+
+\hypertarget{class_u_s_u_1_1_motor_control_a195cfcad9f3e9ca8cbde54340aad620c}{\index{\-U\-S\-U\-::\-Motor\-Control@{\-U\-S\-U\-::\-Motor\-Control}!get\-Analogs@{get\-Analogs}}
+\index{get\-Analogs@{get\-Analogs}!USU::MotorControl@{\-U\-S\-U\-::\-Motor\-Control}}
+\subsubsection[{get\-Analogs}]{\setlength{\rightskip}{0pt plus 5cm}void {\bf \-Motor\-Control\-::get\-Analogs} (
+\begin{DoxyParamCaption}
+\item[{float $\ast$}]{a\-Out1, }
+\item[{float $\ast$}]{a\-Out2}
+\end{DoxyParamCaption}
+)}}\label{class_u_s_u_1_1_motor_control_a195cfcad9f3e9ca8cbde54340aad620c}
+
+
+\-For testing\-: returns the \-Analog measurements of all motors. 
+
+
+\begin{DoxyParams}{\-Parameters}
+{\em a\-Out1} & \-Float array to store the first analog measurement of each motor \\
+\hline
+{\em a\-Out2} & \-Float array to store the second analog measurement of each motor \\
+\hline
+\end{DoxyParams}
+
+
+\-Definition at line 57 of file motorcontrol.\-cpp.
+
+\hypertarget{class_u_s_u_1_1_motor_control_a16a8f713f050fffc56321f82267bc7cc}{\index{\-U\-S\-U\-::\-Motor\-Control@{\-U\-S\-U\-::\-Motor\-Control}!get\-Duty\-Cycles@{get\-Duty\-Cycles}}
+\index{get\-Duty\-Cycles@{get\-Duty\-Cycles}!USU::MotorControl@{\-U\-S\-U\-::\-Motor\-Control}}
+\subsubsection[{get\-Duty\-Cycles}]{\setlength{\rightskip}{0pt plus 5cm}void {\bf \-Motor\-Control\-::get\-Duty\-Cycles} (
+\begin{DoxyParamCaption}
+\item[{int $\ast$}]{dc}
+\end{DoxyParamCaption}
+)}}\label{class_u_s_u_1_1_motor_control_a16a8f713f050fffc56321f82267bc7cc}
+
+
+\-For testing\-: returns the dutycycles of all motors. 
+
+
+\begin{DoxyParams}{\-Parameters}
+{\em dc} & \-Int array to store the duty cycle of each motor \\
+\hline
+\end{DoxyParams}
+
+
+\-Definition at line 69 of file motorcontrol.\-cpp.
+
+\hypertarget{class_u_s_u_1_1_motor_control_ad08369ed288a7816de1b3c423684f0da}{\index{\-U\-S\-U\-::\-Motor\-Control@{\-U\-S\-U\-::\-Motor\-Control}!set\-Motor@{set\-Motor}}
+\index{set\-Motor@{set\-Motor}!USU::MotorControl@{\-U\-S\-U\-::\-Motor\-Control}}
+\subsubsection[{set\-Motor}]{\setlength{\rightskip}{0pt plus 5cm}void {\bf \-Motor\-Control\-::set\-Motor} (
+\begin{DoxyParamCaption}
+\item[{int}]{motor, }
+\item[{int}]{duty\-Cycle}
+\end{DoxyParamCaption}
+)}}\label{class_u_s_u_1_1_motor_control_ad08369ed288a7816de1b3c423684f0da}
+
+
+\-For testing\-: sets the speed of a motor. 
+
+
+\begin{DoxyParams}{\-Parameters}
+{\em motor} & which motor \mbox{[}0..3\mbox{]} \\
+\hline
+{\em duty\-Cycle} & which speed \mbox{[}-\/100..100\mbox{]} \\
+\hline
+\end{DoxyParams}
+
+
+\-Definition at line 46 of file motorcontrol.\-cpp.
+
+
+
+\-The documentation for this class was generated from the following files\-:\begin{DoxyCompactItemize}
+\item 
+include/\hyperlink{motorcontrol_8h}{motorcontrol.\-h}\item 
+src/\hyperlink{motorcontrol_8cpp}{motorcontrol.\-cpp}\end{DoxyCompactItemize}

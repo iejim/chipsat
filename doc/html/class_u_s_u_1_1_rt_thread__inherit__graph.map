@@ -1,0 +1,8 @@
+<map id="G" name="G">
+<area shape="rect" id="node3" href="$class_motor_programmer.html" title="Class which reads the input file and runs the trajectory for each motor." alt="" coords="5,83,131,112"/>
+<area shape="rect" id="node5" href="$class_u_s_u_1_1_g_x3_communicator.html" title="Represents the Thread class for communication with the 3DM&#45;GX3&#45;25." alt="" coords="155,83,325,112"/>
+<area shape="rect" id="node7" href="$class_u_s_u_1_1_periodic_rt_thread.html" title="TODO: Make some proper exceptions." alt="" coords="349,83,509,112"/>
+<area shape="rect" id="node9" href="$class_data_collector.html" title="Simple class which manages the motors and collects data at an periodic intervall." alt="" coords="321,160,423,189"/>
+<area shape="rect" id="node12" href="$class_my_thread.html" title="MyThread" alt="" coords="447,160,527,189"/>
+<area shape="rect" id="node14" href="$class_u_s_u_1_1_kalman_filter.html" title="Represents the Periodic Thread class for state estimation." alt="" coords="551,160,681,189"/>
+</map>

@@ -1,0 +1,89 @@
+\hypertarget{_beagle___g_p_i_o_8h}{\section{include/\-Beagle\-\_\-\-G\-P\-I\-O.h \-File \-Reference}
+\label{_beagle___g_p_i_o_8h}\index{include/\-Beagle\-\_\-\-G\-P\-I\-O.\-h@{include/\-Beagle\-\_\-\-G\-P\-I\-O.\-h}}
+}
+{\ttfamily \#include $<$iostream$>$}\*
+{\ttfamily \#include $<$sys/ioctl.\-h$>$}\*
+{\ttfamily \#include $<$linux/types.\-h$>$}\*
+{\ttfamily \#include $<$linux/spi/spidev.\-h$>$}\*
+\-Include dependency graph for \-Beagle\-\_\-\-G\-P\-I\-O.\-h\-:\nopagebreak
+\begin{figure}[H]
+\begin{center}
+\leavevmode
+\includegraphics[width=350pt]{_beagle___g_p_i_o_8h__incl}
+\end{center}
+\end{figure}
+\-This graph shows which files directly or indirectly include this file\-:\nopagebreak
+\begin{figure}[H]
+\begin{center}
+\leavevmode
+\includegraphics[width=350pt]{_beagle___g_p_i_o_8h__dep__incl}
+\end{center}
+\end{figure}
+\subsection*{\-Classes}
+\begin{DoxyCompactItemize}
+\item 
+class \hyperlink{class_beagle___g_p_i_o}{\-Beagle\-\_\-\-G\-P\-I\-O}
+\begin{DoxyCompactList}\small\item\em \-Wrapper class to access the \-G\-P\-I\-Os of the \-Beagle\-Bone. \end{DoxyCompactList}\end{DoxyCompactItemize}
+\subsection*{\-Defines}
+\begin{DoxyCompactItemize}
+\item 
+\#define \hyperlink{_beagle___g_p_i_o_8h_a1936734e6c1d7f62fea288fdf8ca8f29}{\-G\-P\-I\-O\-\_\-\-E\-R\-R\-O\-R}(msg)~std\-::cout $<$$<$ \char`\"{}\mbox{[}\-G\-P\-I\-O\mbox{]} \-Error \-: \char`\"{} $<$$<$ msg $<$$<$ std\-::endl;
+\item 
+\#define \hyperlink{_beagle___g_p_i_o_8h_a4539ad479eb3f5b550fe158afba3c743}{\-B\-E\-A\-G\-L\-E\-\_\-\-G\-P\-I\-O\-\_\-\-D\-E\-B\-U\-G}
+\item 
+\#define \hyperlink{_beagle___g_p_i_o_8h_a3d0c439f7d891ad8c96dcd24f5407ba9}{\-G\-P\-I\-O\-\_\-\-P\-R\-I\-N\-T}(msg)~std\-::cout $<$$<$ \char`\"{}\mbox{[}\-G\-P\-I\-O\mbox{]} \-: \char`\"{} $<$$<$ msg $<$$<$ std\-::endl;
+\item 
+\#define \hyperlink{_beagle___g_p_i_o_8h_acdcc5aaebf3f273c1762f24a6ece2e5e}{assert}(condition)
+\end{DoxyCompactItemize}
+
+
+\subsection{\-Define \-Documentation}
+\hypertarget{_beagle___g_p_i_o_8h_acdcc5aaebf3f273c1762f24a6ece2e5e}{\index{\-Beagle\-\_\-\-G\-P\-I\-O.\-h@{\-Beagle\-\_\-\-G\-P\-I\-O.\-h}!assert@{assert}}
+\index{assert@{assert}!Beagle_GPIO.h@{\-Beagle\-\_\-\-G\-P\-I\-O.\-h}}
+\subsubsection[{assert}]{\setlength{\rightskip}{0pt plus 5cm}\#define {\bf assert}(
+\begin{DoxyParamCaption}
+\item[{}]{condition}
+\end{DoxyParamCaption}
+)}}\label{_beagle___g_p_i_o_8h_acdcc5aaebf3f273c1762f24a6ece2e5e}
+{\bfseries \-Value\-:}
+\begin{DoxyCode}
+if (!(condition))       \
+                {                       \
+                        GPIO_ERROR( "Assert Failed in file '" << __FILE__ << "'
+       on line " << __LINE__ );        \
+                        exit(0);        \
+                }
+\end{DoxyCode}
+
+
+\-Definition at line 32 of file \-Beagle\-\_\-\-G\-P\-I\-O.\-h.
+
+\hypertarget{_beagle___g_p_i_o_8h_a4539ad479eb3f5b550fe158afba3c743}{\index{\-Beagle\-\_\-\-G\-P\-I\-O.\-h@{\-Beagle\-\_\-\-G\-P\-I\-O.\-h}!\-B\-E\-A\-G\-L\-E\-\_\-\-G\-P\-I\-O\-\_\-\-D\-E\-B\-U\-G@{\-B\-E\-A\-G\-L\-E\-\_\-\-G\-P\-I\-O\-\_\-\-D\-E\-B\-U\-G}}
+\index{\-B\-E\-A\-G\-L\-E\-\_\-\-G\-P\-I\-O\-\_\-\-D\-E\-B\-U\-G@{\-B\-E\-A\-G\-L\-E\-\_\-\-G\-P\-I\-O\-\_\-\-D\-E\-B\-U\-G}!Beagle_GPIO.h@{\-Beagle\-\_\-\-G\-P\-I\-O.\-h}}
+\subsubsection[{\-B\-E\-A\-G\-L\-E\-\_\-\-G\-P\-I\-O\-\_\-\-D\-E\-B\-U\-G}]{\setlength{\rightskip}{0pt plus 5cm}\#define {\bf \-B\-E\-A\-G\-L\-E\-\_\-\-G\-P\-I\-O\-\_\-\-D\-E\-B\-U\-G}}}\label{_beagle___g_p_i_o_8h_a4539ad479eb3f5b550fe158afba3c743}
+
+
+\-Definition at line 29 of file \-Beagle\-\_\-\-G\-P\-I\-O.\-h.
+
+\hypertarget{_beagle___g_p_i_o_8h_a1936734e6c1d7f62fea288fdf8ca8f29}{\index{\-Beagle\-\_\-\-G\-P\-I\-O.\-h@{\-Beagle\-\_\-\-G\-P\-I\-O.\-h}!\-G\-P\-I\-O\-\_\-\-E\-R\-R\-O\-R@{\-G\-P\-I\-O\-\_\-\-E\-R\-R\-O\-R}}
+\index{\-G\-P\-I\-O\-\_\-\-E\-R\-R\-O\-R@{\-G\-P\-I\-O\-\_\-\-E\-R\-R\-O\-R}!Beagle_GPIO.h@{\-Beagle\-\_\-\-G\-P\-I\-O.\-h}}
+\subsubsection[{\-G\-P\-I\-O\-\_\-\-E\-R\-R\-O\-R}]{\setlength{\rightskip}{0pt plus 5cm}\#define {\bf \-G\-P\-I\-O\-\_\-\-E\-R\-R\-O\-R}(
+\begin{DoxyParamCaption}
+\item[{}]{msg}
+\end{DoxyParamCaption}
+)~std\-::cout $<$$<$ \char`\"{}\mbox{[}\-G\-P\-I\-O\mbox{]} \-Error \-: \char`\"{} $<$$<$ msg $<$$<$ std\-::endl;}}\label{_beagle___g_p_i_o_8h_a1936734e6c1d7f62fea288fdf8ca8f29}
+
+
+\-Definition at line 27 of file \-Beagle\-\_\-\-G\-P\-I\-O.\-h.
+
+\hypertarget{_beagle___g_p_i_o_8h_a3d0c439f7d891ad8c96dcd24f5407ba9}{\index{\-Beagle\-\_\-\-G\-P\-I\-O.\-h@{\-Beagle\-\_\-\-G\-P\-I\-O.\-h}!\-G\-P\-I\-O\-\_\-\-P\-R\-I\-N\-T@{\-G\-P\-I\-O\-\_\-\-P\-R\-I\-N\-T}}
+\index{\-G\-P\-I\-O\-\_\-\-P\-R\-I\-N\-T@{\-G\-P\-I\-O\-\_\-\-P\-R\-I\-N\-T}!Beagle_GPIO.h@{\-Beagle\-\_\-\-G\-P\-I\-O.\-h}}
+\subsubsection[{\-G\-P\-I\-O\-\_\-\-P\-R\-I\-N\-T}]{\setlength{\rightskip}{0pt plus 5cm}\#define {\bf \-G\-P\-I\-O\-\_\-\-P\-R\-I\-N\-T}(
+\begin{DoxyParamCaption}
+\item[{}]{msg}
+\end{DoxyParamCaption}
+)~std\-::cout $<$$<$ \char`\"{}\mbox{[}\-G\-P\-I\-O\mbox{]} \-: \char`\"{} $<$$<$ msg $<$$<$ std\-::endl;}}\label{_beagle___g_p_i_o_8h_a3d0c439f7d891ad8c96dcd24f5407ba9}
+
+
+\-Definition at line 31 of file \-Beagle\-\_\-\-G\-P\-I\-O.\-h.
+

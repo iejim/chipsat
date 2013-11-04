@@ -1,0 +1,112 @@
+\hypertarget{class_u_s_u_1_1_motor}{\section{\-U\-S\-U\-:\-:\-Motor \-Class \-Reference}
+\label{class_u_s_u_1_1_motor}\index{\-U\-S\-U\-::\-Motor@{\-U\-S\-U\-::\-Motor}}
+}
+
+
+\-Class which represents a motor.  
+
+
+
+
+{\ttfamily \#include $<$motor.\-h$>$}
+
+\subsection*{\-Public \-Member \-Functions}
+\begin{DoxyCompactItemize}
+\item 
+\hyperlink{class_u_s_u_1_1_motor_a2200a3939cd62d2e22e9b134b54bc402}{\-Motor} (\hyperlink{class_beagle___g_p_i_o}{\-Beagle\-\_\-\-G\-P\-I\-O} \&beagle\-Gpio, \hyperlink{class_beagle___g_p_i_o_a9b1fd560ea5d2d65898ac15c23055e58}{\-Beagle\-\_\-\-G\-P\-I\-O\-::\-Pins} clockwise, \hyperlink{class_beagle___g_p_i_o_a9b1fd560ea5d2d65898ac15c23055e58}{\-Beagle\-\_\-\-G\-P\-I\-O\-::\-Pins} counter\-Clockwise, \hyperlink{classc_p_w_m}{c\-P\-W\-M} \&pwm, \hyperlink{motor_8h_aa4a2cd53d0866ae4c273573db3c4870d}{\-Set\-Duty\-Cyle} duty\-Cycle)
+\begin{DoxyCompactList}\small\item\em \-Constructor. \end{DoxyCompactList}\item 
+void \hyperlink{class_u_s_u_1_1_motor_aa58cbc26a0da87389dd208367d0fa407}{set\-Speed} (int speed)
+\begin{DoxyCompactList}\small\item\em \-Set the speed of the motor in percent. \end{DoxyCompactList}\item 
+int \hyperlink{class_u_s_u_1_1_motor_a98d4c98ddc30e00485712f55b4a91211}{get\-Speed} () const 
+\begin{DoxyCompactList}\small\item\em \-Return the current speed of the motor. \end{DoxyCompactList}\end{DoxyCompactItemize}
+
+
+\subsection{\-Detailed \-Description}
+\-Class which represents a motor. 
+
+\-It controls 2 digital pins to set motor spin direction and one \-P\-W\-M channel to set motor speed. 
+
+\-Definition at line 37 of file motor.\-h.
+
+
+
+\subsection{\-Constructor \& \-Destructor \-Documentation}
+\hypertarget{class_u_s_u_1_1_motor_a2200a3939cd62d2e22e9b134b54bc402}{\index{\-U\-S\-U\-::\-Motor@{\-U\-S\-U\-::\-Motor}!\-Motor@{\-Motor}}
+\index{\-Motor@{\-Motor}!USU::Motor@{\-U\-S\-U\-::\-Motor}}
+\subsubsection[{\-Motor}]{\setlength{\rightskip}{0pt plus 5cm}{\bf \-Motor\-::\-Motor} (
+\begin{DoxyParamCaption}
+\item[{{\bf \-Beagle\-\_\-\-G\-P\-I\-O} \&}]{beagle\-Gpio, }
+\item[{{\bf \-Beagle\-\_\-\-G\-P\-I\-O\-::\-Pins}}]{clockwise, }
+\item[{{\bf \-Beagle\-\_\-\-G\-P\-I\-O\-::\-Pins}}]{counter\-Clockwise, }
+\item[{{\bf c\-P\-W\-M} \&}]{pwm, }
+\item[{{\bf \-Set\-Duty\-Cyle}}]{duty\-Cycle}
+\end{DoxyParamCaption}
+)}}\label{class_u_s_u_1_1_motor_a2200a3939cd62d2e22e9b134b54bc402}
+
+
+\-Constructor. 
+
+
+\begin{DoxyParams}{\-Parameters}
+{\em beagle\-Gpio} & \-Reference to a \hyperlink{class_beagle___g_p_i_o}{\-Beagle\-\_\-\-G\-P\-I\-O} object to set the pins \\
+\hline
+{\em clockwise} & \-First pin needed to set motor direction \\
+\hline
+{\em counter\-Clockwise} & \-Second pin needed to set motor direction \\
+\hline
+{\em pwm} & \-Reference to the c\-P\-W\-M-\/object, which controls the \-P\-W\-M \\
+\hline
+{\em duty\-Cycle} & \-Function to set the duty\-Cycle of the \-P\-W\-M-\/channel assigned to the motor \\
+\hline
+\end{DoxyParams}
+
+
+\-Definition at line 14 of file motor.\-cpp.
+
+
+
+\subsection{\-Member \-Function \-Documentation}
+\hypertarget{class_u_s_u_1_1_motor_a98d4c98ddc30e00485712f55b4a91211}{\index{\-U\-S\-U\-::\-Motor@{\-U\-S\-U\-::\-Motor}!get\-Speed@{get\-Speed}}
+\index{get\-Speed@{get\-Speed}!USU::Motor@{\-U\-S\-U\-::\-Motor}}
+\subsubsection[{get\-Speed}]{\setlength{\rightskip}{0pt plus 5cm}int {\bf \-U\-S\-U\-::\-Motor\-::get\-Speed} (
+\begin{DoxyParamCaption}
+{}
+\end{DoxyParamCaption}
+) const\hspace{0.3cm}{\ttfamily  \mbox{[}inline\mbox{]}}}}\label{class_u_s_u_1_1_motor_a98d4c98ddc30e00485712f55b4a91211}
+
+
+\-Return the current speed of the motor. 
+
+\begin{DoxyReturn}{\-Returns}
+int current \-Speed of the motor 
+\end{DoxyReturn}
+
+
+\-Definition at line 63 of file motor.\-h.
+
+\hypertarget{class_u_s_u_1_1_motor_aa58cbc26a0da87389dd208367d0fa407}{\index{\-U\-S\-U\-::\-Motor@{\-U\-S\-U\-::\-Motor}!set\-Speed@{set\-Speed}}
+\index{set\-Speed@{set\-Speed}!USU::Motor@{\-U\-S\-U\-::\-Motor}}
+\subsubsection[{set\-Speed}]{\setlength{\rightskip}{0pt plus 5cm}void {\bf \-Motor\-::set\-Speed} (
+\begin{DoxyParamCaption}
+\item[{int}]{speed}
+\end{DoxyParamCaption}
+)}}\label{class_u_s_u_1_1_motor_aa58cbc26a0da87389dd208367d0fa407}
+
+
+\-Set the speed of the motor in percent. 
+
+
+\begin{DoxyParams}{\-Parameters}
+{\em speed} & desired motor speed (-\/100, 100) \\
+\hline
+\end{DoxyParams}
+
+
+\-Definition at line 29 of file motor.\-cpp.
+
+
+
+\-The documentation for this class was generated from the following files\-:\begin{DoxyCompactItemize}
+\item 
+include/\hyperlink{motor_8h}{motor.\-h}\item 
+src/\hyperlink{motor_8cpp}{motor.\-cpp}\end{DoxyCompactItemize}

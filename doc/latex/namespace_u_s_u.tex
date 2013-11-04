@@ -1,0 +1,416 @@
+\hypertarget{namespace_u_s_u}{\section{\-U\-S\-U \-Namespace \-Reference}
+\label{namespace_u_s_u}\index{\-U\-S\-U@{\-U\-S\-U}}
+}
+
+
+\-T\-O\-D\-O\-: \-Make some proper exceptions.  
+
+
+\subsection*{\-Classes}
+\begin{DoxyCompactItemize}
+\item 
+class \hyperlink{class_u_s_u_1_1_g_x3_communicator}{\-G\-X3\-Communicator}
+\begin{DoxyCompactList}\small\item\em \-Represents the \-Thread class for communication with the 3\-D\-M-\/\-G\-X3-\/25. \end{DoxyCompactList}\item 
+class \hyperlink{class_u_s_u_1_1_kalman_filter}{\-Kalman\-Filter}
+\begin{DoxyCompactList}\small\item\em \-Represents the \-Periodic \-Thread class for state estimation. \end{DoxyCompactList}\item 
+class \hyperlink{class_u_s_u_1_1_lock}{\-Lock}
+\begin{DoxyCompactList}\small\item\em \-Wrapper class for pthread mutexes. \end{DoxyCompactList}\item 
+class \hyperlink{class_u_s_u_1_1_scoped_lock}{\-Scoped\-Lock}
+\begin{DoxyCompactList}\small\item\em \-Provides a helper class for \-Scoped \-Mutexes. \end{DoxyCompactList}\item 
+class \hyperlink{class_u_s_u_1_1_max127}{\-Max127}
+\begin{DoxyCompactList}\small\item\em \-Class representing the \-M\-A\-X127 \-A\-D\-C. \end{DoxyCompactList}\item 
+class \hyperlink{class_u_s_u_1_1_g_x3_packet}{\-G\-X3\-Packet}
+\begin{DoxyCompactList}\small\item\em \-Abstract base class for received packets. \end{DoxyCompactList}\item 
+class \hyperlink{class_u_s_u_1_1_raw_acc_ang}{\-Raw\-Acc\-Ang}
+\begin{DoxyCompactList}\small\item\em \-Representation for receiving (raw) acceleration \& angular rate packets. \end{DoxyCompactList}\item 
+class \hyperlink{class_u_s_u_1_1_acc_ang_mag}{\-Acc\-Ang\-Mag}
+\begin{DoxyCompactList}\small\item\em \-Representation for receiving acceleration, angular rate and magnetometer packets. \end{DoxyCompactList}\item 
+class \hyperlink{class_u_s_u_1_1_quaternion}{\-Quaternion}
+\begin{DoxyCompactList}\small\item\em \-Representation for receiving the \hyperlink{class_u_s_u_1_1_quaternion}{\-Quaternion} representation from the \hyperlink{class_i_m_u}{\-I\-M\-U}. \end{DoxyCompactList}\item 
+class \hyperlink{class_u_s_u_1_1_acc_ang_mag_orientation_mat}{\-Acc\-Ang\-Mag\-Orientation\-Mat}
+\begin{DoxyCompactList}\small\item\em \-Representation for packets containing the 3 sensor vectors and orientation matrix \-This class can be used with the commands which return 3 \-Vectors and a 3x3 \-Matrix. \-The units are\-: \end{DoxyCompactList}\item 
+class \hyperlink{class_u_s_u_1_1_g_x3_command}{\-G\-X3\-Command}
+\begin{DoxyCompactList}\small\item\em \-Base class for commands send to the 3\-D\-M-\/\-G\-X3-\/25. \end{DoxyCompactList}\item 
+class \hyperlink{class_u_s_u_1_1_set_countinuous_mode}{\-Set\-Countinuous\-Mode}
+\begin{DoxyCompactList}\small\item\em \-Represents the \char`\"{}\-Set continuous mode\char`\"{} command. \end{DoxyCompactList}\item 
+class \hyperlink{class_u_s_u_1_1_sampling_settings}{\-Sampling\-Settings}
+\begin{DoxyCompactList}\small\item\em \-Represents the \char`\"{}\-Sampling Settings\char`\"{} command. \end{DoxyCompactList}\item 
+class \hyperlink{class_u_s_u_1_1_min_imu}{\-Min\-Imu}
+\begin{DoxyCompactList}\small\item\em \-Class to manage the communication to the \-Pololu \-Min\-I\-M\-U9. \end{DoxyCompactList}\item 
+class \hyperlink{class_u_s_u_1_1_motor}{\-Motor}
+\begin{DoxyCompactList}\small\item\em \-Class which represents a motor. \end{DoxyCompactList}\item 
+class \hyperlink{class_u_s_u_1_1_motor_control}{\-Motor\-Control}
+\begin{DoxyCompactList}\small\item\em \-Represents the class for motor control. \end{DoxyCompactList}\item 
+class \hyperlink{class_u_s_u_1_1_periodic_rt_thread}{\-Periodic\-Rt\-Thread}
+\begin{DoxyCompactList}\small\item\em \-T\-O\-D\-O\-: \-Make some proper exceptions. \end{DoxyCompactList}\item 
+class \hyperlink{class_u_s_u_1_1_rt_thread}{\-Rt\-Thread}
+\begin{DoxyCompactList}\small\item\em \-Abstract wrapper class for the pthread library with \-R\-T-\/priority. \end{DoxyCompactList}\item 
+class \hyperlink{class_u_s_u_1_1_semaphore}{\-Semaphore}
+\begin{DoxyCompactList}\small\item\em \-Wrapper class for semaphores. \end{DoxyCompactList}\item 
+class \hyperlink{class_u_s_u_1_1_shared_queue}{\-Shared\-Queue}
+\begin{DoxyCompactList}\small\item\em \-Wrapper class to make std\-::queue thread safe. \end{DoxyCompactList}\end{DoxyCompactItemize}
+\subsection*{\-Variables}
+\begin{DoxyCompactItemize}
+\item 
+const uint8\-\_\-t \hyperlink{namespace_u_s_u_a2db9a5d5bfe7ac01ad7614d2113cdbee}{\-I2\-C\-\_\-\-A\-D\-D\-R\-E\-S\-S} = 0b00101000
+\begin{DoxyCompactList}\small\item\em \-I2\-C-\/address of the \-A\-D\-C. \end{DoxyCompactList}\item 
+const uint8\-\_\-t \hyperlink{namespace_u_s_u_a2a7d5ce7e6cfea72beb680d46437f83a}{\-C\-O\-N\-T\-R\-O\-L\-\_\-\-B\-Y\-T\-E} = 0b10000110
+\begin{DoxyCompactList}\small\item\em \-Template of the control byte. \end{DoxyCompactList}\item 
+const uint8\-\_\-t \hyperlink{namespace_u_s_u_af74f2b5c887719077addc33c5986024b}{\-S\-E\-L0} = 4
+\item 
+const uint8\-\_\-t \hyperlink{namespace_u_s_u_a6bbb473161195a7e10d9f821cece1b04}{\-R\-A\-W\-\_\-\-A\-C\-C\-\_\-\-A\-N\-G} = 0x\-C1
+\item 
+const uint8\-\_\-t \hyperlink{namespace_u_s_u_a0517f100ec98a93fb28d4ae52a943b19}{\-A\-C\-C\-\_\-\-A\-N\-G} = 0x\-C2
+\item 
+const uint8\-\_\-t \hyperlink{namespace_u_s_u_acaafc8eff5346d9c529238dd0ceb61a6}{\-D\-E\-L\-T\-A\-\_\-\-A\-N\-G\-L\-E\-\_\-\-V\-E\-L} = 0x\-C3
+\item 
+const uint8\-\_\-t \hyperlink{namespace_u_s_u_a1f3d4b142078bc61d7dea5676b399d29}{\-S\-E\-T\-\_\-\-C\-O\-N\-T\-I\-N\-U\-O\-U\-S\-\_\-\-M\-O\-D\-E} = 0x\-C4
+\item 
+const uint8\-\_\-t \hyperlink{namespace_u_s_u_a6bab14d28c02be2a8956e98d18b9b275}{\-O\-R\-I\-E\-N\-T\-A\-T\-I\-O\-N\-\_\-\-M\-A\-T\-R\-I\-X} = 0x\-C5
+\item 
+const uint8\-\_\-t \hyperlink{namespace_u_s_u_a9d3464edac1b198f5c02658b36d083bb}{\-O\-R\-I\-E\-N\-T\-A\-T\-I\-O\-N\-\_\-\-U\-P\-D\-A\-T\-E\-\_\-\-M\-A\-T} = 0x\-C6
+\item 
+const uint8\-\_\-t \hyperlink{namespace_u_s_u_a85ca84f12076e3251addb0c96317c83a}{\-M\-A\-G\-\_\-\-V\-E\-C} = 0x\-C7
+\item 
+const uint8\-\_\-t \hyperlink{namespace_u_s_u_a13f66b9f78d1a3e9778bce391ab41b5e}{\-A\-C\-C\-\_\-\-A\-N\-G\-\_\-\-O\-R\-I\-E\-N\-T\-A\-T\-I\-O\-N\-\_\-\-M\-A\-T} = 0x\-C8
+\item 
+const uint8\-\_\-t \hyperlink{namespace_u_s_u_a16dfbf07cc906050d4685de10f84c3d8}{\-W\-R\-I\-T\-E\-\_\-\-A\-C\-C\-\_\-\-B\-I\-A\-S\-\_\-\-C\-O\-R\-R\-E\-C\-T\-I\-O\-N} = 0x\-C9
+\item 
+const uint8\-\_\-t \hyperlink{namespace_u_s_u_a7e0bd6ee510ca1a1aded8b277a6c5c6a}{\-W\-R\-I\-T\-E\-\_\-\-G\-Y\-R\-O\-\_\-\-B\-I\-A\-S\-\_\-\-C\-O\-R\-R\-E\-C\-T\-I\-O\-N} = 0x\-C\-A
+\item 
+const uint8\-\_\-t \hyperlink{namespace_u_s_u_ad03e7c0f41fd47a68a9f33abde73932a}{\-A\-C\-C\-\_\-\-A\-N\-G\-\_\-\-M\-A\-G\-\_\-\-V\-E\-C} = 0x\-C\-B
+\item 
+const uint8\-\_\-t \hyperlink{namespace_u_s_u_adb9724de65ce9a212dd8611f69d241f0}{\-A\-C\-C\-\_\-\-A\-N\-G\-\_\-\-M\-A\-G\-\_\-\-V\-E\-C\-\_\-\-O\-R\-I\-E\-N\-T\-A\-T\-I\-O\-N\-\_\-\-M\-A\-T} = 0x\-C\-C
+\item 
+const uint8\-\_\-t \hyperlink{namespace_u_s_u_a92bab9f2a72649fb48c86fd407ef8c59}{\-C\-A\-P\-T\-U\-R\-E\-\_\-\-G\-Y\-R\-O\-\_\-\-B\-I\-A\-S} = 0x\-C\-D
+\item 
+const uint8\-\_\-t \hyperlink{namespace_u_s_u_a6d35ce7963dec25cc43e551dccd71453}{\-E\-U\-L\-E\-R\-\_\-\-A\-N\-G\-L\-E\-S} = 0x\-C\-E
+\item 
+const uint8\-\_\-t \hyperlink{namespace_u_s_u_af604e3d925c2fe95f8a6b1af3f79d2d0}{\-E\-U\-L\-E\-R\-\_\-\-A\-N\-G\-L\-E\-S\-\_\-\-A\-N\-G\-\_\-\-R\-A\-T\-E\-S} = 0x\-C\-F
+\item 
+const uint8\-\_\-t \hyperlink{namespace_u_s_u_a440c70222186b93e58fd4448cecb2ad2}{\-T\-R\-A\-N\-S\-F\-E\-R\-\_\-\-T\-O\-\_\-\-N\-O\-N\-V\-O\-L\-\_\-\-M\-E\-M} = 0x\-D0
+\item 
+const uint8\-\_\-t \hyperlink{namespace_u_s_u_ac5f57d308aea3cdda7c0a2ddade6996b}{\-T\-E\-M\-P\-E\-R\-A\-T\-U\-R\-E\-S} = 0x\-D1
+\item 
+const uint8\-\_\-t \hyperlink{namespace_u_s_u_a21b21aa9bf4f65bb8f89f61c853b0d65}{\-G\-Y\-R\-O\-\_\-\-S\-T\-A\-B\-I\-L\-\_\-\-A\-C\-C\-\_\-\-A\-N\-G\-\_\-\-M\-A\-G} = 0x\-D2
+\item 
+const uint8\-\_\-t \hyperlink{namespace_u_s_u_a18e6e53c69e61c3538c351bb86c77629}{\-D\-E\-L\-T\-A\-\_\-\-A\-N\-G\-L\-E\-\_\-\-V\-E\-L\-\_\-\-M\-A\-G\-\_\-\-V\-E\-C} = 0x\-D3
+\item 
+const uint8\-\_\-t \hyperlink{namespace_u_s_u_afb689aa4352de24daaa765fd9e625ae3}{\-M\-O\-D\-E} = 0x\-D4
+\item 
+const uint8\-\_\-t \hyperlink{namespace_u_s_u_afc9a1298a3210c69931db151aaf35de7}{\-M\-O\-D\-E\-\_\-\-P\-R\-E\-S\-E\-T} = 0x\-D5
+\item 
+const uint8\-\_\-t \hyperlink{namespace_u_s_u_a5bc881189e111127f0bd759100dbab6b}{\-C\-O\-N\-T\-I\-N\-U\-O\-U\-S\-\_\-\-P\-R\-E\-S\-E\-T} = 0x\-D6
+\item 
+const uint8\-\_\-t \hyperlink{namespace_u_s_u_abed08045a54f63e04380a2ac80bcaf79}{\-T\-I\-M\-E\-R} = 0x\-D7
+\item 
+const uint8\-\_\-t \hyperlink{namespace_u_s_u_a3709ea83b0ef142216dad235ed73a34b}{\-C\-O\-M\-M\-\_\-\-S\-E\-T\-T\-I\-N\-G\-S} = 0x\-D9
+\item 
+const uint8\-\_\-t \hyperlink{namespace_u_s_u_aa13337d52a46707f63911e7c2972971b}{\-S\-T\-A\-T\-I\-O\-N\-A\-R\-Y\-\_\-\-T\-E\-S\-T} = 0x\-D\-A
+\item 
+const uint8\-\_\-t \hyperlink{namespace_u_s_u_aeb8ec20b4bb74ff2895ab487c29810e0}{\-S\-A\-M\-P\-L\-I\-N\-G\-\_\-\-S\-E\-T\-T\-I\-N\-G\-S} = 0x\-D\-B
+\item 
+const uint8\-\_\-t \hyperlink{namespace_u_s_u_a9c5f8777b9c35aaaa0b64490d1f9a20d}{\-R\-E\-A\-L\-I\-G\-N\-\_\-\-U\-P\-\_\-\-N\-O\-R\-T\-H} = 0x\-D\-D
+\item 
+const uint8\-\_\-t \hyperlink{namespace_u_s_u_ad476e2e7f70dbe869e508f676bea92a9}{\-Q\-U\-A\-T\-E\-R\-N\-I\-O\-N} = 0x\-D\-F
+\item 
+const uint8\-\_\-t \hyperlink{namespace_u_s_u_a483eb9b7abe528d9fe3e843b4655a977}{\-W\-R\-I\-T\-E\-\_\-\-W\-O\-R\-D\-\_\-\-E\-E\-P\-R\-O\-M} = 0x\-E4
+\item 
+const uint8\-\_\-t \hyperlink{namespace_u_s_u_ac9d01a02c622d06449580697749db1f5}{\-R\-E\-A\-D\-\_\-\-W\-O\-R\-D\-\_\-\-E\-E\-P\-R\-O\-M} = 0x\-E5
+\item 
+const uint8\-\_\-t \hyperlink{namespace_u_s_u_a7d0e77d37d6107d2869c30f57412e8b0}{\-R\-E\-A\-D\-\_\-\-F\-I\-R\-M\-W\-A\-R\-E\-\_\-\-V\-E\-R} = 0x\-E9
+\item 
+const uint8\-\_\-t \hyperlink{namespace_u_s_u_ad810b0281ab629302e9fd716374b90ed}{\-R\-E\-A\-D\-\_\-\-D\-E\-V\-I\-C\-E\-\_\-\-I\-D} = 0x\-E\-A
+\item 
+const uint8\-\_\-t \hyperlink{namespace_u_s_u_ae7447325a101912b787905199c4f2acb}{\-S\-T\-O\-P\-\_\-\-C\-O\-N\-T\-I\-N\-U\-O\-U\-S} = 0x\-F\-A
+\item 
+const uint8\-\_\-t \hyperlink{namespace_u_s_u_a321d286cf60a5fd674ad8c0286db8748}{\-F\-I\-R\-M\-W\-A\-R\-E\-\_\-\-U\-P\-D\-A\-T\-E} = 0x\-F\-D
+\item 
+const uint8\-\_\-t \hyperlink{namespace_u_s_u_a7c9f78c9bb18ba92a529bf5819f6a5d2}{\-D\-E\-V\-I\-C\-E\-\_\-\-R\-E\-S\-E\-T} = 0x\-F\-E
+\end{DoxyCompactItemize}
+
+
+\subsection{\-Detailed \-Description}
+\-T\-O\-D\-O\-: \-Make some proper exceptions. 
+
+\subsection{\-Variable \-Documentation}
+\hypertarget{namespace_u_s_u_a0517f100ec98a93fb28d4ae52a943b19}{\index{\-U\-S\-U@{\-U\-S\-U}!\-A\-C\-C\-\_\-\-A\-N\-G@{\-A\-C\-C\-\_\-\-A\-N\-G}}
+\index{\-A\-C\-C\-\_\-\-A\-N\-G@{\-A\-C\-C\-\_\-\-A\-N\-G}!USU@{\-U\-S\-U}}
+\subsubsection[{\-A\-C\-C\-\_\-\-A\-N\-G}]{\setlength{\rightskip}{0pt plus 5cm}const uint8\-\_\-t {\bf \-U\-S\-U\-::\-A\-C\-C\-\_\-\-A\-N\-G} = 0x\-C2}}\label{namespace_u_s_u_a0517f100ec98a93fb28d4ae52a943b19}
+\-Acceleration \& \-Angular \-Rate 
+
+\-Definition at line 30 of file messages.\-h.
+
+\hypertarget{namespace_u_s_u_ad03e7c0f41fd47a68a9f33abde73932a}{\index{\-U\-S\-U@{\-U\-S\-U}!\-A\-C\-C\-\_\-\-A\-N\-G\-\_\-\-M\-A\-G\-\_\-\-V\-E\-C@{\-A\-C\-C\-\_\-\-A\-N\-G\-\_\-\-M\-A\-G\-\_\-\-V\-E\-C}}
+\index{\-A\-C\-C\-\_\-\-A\-N\-G\-\_\-\-M\-A\-G\-\_\-\-V\-E\-C@{\-A\-C\-C\-\_\-\-A\-N\-G\-\_\-\-M\-A\-G\-\_\-\-V\-E\-C}!USU@{\-U\-S\-U}}
+\subsubsection[{\-A\-C\-C\-\_\-\-A\-N\-G\-\_\-\-M\-A\-G\-\_\-\-V\-E\-C}]{\setlength{\rightskip}{0pt plus 5cm}const uint8\-\_\-t {\bf \-U\-S\-U\-::\-A\-C\-C\-\_\-\-A\-N\-G\-\_\-\-M\-A\-G\-\_\-\-V\-E\-C} = 0x\-C\-B}}\label{namespace_u_s_u_ad03e7c0f41fd47a68a9f33abde73932a}
+\-Acceleration, \-Angular \-Rate \& \-Magnetometer \-Vector 
+
+\-Definition at line 39 of file messages.\-h.
+
+\hypertarget{namespace_u_s_u_adb9724de65ce9a212dd8611f69d241f0}{\index{\-U\-S\-U@{\-U\-S\-U}!\-A\-C\-C\-\_\-\-A\-N\-G\-\_\-\-M\-A\-G\-\_\-\-V\-E\-C\-\_\-\-O\-R\-I\-E\-N\-T\-A\-T\-I\-O\-N\-\_\-\-M\-A\-T@{\-A\-C\-C\-\_\-\-A\-N\-G\-\_\-\-M\-A\-G\-\_\-\-V\-E\-C\-\_\-\-O\-R\-I\-E\-N\-T\-A\-T\-I\-O\-N\-\_\-\-M\-A\-T}}
+\index{\-A\-C\-C\-\_\-\-A\-N\-G\-\_\-\-M\-A\-G\-\_\-\-V\-E\-C\-\_\-\-O\-R\-I\-E\-N\-T\-A\-T\-I\-O\-N\-\_\-\-M\-A\-T@{\-A\-C\-C\-\_\-\-A\-N\-G\-\_\-\-M\-A\-G\-\_\-\-V\-E\-C\-\_\-\-O\-R\-I\-E\-N\-T\-A\-T\-I\-O\-N\-\_\-\-M\-A\-T}!USU@{\-U\-S\-U}}
+\subsubsection[{\-A\-C\-C\-\_\-\-A\-N\-G\-\_\-\-M\-A\-G\-\_\-\-V\-E\-C\-\_\-\-O\-R\-I\-E\-N\-T\-A\-T\-I\-O\-N\-\_\-\-M\-A\-T}]{\setlength{\rightskip}{0pt plus 5cm}const uint8\-\_\-t {\bf \-U\-S\-U\-::\-A\-C\-C\-\_\-\-A\-N\-G\-\_\-\-M\-A\-G\-\_\-\-V\-E\-C\-\_\-\-O\-R\-I\-E\-N\-T\-A\-T\-I\-O\-N\-\_\-\-M\-A\-T} = 0x\-C\-C}}\label{namespace_u_s_u_adb9724de65ce9a212dd8611f69d241f0}
+\-Acceleration, \-Angular \-Rate \& \-Magnetometer \-Vectors \& \-Orientation \-Matrix 
+
+\-Definition at line 40 of file messages.\-h.
+
+\hypertarget{namespace_u_s_u_a13f66b9f78d1a3e9778bce391ab41b5e}{\index{\-U\-S\-U@{\-U\-S\-U}!\-A\-C\-C\-\_\-\-A\-N\-G\-\_\-\-O\-R\-I\-E\-N\-T\-A\-T\-I\-O\-N\-\_\-\-M\-A\-T@{\-A\-C\-C\-\_\-\-A\-N\-G\-\_\-\-O\-R\-I\-E\-N\-T\-A\-T\-I\-O\-N\-\_\-\-M\-A\-T}}
+\index{\-A\-C\-C\-\_\-\-A\-N\-G\-\_\-\-O\-R\-I\-E\-N\-T\-A\-T\-I\-O\-N\-\_\-\-M\-A\-T@{\-A\-C\-C\-\_\-\-A\-N\-G\-\_\-\-O\-R\-I\-E\-N\-T\-A\-T\-I\-O\-N\-\_\-\-M\-A\-T}!USU@{\-U\-S\-U}}
+\subsubsection[{\-A\-C\-C\-\_\-\-A\-N\-G\-\_\-\-O\-R\-I\-E\-N\-T\-A\-T\-I\-O\-N\-\_\-\-M\-A\-T}]{\setlength{\rightskip}{0pt plus 5cm}const uint8\-\_\-t {\bf \-U\-S\-U\-::\-A\-C\-C\-\_\-\-A\-N\-G\-\_\-\-O\-R\-I\-E\-N\-T\-A\-T\-I\-O\-N\-\_\-\-M\-A\-T} = 0x\-C8}}\label{namespace_u_s_u_a13f66b9f78d1a3e9778bce391ab41b5e}
+\-Acceleration, \-Angular \-Rate \& \-Orientation \-Matrix 
+
+\-Definition at line 36 of file messages.\-h.
+
+\hypertarget{namespace_u_s_u_a92bab9f2a72649fb48c86fd407ef8c59}{\index{\-U\-S\-U@{\-U\-S\-U}!\-C\-A\-P\-T\-U\-R\-E\-\_\-\-G\-Y\-R\-O\-\_\-\-B\-I\-A\-S@{\-C\-A\-P\-T\-U\-R\-E\-\_\-\-G\-Y\-R\-O\-\_\-\-B\-I\-A\-S}}
+\index{\-C\-A\-P\-T\-U\-R\-E\-\_\-\-G\-Y\-R\-O\-\_\-\-B\-I\-A\-S@{\-C\-A\-P\-T\-U\-R\-E\-\_\-\-G\-Y\-R\-O\-\_\-\-B\-I\-A\-S}!USU@{\-U\-S\-U}}
+\subsubsection[{\-C\-A\-P\-T\-U\-R\-E\-\_\-\-G\-Y\-R\-O\-\_\-\-B\-I\-A\-S}]{\setlength{\rightskip}{0pt plus 5cm}const uint8\-\_\-t {\bf \-U\-S\-U\-::\-C\-A\-P\-T\-U\-R\-E\-\_\-\-G\-Y\-R\-O\-\_\-\-B\-I\-A\-S} = 0x\-C\-D}}\label{namespace_u_s_u_a92bab9f2a72649fb48c86fd407ef8c59}
+\-Capture \-Gyro \-Bias 
+
+\-Definition at line 41 of file messages.\-h.
+
+\hypertarget{namespace_u_s_u_a3709ea83b0ef142216dad235ed73a34b}{\index{\-U\-S\-U@{\-U\-S\-U}!\-C\-O\-M\-M\-\_\-\-S\-E\-T\-T\-I\-N\-G\-S@{\-C\-O\-M\-M\-\_\-\-S\-E\-T\-T\-I\-N\-G\-S}}
+\index{\-C\-O\-M\-M\-\_\-\-S\-E\-T\-T\-I\-N\-G\-S@{\-C\-O\-M\-M\-\_\-\-S\-E\-T\-T\-I\-N\-G\-S}!USU@{\-U\-S\-U}}
+\subsubsection[{\-C\-O\-M\-M\-\_\-\-S\-E\-T\-T\-I\-N\-G\-S}]{\setlength{\rightskip}{0pt plus 5cm}const uint8\-\_\-t {\bf \-U\-S\-U\-::\-C\-O\-M\-M\-\_\-\-S\-E\-T\-T\-I\-N\-G\-S} = 0x\-D9}}\label{namespace_u_s_u_a3709ea83b0ef142216dad235ed73a34b}
+\-Communications \-Settings 
+
+\-Definition at line 52 of file messages.\-h.
+
+\hypertarget{namespace_u_s_u_a5bc881189e111127f0bd759100dbab6b}{\index{\-U\-S\-U@{\-U\-S\-U}!\-C\-O\-N\-T\-I\-N\-U\-O\-U\-S\-\_\-\-P\-R\-E\-S\-E\-T@{\-C\-O\-N\-T\-I\-N\-U\-O\-U\-S\-\_\-\-P\-R\-E\-S\-E\-T}}
+\index{\-C\-O\-N\-T\-I\-N\-U\-O\-U\-S\-\_\-\-P\-R\-E\-S\-E\-T@{\-C\-O\-N\-T\-I\-N\-U\-O\-U\-S\-\_\-\-P\-R\-E\-S\-E\-T}!USU@{\-U\-S\-U}}
+\subsubsection[{\-C\-O\-N\-T\-I\-N\-U\-O\-U\-S\-\_\-\-P\-R\-E\-S\-E\-T}]{\setlength{\rightskip}{0pt plus 5cm}const uint8\-\_\-t {\bf \-U\-S\-U\-::\-C\-O\-N\-T\-I\-N\-U\-O\-U\-S\-\_\-\-P\-R\-E\-S\-E\-T} = 0x\-D6}}\label{namespace_u_s_u_a5bc881189e111127f0bd759100dbab6b}
+\-Continuous \-Preset 
+
+\-Definition at line 50 of file messages.\-h.
+
+\hypertarget{namespace_u_s_u_a2a7d5ce7e6cfea72beb680d46437f83a}{\index{\-U\-S\-U@{\-U\-S\-U}!\-C\-O\-N\-T\-R\-O\-L\-\_\-\-B\-Y\-T\-E@{\-C\-O\-N\-T\-R\-O\-L\-\_\-\-B\-Y\-T\-E}}
+\index{\-C\-O\-N\-T\-R\-O\-L\-\_\-\-B\-Y\-T\-E@{\-C\-O\-N\-T\-R\-O\-L\-\_\-\-B\-Y\-T\-E}!USU@{\-U\-S\-U}}
+\subsubsection[{\-C\-O\-N\-T\-R\-O\-L\-\_\-\-B\-Y\-T\-E}]{\setlength{\rightskip}{0pt plus 5cm}const uint8\-\_\-t {\bf \-U\-S\-U\-::\-C\-O\-N\-T\-R\-O\-L\-\_\-\-B\-Y\-T\-E} = 0b10000110}}\label{namespace_u_s_u_a2a7d5ce7e6cfea72beb680d46437f83a}
+
+
+\-Template of the control byte. 
+
+\-The used settings are\-\_\-
+\begin{DoxyItemize}
+\item fullscale range +-\/5\-V
+\item \-Standby \-Power-\/\-Down mode
+\end{DoxyItemize}
+
+\-The bits for channel selection are set to 0. \-Send \-C\-O\-N\-T\-R\-O\-L\-\_\-\-B\-Y\-T\-E $|$ (\-C\-H$<$$<$\-S\-E\-L0) with \-C\-H being the desired channel via the \hyperlink{class_i2_c_bus}{\-I2\-C\-Bus}. 
+
+\-Definition at line 40 of file max127.\-h.
+
+\hypertarget{namespace_u_s_u_acaafc8eff5346d9c529238dd0ceb61a6}{\index{\-U\-S\-U@{\-U\-S\-U}!\-D\-E\-L\-T\-A\-\_\-\-A\-N\-G\-L\-E\-\_\-\-V\-E\-L@{\-D\-E\-L\-T\-A\-\_\-\-A\-N\-G\-L\-E\-\_\-\-V\-E\-L}}
+\index{\-D\-E\-L\-T\-A\-\_\-\-A\-N\-G\-L\-E\-\_\-\-V\-E\-L@{\-D\-E\-L\-T\-A\-\_\-\-A\-N\-G\-L\-E\-\_\-\-V\-E\-L}!USU@{\-U\-S\-U}}
+\subsubsection[{\-D\-E\-L\-T\-A\-\_\-\-A\-N\-G\-L\-E\-\_\-\-V\-E\-L}]{\setlength{\rightskip}{0pt plus 5cm}const uint8\-\_\-t {\bf \-U\-S\-U\-::\-D\-E\-L\-T\-A\-\_\-\-A\-N\-G\-L\-E\-\_\-\-V\-E\-L} = 0x\-C3}}\label{namespace_u_s_u_acaafc8eff5346d9c529238dd0ceb61a6}
+\-Delta\-Angle \& \-Delta\-Velocity 
+
+\-Definition at line 31 of file messages.\-h.
+
+\hypertarget{namespace_u_s_u_a18e6e53c69e61c3538c351bb86c77629}{\index{\-U\-S\-U@{\-U\-S\-U}!\-D\-E\-L\-T\-A\-\_\-\-A\-N\-G\-L\-E\-\_\-\-V\-E\-L\-\_\-\-M\-A\-G\-\_\-\-V\-E\-C@{\-D\-E\-L\-T\-A\-\_\-\-A\-N\-G\-L\-E\-\_\-\-V\-E\-L\-\_\-\-M\-A\-G\-\_\-\-V\-E\-C}}
+\index{\-D\-E\-L\-T\-A\-\_\-\-A\-N\-G\-L\-E\-\_\-\-V\-E\-L\-\_\-\-M\-A\-G\-\_\-\-V\-E\-C@{\-D\-E\-L\-T\-A\-\_\-\-A\-N\-G\-L\-E\-\_\-\-V\-E\-L\-\_\-\-M\-A\-G\-\_\-\-V\-E\-C}!USU@{\-U\-S\-U}}
+\subsubsection[{\-D\-E\-L\-T\-A\-\_\-\-A\-N\-G\-L\-E\-\_\-\-V\-E\-L\-\_\-\-M\-A\-G\-\_\-\-V\-E\-C}]{\setlength{\rightskip}{0pt plus 5cm}const uint8\-\_\-t {\bf \-U\-S\-U\-::\-D\-E\-L\-T\-A\-\_\-\-A\-N\-G\-L\-E\-\_\-\-V\-E\-L\-\_\-\-M\-A\-G\-\_\-\-V\-E\-C} = 0x\-D3}}\label{namespace_u_s_u_a18e6e53c69e61c3538c351bb86c77629}
+\-Delta\-Angle \& \-Delta\-Velocity \& \-Magnetometer \-Vectors 
+
+\-Definition at line 47 of file messages.\-h.
+
+\hypertarget{namespace_u_s_u_a7c9f78c9bb18ba92a529bf5819f6a5d2}{\index{\-U\-S\-U@{\-U\-S\-U}!\-D\-E\-V\-I\-C\-E\-\_\-\-R\-E\-S\-E\-T@{\-D\-E\-V\-I\-C\-E\-\_\-\-R\-E\-S\-E\-T}}
+\index{\-D\-E\-V\-I\-C\-E\-\_\-\-R\-E\-S\-E\-T@{\-D\-E\-V\-I\-C\-E\-\_\-\-R\-E\-S\-E\-T}!USU@{\-U\-S\-U}}
+\subsubsection[{\-D\-E\-V\-I\-C\-E\-\_\-\-R\-E\-S\-E\-T}]{\setlength{\rightskip}{0pt plus 5cm}const uint8\-\_\-t {\bf \-U\-S\-U\-::\-D\-E\-V\-I\-C\-E\-\_\-\-R\-E\-S\-E\-T} = 0x\-F\-E}}\label{namespace_u_s_u_a7c9f78c9bb18ba92a529bf5819f6a5d2}
+\-Device \-Reset (no reply) 
+
+\-Definition at line 63 of file messages.\-h.
+
+\hypertarget{namespace_u_s_u_a6d35ce7963dec25cc43e551dccd71453}{\index{\-U\-S\-U@{\-U\-S\-U}!\-E\-U\-L\-E\-R\-\_\-\-A\-N\-G\-L\-E\-S@{\-E\-U\-L\-E\-R\-\_\-\-A\-N\-G\-L\-E\-S}}
+\index{\-E\-U\-L\-E\-R\-\_\-\-A\-N\-G\-L\-E\-S@{\-E\-U\-L\-E\-R\-\_\-\-A\-N\-G\-L\-E\-S}!USU@{\-U\-S\-U}}
+\subsubsection[{\-E\-U\-L\-E\-R\-\_\-\-A\-N\-G\-L\-E\-S}]{\setlength{\rightskip}{0pt plus 5cm}const uint8\-\_\-t {\bf \-U\-S\-U\-::\-E\-U\-L\-E\-R\-\_\-\-A\-N\-G\-L\-E\-S} = 0x\-C\-E}}\label{namespace_u_s_u_a6d35ce7963dec25cc43e551dccd71453}
+\-Euler \-Angles 
+
+\-Definition at line 42 of file messages.\-h.
+
+\hypertarget{namespace_u_s_u_af604e3d925c2fe95f8a6b1af3f79d2d0}{\index{\-U\-S\-U@{\-U\-S\-U}!\-E\-U\-L\-E\-R\-\_\-\-A\-N\-G\-L\-E\-S\-\_\-\-A\-N\-G\-\_\-\-R\-A\-T\-E\-S@{\-E\-U\-L\-E\-R\-\_\-\-A\-N\-G\-L\-E\-S\-\_\-\-A\-N\-G\-\_\-\-R\-A\-T\-E\-S}}
+\index{\-E\-U\-L\-E\-R\-\_\-\-A\-N\-G\-L\-E\-S\-\_\-\-A\-N\-G\-\_\-\-R\-A\-T\-E\-S@{\-E\-U\-L\-E\-R\-\_\-\-A\-N\-G\-L\-E\-S\-\_\-\-A\-N\-G\-\_\-\-R\-A\-T\-E\-S}!USU@{\-U\-S\-U}}
+\subsubsection[{\-E\-U\-L\-E\-R\-\_\-\-A\-N\-G\-L\-E\-S\-\_\-\-A\-N\-G\-\_\-\-R\-A\-T\-E\-S}]{\setlength{\rightskip}{0pt plus 5cm}const uint8\-\_\-t {\bf \-U\-S\-U\-::\-E\-U\-L\-E\-R\-\_\-\-A\-N\-G\-L\-E\-S\-\_\-\-A\-N\-G\-\_\-\-R\-A\-T\-E\-S} = 0x\-C\-F}}\label{namespace_u_s_u_af604e3d925c2fe95f8a6b1af3f79d2d0}
+\-Euler \-Angles and \-Angular \-Rates 
+
+\-Definition at line 43 of file messages.\-h.
+
+\hypertarget{namespace_u_s_u_a321d286cf60a5fd674ad8c0286db8748}{\index{\-U\-S\-U@{\-U\-S\-U}!\-F\-I\-R\-M\-W\-A\-R\-E\-\_\-\-U\-P\-D\-A\-T\-E@{\-F\-I\-R\-M\-W\-A\-R\-E\-\_\-\-U\-P\-D\-A\-T\-E}}
+\index{\-F\-I\-R\-M\-W\-A\-R\-E\-\_\-\-U\-P\-D\-A\-T\-E@{\-F\-I\-R\-M\-W\-A\-R\-E\-\_\-\-U\-P\-D\-A\-T\-E}!USU@{\-U\-S\-U}}
+\subsubsection[{\-F\-I\-R\-M\-W\-A\-R\-E\-\_\-\-U\-P\-D\-A\-T\-E}]{\setlength{\rightskip}{0pt plus 5cm}const uint8\-\_\-t {\bf \-U\-S\-U\-::\-F\-I\-R\-M\-W\-A\-R\-E\-\_\-\-U\-P\-D\-A\-T\-E} = 0x\-F\-D}}\label{namespace_u_s_u_a321d286cf60a5fd674ad8c0286db8748}
+\-Firmware \-Update (no reply) 
+
+\-Definition at line 62 of file messages.\-h.
+
+\hypertarget{namespace_u_s_u_a21b21aa9bf4f65bb8f89f61c853b0d65}{\index{\-U\-S\-U@{\-U\-S\-U}!\-G\-Y\-R\-O\-\_\-\-S\-T\-A\-B\-I\-L\-\_\-\-A\-C\-C\-\_\-\-A\-N\-G\-\_\-\-M\-A\-G@{\-G\-Y\-R\-O\-\_\-\-S\-T\-A\-B\-I\-L\-\_\-\-A\-C\-C\-\_\-\-A\-N\-G\-\_\-\-M\-A\-G}}
+\index{\-G\-Y\-R\-O\-\_\-\-S\-T\-A\-B\-I\-L\-\_\-\-A\-C\-C\-\_\-\-A\-N\-G\-\_\-\-M\-A\-G@{\-G\-Y\-R\-O\-\_\-\-S\-T\-A\-B\-I\-L\-\_\-\-A\-C\-C\-\_\-\-A\-N\-G\-\_\-\-M\-A\-G}!USU@{\-U\-S\-U}}
+\subsubsection[{\-G\-Y\-R\-O\-\_\-\-S\-T\-A\-B\-I\-L\-\_\-\-A\-C\-C\-\_\-\-A\-N\-G\-\_\-\-M\-A\-G}]{\setlength{\rightskip}{0pt plus 5cm}const uint8\-\_\-t {\bf \-U\-S\-U\-::\-G\-Y\-R\-O\-\_\-\-S\-T\-A\-B\-I\-L\-\_\-\-A\-C\-C\-\_\-\-A\-N\-G\-\_\-\-M\-A\-G} = 0x\-D2}}\label{namespace_u_s_u_a21b21aa9bf4f65bb8f89f61c853b0d65}
+\-Gyro \-Stabilized \-Acceleration, \-Angular \-Rate \& \-Magnetometer 
+
+\-Definition at line 46 of file messages.\-h.
+
+\hypertarget{namespace_u_s_u_a2db9a5d5bfe7ac01ad7614d2113cdbee}{\index{\-U\-S\-U@{\-U\-S\-U}!\-I2\-C\-\_\-\-A\-D\-D\-R\-E\-S\-S@{\-I2\-C\-\_\-\-A\-D\-D\-R\-E\-S\-S}}
+\index{\-I2\-C\-\_\-\-A\-D\-D\-R\-E\-S\-S@{\-I2\-C\-\_\-\-A\-D\-D\-R\-E\-S\-S}!USU@{\-U\-S\-U}}
+\subsubsection[{\-I2\-C\-\_\-\-A\-D\-D\-R\-E\-S\-S}]{\setlength{\rightskip}{0pt plus 5cm}const uint8\-\_\-t {\bf \-U\-S\-U\-::\-I2\-C\-\_\-\-A\-D\-D\-R\-E\-S\-S} = 0b00101000}}\label{namespace_u_s_u_a2db9a5d5bfe7ac01ad7614d2113cdbee}
+
+
+\-I2\-C-\/address of the \-A\-D\-C. 
+
+\-It is assumed that the \-P\-I\-Ns \-A0-\/\-A2 are connected to \-G\-N\-D. \-If the \-P\-I\-Ns are connected to \-V\-C\-C change accordingly. 
+
+\-Definition at line 27 of file max127.\-h.
+
+\hypertarget{namespace_u_s_u_a85ca84f12076e3251addb0c96317c83a}{\index{\-U\-S\-U@{\-U\-S\-U}!\-M\-A\-G\-\_\-\-V\-E\-C@{\-M\-A\-G\-\_\-\-V\-E\-C}}
+\index{\-M\-A\-G\-\_\-\-V\-E\-C@{\-M\-A\-G\-\_\-\-V\-E\-C}!USU@{\-U\-S\-U}}
+\subsubsection[{\-M\-A\-G\-\_\-\-V\-E\-C}]{\setlength{\rightskip}{0pt plus 5cm}const uint8\-\_\-t {\bf \-U\-S\-U\-::\-M\-A\-G\-\_\-\-V\-E\-C} = 0x\-C7}}\label{namespace_u_s_u_a85ca84f12076e3251addb0c96317c83a}
+\-Magnetometer \-Vector 
+
+\-Definition at line 35 of file messages.\-h.
+
+\hypertarget{namespace_u_s_u_afb689aa4352de24daaa765fd9e625ae3}{\index{\-U\-S\-U@{\-U\-S\-U}!\-M\-O\-D\-E@{\-M\-O\-D\-E}}
+\index{\-M\-O\-D\-E@{\-M\-O\-D\-E}!USU@{\-U\-S\-U}}
+\subsubsection[{\-M\-O\-D\-E}]{\setlength{\rightskip}{0pt plus 5cm}const uint8\-\_\-t {\bf \-U\-S\-U\-::\-M\-O\-D\-E} = 0x\-D4}}\label{namespace_u_s_u_afb689aa4352de24daaa765fd9e625ae3}
+\-Mode 
+
+\-Definition at line 48 of file messages.\-h.
+
+\hypertarget{namespace_u_s_u_afc9a1298a3210c69931db151aaf35de7}{\index{\-U\-S\-U@{\-U\-S\-U}!\-M\-O\-D\-E\-\_\-\-P\-R\-E\-S\-E\-T@{\-M\-O\-D\-E\-\_\-\-P\-R\-E\-S\-E\-T}}
+\index{\-M\-O\-D\-E\-\_\-\-P\-R\-E\-S\-E\-T@{\-M\-O\-D\-E\-\_\-\-P\-R\-E\-S\-E\-T}!USU@{\-U\-S\-U}}
+\subsubsection[{\-M\-O\-D\-E\-\_\-\-P\-R\-E\-S\-E\-T}]{\setlength{\rightskip}{0pt plus 5cm}const uint8\-\_\-t {\bf \-U\-S\-U\-::\-M\-O\-D\-E\-\_\-\-P\-R\-E\-S\-E\-T} = 0x\-D5}}\label{namespace_u_s_u_afc9a1298a3210c69931db151aaf35de7}
+\-Mode \-Preset 
+
+\-Definition at line 49 of file messages.\-h.
+
+\hypertarget{namespace_u_s_u_a6bab14d28c02be2a8956e98d18b9b275}{\index{\-U\-S\-U@{\-U\-S\-U}!\-O\-R\-I\-E\-N\-T\-A\-T\-I\-O\-N\-\_\-\-M\-A\-T\-R\-I\-X@{\-O\-R\-I\-E\-N\-T\-A\-T\-I\-O\-N\-\_\-\-M\-A\-T\-R\-I\-X}}
+\index{\-O\-R\-I\-E\-N\-T\-A\-T\-I\-O\-N\-\_\-\-M\-A\-T\-R\-I\-X@{\-O\-R\-I\-E\-N\-T\-A\-T\-I\-O\-N\-\_\-\-M\-A\-T\-R\-I\-X}!USU@{\-U\-S\-U}}
+\subsubsection[{\-O\-R\-I\-E\-N\-T\-A\-T\-I\-O\-N\-\_\-\-M\-A\-T\-R\-I\-X}]{\setlength{\rightskip}{0pt plus 5cm}const uint8\-\_\-t {\bf \-U\-S\-U\-::\-O\-R\-I\-E\-N\-T\-A\-T\-I\-O\-N\-\_\-\-M\-A\-T\-R\-I\-X} = 0x\-C5}}\label{namespace_u_s_u_a6bab14d28c02be2a8956e98d18b9b275}
+\-Orientation \-Matrix 
+
+\-Definition at line 33 of file messages.\-h.
+
+\hypertarget{namespace_u_s_u_a9d3464edac1b198f5c02658b36d083bb}{\index{\-U\-S\-U@{\-U\-S\-U}!\-O\-R\-I\-E\-N\-T\-A\-T\-I\-O\-N\-\_\-\-U\-P\-D\-A\-T\-E\-\_\-\-M\-A\-T@{\-O\-R\-I\-E\-N\-T\-A\-T\-I\-O\-N\-\_\-\-U\-P\-D\-A\-T\-E\-\_\-\-M\-A\-T}}
+\index{\-O\-R\-I\-E\-N\-T\-A\-T\-I\-O\-N\-\_\-\-U\-P\-D\-A\-T\-E\-\_\-\-M\-A\-T@{\-O\-R\-I\-E\-N\-T\-A\-T\-I\-O\-N\-\_\-\-U\-P\-D\-A\-T\-E\-\_\-\-M\-A\-T}!USU@{\-U\-S\-U}}
+\subsubsection[{\-O\-R\-I\-E\-N\-T\-A\-T\-I\-O\-N\-\_\-\-U\-P\-D\-A\-T\-E\-\_\-\-M\-A\-T}]{\setlength{\rightskip}{0pt plus 5cm}const uint8\-\_\-t {\bf \-U\-S\-U\-::\-O\-R\-I\-E\-N\-T\-A\-T\-I\-O\-N\-\_\-\-U\-P\-D\-A\-T\-E\-\_\-\-M\-A\-T} = 0x\-C6}}\label{namespace_u_s_u_a9d3464edac1b198f5c02658b36d083bb}
+\-Orientation \-Update \-Matrix 
+
+\-Definition at line 34 of file messages.\-h.
+
+\hypertarget{namespace_u_s_u_ad476e2e7f70dbe869e508f676bea92a9}{\index{\-U\-S\-U@{\-U\-S\-U}!\-Q\-U\-A\-T\-E\-R\-N\-I\-O\-N@{\-Q\-U\-A\-T\-E\-R\-N\-I\-O\-N}}
+\index{\-Q\-U\-A\-T\-E\-R\-N\-I\-O\-N@{\-Q\-U\-A\-T\-E\-R\-N\-I\-O\-N}!USU@{\-U\-S\-U}}
+\subsubsection[{\-Q\-U\-A\-T\-E\-R\-N\-I\-O\-N}]{\setlength{\rightskip}{0pt plus 5cm}const uint8\-\_\-t {\bf \-U\-S\-U\-::\-Q\-U\-A\-T\-E\-R\-N\-I\-O\-N} = 0x\-D\-F}}\label{namespace_u_s_u_ad476e2e7f70dbe869e508f676bea92a9}
+\hyperlink{class_u_s_u_1_1_quaternion}{\-Quaternion} 
+
+\-Definition at line 56 of file messages.\-h.
+
+\hypertarget{namespace_u_s_u_a6bbb473161195a7e10d9f821cece1b04}{\index{\-U\-S\-U@{\-U\-S\-U}!\-R\-A\-W\-\_\-\-A\-C\-C\-\_\-\-A\-N\-G@{\-R\-A\-W\-\_\-\-A\-C\-C\-\_\-\-A\-N\-G}}
+\index{\-R\-A\-W\-\_\-\-A\-C\-C\-\_\-\-A\-N\-G@{\-R\-A\-W\-\_\-\-A\-C\-C\-\_\-\-A\-N\-G}!USU@{\-U\-S\-U}}
+\subsubsection[{\-R\-A\-W\-\_\-\-A\-C\-C\-\_\-\-A\-N\-G}]{\setlength{\rightskip}{0pt plus 5cm}const uint8\-\_\-t {\bf \-U\-S\-U\-::\-R\-A\-W\-\_\-\-A\-C\-C\-\_\-\-A\-N\-G} = 0x\-C1}}\label{namespace_u_s_u_a6bbb473161195a7e10d9f821cece1b04}
+\-Raw \-Accelerometer and \-Angular \-Rate \-Sensor \-Outputs 
+
+\-Definition at line 29 of file messages.\-h.
+
+\hypertarget{namespace_u_s_u_ad810b0281ab629302e9fd716374b90ed}{\index{\-U\-S\-U@{\-U\-S\-U}!\-R\-E\-A\-D\-\_\-\-D\-E\-V\-I\-C\-E\-\_\-\-I\-D@{\-R\-E\-A\-D\-\_\-\-D\-E\-V\-I\-C\-E\-\_\-\-I\-D}}
+\index{\-R\-E\-A\-D\-\_\-\-D\-E\-V\-I\-C\-E\-\_\-\-I\-D@{\-R\-E\-A\-D\-\_\-\-D\-E\-V\-I\-C\-E\-\_\-\-I\-D}!USU@{\-U\-S\-U}}
+\subsubsection[{\-R\-E\-A\-D\-\_\-\-D\-E\-V\-I\-C\-E\-\_\-\-I\-D}]{\setlength{\rightskip}{0pt plus 5cm}const uint8\-\_\-t {\bf \-U\-S\-U\-::\-R\-E\-A\-D\-\_\-\-D\-E\-V\-I\-C\-E\-\_\-\-I\-D} = 0x\-E\-A}}\label{namespace_u_s_u_ad810b0281ab629302e9fd716374b90ed}
+\-Read \-Device \-I\-D \-String 
+
+\-Definition at line 60 of file messages.\-h.
+
+\hypertarget{namespace_u_s_u_a7d0e77d37d6107d2869c30f57412e8b0}{\index{\-U\-S\-U@{\-U\-S\-U}!\-R\-E\-A\-D\-\_\-\-F\-I\-R\-M\-W\-A\-R\-E\-\_\-\-V\-E\-R@{\-R\-E\-A\-D\-\_\-\-F\-I\-R\-M\-W\-A\-R\-E\-\_\-\-V\-E\-R}}
+\index{\-R\-E\-A\-D\-\_\-\-F\-I\-R\-M\-W\-A\-R\-E\-\_\-\-V\-E\-R@{\-R\-E\-A\-D\-\_\-\-F\-I\-R\-M\-W\-A\-R\-E\-\_\-\-V\-E\-R}!USU@{\-U\-S\-U}}
+\subsubsection[{\-R\-E\-A\-D\-\_\-\-F\-I\-R\-M\-W\-A\-R\-E\-\_\-\-V\-E\-R}]{\setlength{\rightskip}{0pt plus 5cm}const uint8\-\_\-t {\bf \-U\-S\-U\-::\-R\-E\-A\-D\-\_\-\-F\-I\-R\-M\-W\-A\-R\-E\-\_\-\-V\-E\-R} = 0x\-E9}}\label{namespace_u_s_u_a7d0e77d37d6107d2869c30f57412e8b0}
+\-Read \-Firmware \-Version \-Number 
+
+\-Definition at line 59 of file messages.\-h.
+
+\hypertarget{namespace_u_s_u_ac9d01a02c622d06449580697749db1f5}{\index{\-U\-S\-U@{\-U\-S\-U}!\-R\-E\-A\-D\-\_\-\-W\-O\-R\-D\-\_\-\-E\-E\-P\-R\-O\-M@{\-R\-E\-A\-D\-\_\-\-W\-O\-R\-D\-\_\-\-E\-E\-P\-R\-O\-M}}
+\index{\-R\-E\-A\-D\-\_\-\-W\-O\-R\-D\-\_\-\-E\-E\-P\-R\-O\-M@{\-R\-E\-A\-D\-\_\-\-W\-O\-R\-D\-\_\-\-E\-E\-P\-R\-O\-M}!USU@{\-U\-S\-U}}
+\subsubsection[{\-R\-E\-A\-D\-\_\-\-W\-O\-R\-D\-\_\-\-E\-E\-P\-R\-O\-M}]{\setlength{\rightskip}{0pt plus 5cm}const uint8\-\_\-t {\bf \-U\-S\-U\-::\-R\-E\-A\-D\-\_\-\-W\-O\-R\-D\-\_\-\-E\-E\-P\-R\-O\-M} = 0x\-E5}}\label{namespace_u_s_u_ac9d01a02c622d06449580697749db1f5}
+\-Read \-Word from \-E\-E\-P\-R\-O\-M 
+
+\-Definition at line 58 of file messages.\-h.
+
+\hypertarget{namespace_u_s_u_a9c5f8777b9c35aaaa0b64490d1f9a20d}{\index{\-U\-S\-U@{\-U\-S\-U}!\-R\-E\-A\-L\-I\-G\-N\-\_\-\-U\-P\-\_\-\-N\-O\-R\-T\-H@{\-R\-E\-A\-L\-I\-G\-N\-\_\-\-U\-P\-\_\-\-N\-O\-R\-T\-H}}
+\index{\-R\-E\-A\-L\-I\-G\-N\-\_\-\-U\-P\-\_\-\-N\-O\-R\-T\-H@{\-R\-E\-A\-L\-I\-G\-N\-\_\-\-U\-P\-\_\-\-N\-O\-R\-T\-H}!USU@{\-U\-S\-U}}
+\subsubsection[{\-R\-E\-A\-L\-I\-G\-N\-\_\-\-U\-P\-\_\-\-N\-O\-R\-T\-H}]{\setlength{\rightskip}{0pt plus 5cm}const uint8\-\_\-t {\bf \-U\-S\-U\-::\-R\-E\-A\-L\-I\-G\-N\-\_\-\-U\-P\-\_\-\-N\-O\-R\-T\-H} = 0x\-D\-D}}\label{namespace_u_s_u_a9c5f8777b9c35aaaa0b64490d1f9a20d}
+\-Realign \-Up and \-North 
+
+\-Definition at line 55 of file messages.\-h.
+
+\hypertarget{namespace_u_s_u_aeb8ec20b4bb74ff2895ab487c29810e0}{\index{\-U\-S\-U@{\-U\-S\-U}!\-S\-A\-M\-P\-L\-I\-N\-G\-\_\-\-S\-E\-T\-T\-I\-N\-G\-S@{\-S\-A\-M\-P\-L\-I\-N\-G\-\_\-\-S\-E\-T\-T\-I\-N\-G\-S}}
+\index{\-S\-A\-M\-P\-L\-I\-N\-G\-\_\-\-S\-E\-T\-T\-I\-N\-G\-S@{\-S\-A\-M\-P\-L\-I\-N\-G\-\_\-\-S\-E\-T\-T\-I\-N\-G\-S}!USU@{\-U\-S\-U}}
+\subsubsection[{\-S\-A\-M\-P\-L\-I\-N\-G\-\_\-\-S\-E\-T\-T\-I\-N\-G\-S}]{\setlength{\rightskip}{0pt plus 5cm}const uint8\-\_\-t {\bf \-U\-S\-U\-::\-S\-A\-M\-P\-L\-I\-N\-G\-\_\-\-S\-E\-T\-T\-I\-N\-G\-S} = 0x\-D\-B}}\label{namespace_u_s_u_aeb8ec20b4bb74ff2895ab487c29810e0}
+\-Sampling \-Settings 
+
+\-Definition at line 54 of file messages.\-h.
+
+\hypertarget{namespace_u_s_u_af74f2b5c887719077addc33c5986024b}{\index{\-U\-S\-U@{\-U\-S\-U}!\-S\-E\-L0@{\-S\-E\-L0}}
+\index{\-S\-E\-L0@{\-S\-E\-L0}!USU@{\-U\-S\-U}}
+\subsubsection[{\-S\-E\-L0}]{\setlength{\rightskip}{0pt plus 5cm}const uint8\-\_\-t {\bf \-U\-S\-U\-::\-S\-E\-L0} = 4}}\label{namespace_u_s_u_af74f2b5c887719077addc33c5986024b}
+\-Bit offset for channel selection 
+
+\-Definition at line 41 of file max127.\-h.
+
+\hypertarget{namespace_u_s_u_a1f3d4b142078bc61d7dea5676b399d29}{\index{\-U\-S\-U@{\-U\-S\-U}!\-S\-E\-T\-\_\-\-C\-O\-N\-T\-I\-N\-U\-O\-U\-S\-\_\-\-M\-O\-D\-E@{\-S\-E\-T\-\_\-\-C\-O\-N\-T\-I\-N\-U\-O\-U\-S\-\_\-\-M\-O\-D\-E}}
+\index{\-S\-E\-T\-\_\-\-C\-O\-N\-T\-I\-N\-U\-O\-U\-S\-\_\-\-M\-O\-D\-E@{\-S\-E\-T\-\_\-\-C\-O\-N\-T\-I\-N\-U\-O\-U\-S\-\_\-\-M\-O\-D\-E}!USU@{\-U\-S\-U}}
+\subsubsection[{\-S\-E\-T\-\_\-\-C\-O\-N\-T\-I\-N\-U\-O\-U\-S\-\_\-\-M\-O\-D\-E}]{\setlength{\rightskip}{0pt plus 5cm}const uint8\-\_\-t {\bf \-U\-S\-U\-::\-S\-E\-T\-\_\-\-C\-O\-N\-T\-I\-N\-U\-O\-U\-S\-\_\-\-M\-O\-D\-E} = 0x\-C4}}\label{namespace_u_s_u_a1f3d4b142078bc61d7dea5676b399d29}
+\-Set \-Continuous \-Mode 
+
+\-Definition at line 32 of file messages.\-h.
+
+\hypertarget{namespace_u_s_u_aa13337d52a46707f63911e7c2972971b}{\index{\-U\-S\-U@{\-U\-S\-U}!\-S\-T\-A\-T\-I\-O\-N\-A\-R\-Y\-\_\-\-T\-E\-S\-T@{\-S\-T\-A\-T\-I\-O\-N\-A\-R\-Y\-\_\-\-T\-E\-S\-T}}
+\index{\-S\-T\-A\-T\-I\-O\-N\-A\-R\-Y\-\_\-\-T\-E\-S\-T@{\-S\-T\-A\-T\-I\-O\-N\-A\-R\-Y\-\_\-\-T\-E\-S\-T}!USU@{\-U\-S\-U}}
+\subsubsection[{\-S\-T\-A\-T\-I\-O\-N\-A\-R\-Y\-\_\-\-T\-E\-S\-T}]{\setlength{\rightskip}{0pt plus 5cm}const uint8\-\_\-t {\bf \-U\-S\-U\-::\-S\-T\-A\-T\-I\-O\-N\-A\-R\-Y\-\_\-\-T\-E\-S\-T} = 0x\-D\-A}}\label{namespace_u_s_u_aa13337d52a46707f63911e7c2972971b}
+\-Stationary \-Test 
+
+\-Definition at line 53 of file messages.\-h.
+
+\hypertarget{namespace_u_s_u_ae7447325a101912b787905199c4f2acb}{\index{\-U\-S\-U@{\-U\-S\-U}!\-S\-T\-O\-P\-\_\-\-C\-O\-N\-T\-I\-N\-U\-O\-U\-S@{\-S\-T\-O\-P\-\_\-\-C\-O\-N\-T\-I\-N\-U\-O\-U\-S}}
+\index{\-S\-T\-O\-P\-\_\-\-C\-O\-N\-T\-I\-N\-U\-O\-U\-S@{\-S\-T\-O\-P\-\_\-\-C\-O\-N\-T\-I\-N\-U\-O\-U\-S}!USU@{\-U\-S\-U}}
+\subsubsection[{\-S\-T\-O\-P\-\_\-\-C\-O\-N\-T\-I\-N\-U\-O\-U\-S}]{\setlength{\rightskip}{0pt plus 5cm}const uint8\-\_\-t {\bf \-U\-S\-U\-::\-S\-T\-O\-P\-\_\-\-C\-O\-N\-T\-I\-N\-U\-O\-U\-S} = 0x\-F\-A}}\label{namespace_u_s_u_ae7447325a101912b787905199c4f2acb}
+\-Stop \-Continuous \-Mode (no reply) 
+
+\-Definition at line 61 of file messages.\-h.
+
+\hypertarget{namespace_u_s_u_ac5f57d308aea3cdda7c0a2ddade6996b}{\index{\-U\-S\-U@{\-U\-S\-U}!\-T\-E\-M\-P\-E\-R\-A\-T\-U\-R\-E\-S@{\-T\-E\-M\-P\-E\-R\-A\-T\-U\-R\-E\-S}}
+\index{\-T\-E\-M\-P\-E\-R\-A\-T\-U\-R\-E\-S@{\-T\-E\-M\-P\-E\-R\-A\-T\-U\-R\-E\-S}!USU@{\-U\-S\-U}}
+\subsubsection[{\-T\-E\-M\-P\-E\-R\-A\-T\-U\-R\-E\-S}]{\setlength{\rightskip}{0pt plus 5cm}const uint8\-\_\-t {\bf \-U\-S\-U\-::\-T\-E\-M\-P\-E\-R\-A\-T\-U\-R\-E\-S} = 0x\-D1}}\label{namespace_u_s_u_ac5f57d308aea3cdda7c0a2ddade6996b}
+\-Temperatures 
+
+\-Definition at line 45 of file messages.\-h.
+
+\hypertarget{namespace_u_s_u_abed08045a54f63e04380a2ac80bcaf79}{\index{\-U\-S\-U@{\-U\-S\-U}!\-T\-I\-M\-E\-R@{\-T\-I\-M\-E\-R}}
+\index{\-T\-I\-M\-E\-R@{\-T\-I\-M\-E\-R}!USU@{\-U\-S\-U}}
+\subsubsection[{\-T\-I\-M\-E\-R}]{\setlength{\rightskip}{0pt plus 5cm}const uint8\-\_\-t {\bf \-U\-S\-U\-::\-T\-I\-M\-E\-R} = 0x\-D7}}\label{namespace_u_s_u_abed08045a54f63e04380a2ac80bcaf79}
+\-Timer 
+
+\-Definition at line 51 of file messages.\-h.
+
+\hypertarget{namespace_u_s_u_a440c70222186b93e58fd4448cecb2ad2}{\index{\-U\-S\-U@{\-U\-S\-U}!\-T\-R\-A\-N\-S\-F\-E\-R\-\_\-\-T\-O\-\_\-\-N\-O\-N\-V\-O\-L\-\_\-\-M\-E\-M@{\-T\-R\-A\-N\-S\-F\-E\-R\-\_\-\-T\-O\-\_\-\-N\-O\-N\-V\-O\-L\-\_\-\-M\-E\-M}}
+\index{\-T\-R\-A\-N\-S\-F\-E\-R\-\_\-\-T\-O\-\_\-\-N\-O\-N\-V\-O\-L\-\_\-\-M\-E\-M@{\-T\-R\-A\-N\-S\-F\-E\-R\-\_\-\-T\-O\-\_\-\-N\-O\-N\-V\-O\-L\-\_\-\-M\-E\-M}!USU@{\-U\-S\-U}}
+\subsubsection[{\-T\-R\-A\-N\-S\-F\-E\-R\-\_\-\-T\-O\-\_\-\-N\-O\-N\-V\-O\-L\-\_\-\-M\-E\-M}]{\setlength{\rightskip}{0pt plus 5cm}const uint8\-\_\-t {\bf \-U\-S\-U\-::\-T\-R\-A\-N\-S\-F\-E\-R\-\_\-\-T\-O\-\_\-\-N\-O\-N\-V\-O\-L\-\_\-\-M\-E\-M} = 0x\-D0}}\label{namespace_u_s_u_a440c70222186b93e58fd4448cecb2ad2}
+\-Transfer \-Quantity to \-Non-\/\-Volatile \-Memory 
+
+\-Definition at line 44 of file messages.\-h.
+
+\hypertarget{namespace_u_s_u_a16dfbf07cc906050d4685de10f84c3d8}{\index{\-U\-S\-U@{\-U\-S\-U}!\-W\-R\-I\-T\-E\-\_\-\-A\-C\-C\-\_\-\-B\-I\-A\-S\-\_\-\-C\-O\-R\-R\-E\-C\-T\-I\-O\-N@{\-W\-R\-I\-T\-E\-\_\-\-A\-C\-C\-\_\-\-B\-I\-A\-S\-\_\-\-C\-O\-R\-R\-E\-C\-T\-I\-O\-N}}
+\index{\-W\-R\-I\-T\-E\-\_\-\-A\-C\-C\-\_\-\-B\-I\-A\-S\-\_\-\-C\-O\-R\-R\-E\-C\-T\-I\-O\-N@{\-W\-R\-I\-T\-E\-\_\-\-A\-C\-C\-\_\-\-B\-I\-A\-S\-\_\-\-C\-O\-R\-R\-E\-C\-T\-I\-O\-N}!USU@{\-U\-S\-U}}
+\subsubsection[{\-W\-R\-I\-T\-E\-\_\-\-A\-C\-C\-\_\-\-B\-I\-A\-S\-\_\-\-C\-O\-R\-R\-E\-C\-T\-I\-O\-N}]{\setlength{\rightskip}{0pt plus 5cm}const uint8\-\_\-t {\bf \-U\-S\-U\-::\-W\-R\-I\-T\-E\-\_\-\-A\-C\-C\-\_\-\-B\-I\-A\-S\-\_\-\-C\-O\-R\-R\-E\-C\-T\-I\-O\-N} = 0x\-C9}}\label{namespace_u_s_u_a16dfbf07cc906050d4685de10f84c3d8}
+\-Write \-Accel \-Bias \-Correction 
+
+\-Definition at line 37 of file messages.\-h.
+
+\hypertarget{namespace_u_s_u_a7e0bd6ee510ca1a1aded8b277a6c5c6a}{\index{\-U\-S\-U@{\-U\-S\-U}!\-W\-R\-I\-T\-E\-\_\-\-G\-Y\-R\-O\-\_\-\-B\-I\-A\-S\-\_\-\-C\-O\-R\-R\-E\-C\-T\-I\-O\-N@{\-W\-R\-I\-T\-E\-\_\-\-G\-Y\-R\-O\-\_\-\-B\-I\-A\-S\-\_\-\-C\-O\-R\-R\-E\-C\-T\-I\-O\-N}}
+\index{\-W\-R\-I\-T\-E\-\_\-\-G\-Y\-R\-O\-\_\-\-B\-I\-A\-S\-\_\-\-C\-O\-R\-R\-E\-C\-T\-I\-O\-N@{\-W\-R\-I\-T\-E\-\_\-\-G\-Y\-R\-O\-\_\-\-B\-I\-A\-S\-\_\-\-C\-O\-R\-R\-E\-C\-T\-I\-O\-N}!USU@{\-U\-S\-U}}
+\subsubsection[{\-W\-R\-I\-T\-E\-\_\-\-G\-Y\-R\-O\-\_\-\-B\-I\-A\-S\-\_\-\-C\-O\-R\-R\-E\-C\-T\-I\-O\-N}]{\setlength{\rightskip}{0pt plus 5cm}const uint8\-\_\-t {\bf \-U\-S\-U\-::\-W\-R\-I\-T\-E\-\_\-\-G\-Y\-R\-O\-\_\-\-B\-I\-A\-S\-\_\-\-C\-O\-R\-R\-E\-C\-T\-I\-O\-N} = 0x\-C\-A}}\label{namespace_u_s_u_a7e0bd6ee510ca1a1aded8b277a6c5c6a}
+\-Write \-Gyro \-Bias \-Correction 
+
+\-Definition at line 38 of file messages.\-h.
+
+\hypertarget{namespace_u_s_u_a483eb9b7abe528d9fe3e843b4655a977}{\index{\-U\-S\-U@{\-U\-S\-U}!\-W\-R\-I\-T\-E\-\_\-\-W\-O\-R\-D\-\_\-\-E\-E\-P\-R\-O\-M@{\-W\-R\-I\-T\-E\-\_\-\-W\-O\-R\-D\-\_\-\-E\-E\-P\-R\-O\-M}}
+\index{\-W\-R\-I\-T\-E\-\_\-\-W\-O\-R\-D\-\_\-\-E\-E\-P\-R\-O\-M@{\-W\-R\-I\-T\-E\-\_\-\-W\-O\-R\-D\-\_\-\-E\-E\-P\-R\-O\-M}!USU@{\-U\-S\-U}}
+\subsubsection[{\-W\-R\-I\-T\-E\-\_\-\-W\-O\-R\-D\-\_\-\-E\-E\-P\-R\-O\-M}]{\setlength{\rightskip}{0pt plus 5cm}const uint8\-\_\-t {\bf \-U\-S\-U\-::\-W\-R\-I\-T\-E\-\_\-\-W\-O\-R\-D\-\_\-\-E\-E\-P\-R\-O\-M} = 0x\-E4}}\label{namespace_u_s_u_a483eb9b7abe528d9fe3e843b4655a977}
+\-Write \-Word to \-E\-E\-P\-R\-O\-M 
+
+\-Definition at line 57 of file messages.\-h.
+

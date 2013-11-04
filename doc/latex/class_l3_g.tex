@@ -1,0 +1,153 @@
+\hypertarget{class_l3_g}{\section{\-L3\-G \-Class \-Reference}
+\label{class_l3_g}\index{\-L3\-G@{\-L3\-G}}
+}
+
+
+\-Class to manage the communication to the \hyperlink{class_l3_g}{\-L3\-G} gyroscope via the \-I2\-C-\/bus.  
+
+
+
+
+{\ttfamily \#include $<$\-L3\-G.\-h$>$}
+
+\subsection*{\-Public \-Member \-Functions}
+\begin{DoxyCompactItemize}
+\item 
+\hyperlink{class_l3_g_a98c77b59983763302f3b9fde5b284a33}{\-L3\-G} (const char $\ast$i2c\-Device\-Name)
+\item 
+void \hyperlink{class_l3_g_a48decd4910020dc16c219e0081239c45}{enable} (void)
+\begin{DoxyCompactList}\small\item\em \-Puts the chip into active sampling mode. \end{DoxyCompactList}\item 
+void \hyperlink{class_l3_g_a6ab0e9d8b8349eb08ba97432660c258e}{write\-Reg} (uint8\-\_\-t reg, uint8\-\_\-t value)
+\begin{DoxyCompactList}\small\item\em \-Write value to register reg. \end{DoxyCompactList}\item 
+uint8\-\_\-t \hyperlink{class_l3_g_a5791e06a4e63a54300716780818ed726}{read\-Reg} (uint8\-\_\-t reg)
+\begin{DoxyCompactList}\small\item\em \-Read the value from register reg. \end{DoxyCompactList}\item 
+void \hyperlink{class_l3_g_a4b1913429824dc07bd2017c3755e7985}{read} ()
+\begin{DoxyCompactList}\small\item\em \-Reads the current raw angular rates into \hyperlink{class_l3_g_a0cb874e50a2ea4753d81e9a46c7e45ce}{g}. \end{DoxyCompactList}\end{DoxyCompactItemize}
+\subsection*{\-Public \-Attributes}
+\begin{DoxyCompactItemize}
+\item 
+int \hyperlink{class_l3_g_a0cb874e50a2ea4753d81e9a46c7e45ce}{g} \mbox{[}3\mbox{]}
+\end{DoxyCompactItemize}
+
+
+\subsection{\-Detailed \-Description}
+\-Class to manage the communication to the \hyperlink{class_l3_g}{\-L3\-G} gyroscope via the \-I2\-C-\/bus. 
+
+\-Definition at line 44 of file \-L3\-G.\-h.
+
+
+
+\subsection{\-Constructor \& \-Destructor \-Documentation}
+\hypertarget{class_l3_g_a98c77b59983763302f3b9fde5b284a33}{\index{\-L3\-G@{\-L3\-G}!\-L3\-G@{\-L3\-G}}
+\index{\-L3\-G@{\-L3\-G}!L3G@{\-L3\-G}}
+\subsubsection[{\-L3\-G}]{\setlength{\rightskip}{0pt plus 5cm}{\bf \-L3\-G\-::\-L3\-G} (
+\begin{DoxyParamCaption}
+\item[{const char $\ast$}]{i2c\-Device\-Name}
+\end{DoxyParamCaption}
+)}}\label{class_l3_g_a98c77b59983763302f3b9fde5b284a33}
+
+\begin{DoxyParams}{\-Parameters}
+{\em i2c\-Device\-Name} & \\
+\hline
+\end{DoxyParams}
+
+
+\-Definition at line 9 of file \-L3\-G.\-cpp.
+
+
+
+\subsection{\-Member \-Function \-Documentation}
+\hypertarget{class_l3_g_a48decd4910020dc16c219e0081239c45}{\index{\-L3\-G@{\-L3\-G}!enable@{enable}}
+\index{enable@{enable}!L3G@{\-L3\-G}}
+\subsubsection[{enable}]{\setlength{\rightskip}{0pt plus 5cm}void {\bf \-L3\-G\-::enable} (
+\begin{DoxyParamCaption}
+\item[{void}]{}
+\end{DoxyParamCaption}
+)}}\label{class_l3_g_a48decd4910020dc16c219e0081239c45}
+
+
+\-Puts the chip into active sampling mode. 
+
+
+
+\-Definition at line 29 of file \-L3\-G.\-cpp.
+
+\hypertarget{class_l3_g_a4b1913429824dc07bd2017c3755e7985}{\index{\-L3\-G@{\-L3\-G}!read@{read}}
+\index{read@{read}!L3G@{\-L3\-G}}
+\subsubsection[{read}]{\setlength{\rightskip}{0pt plus 5cm}void {\bf \-L3\-G\-::read} (
+\begin{DoxyParamCaption}
+{}
+\end{DoxyParamCaption}
+)}}\label{class_l3_g_a4b1913429824dc07bd2017c3755e7985}
+
+
+\-Reads the current raw angular rates into \hyperlink{class_l3_g_a0cb874e50a2ea4753d81e9a46c7e45ce}{g}. 
+
+
+
+\-Definition at line 45 of file \-L3\-G.\-cpp.
+
+\hypertarget{class_l3_g_a5791e06a4e63a54300716780818ed726}{\index{\-L3\-G@{\-L3\-G}!read\-Reg@{read\-Reg}}
+\index{read\-Reg@{read\-Reg}!L3G@{\-L3\-G}}
+\subsubsection[{read\-Reg}]{\setlength{\rightskip}{0pt plus 5cm}uint8\-\_\-t {\bf \-L3\-G\-::read\-Reg} (
+\begin{DoxyParamCaption}
+\item[{uint8\-\_\-t}]{reg}
+\end{DoxyParamCaption}
+)}}\label{class_l3_g_a5791e06a4e63a54300716780818ed726}
+
+
+\-Read the value from register reg. 
+
+
+\begin{DoxyParams}{\-Parameters}
+{\em reg} & \-Register address to read from \\
+\hline
+\end{DoxyParams}
+\begin{DoxyReturn}{\-Returns}
+uint8\-\_\-t \-Value read from the register reg 
+\end{DoxyReturn}
+
+
+\-Definition at line 40 of file \-L3\-G.\-cpp.
+
+\hypertarget{class_l3_g_a6ab0e9d8b8349eb08ba97432660c258e}{\index{\-L3\-G@{\-L3\-G}!write\-Reg@{write\-Reg}}
+\index{write\-Reg@{write\-Reg}!L3G@{\-L3\-G}}
+\subsubsection[{write\-Reg}]{\setlength{\rightskip}{0pt plus 5cm}void {\bf \-L3\-G\-::write\-Reg} (
+\begin{DoxyParamCaption}
+\item[{uint8\-\_\-t}]{reg, }
+\item[{uint8\-\_\-t}]{value}
+\end{DoxyParamCaption}
+)}}\label{class_l3_g_a6ab0e9d8b8349eb08ba97432660c258e}
+
+
+\-Write value to register reg. 
+
+\-T\-O\-D\-O\-: \-Make registers enum, so that writing to wrong register impossible?
+
+
+\begin{DoxyParams}{\-Parameters}
+{\em reg} & \-Register address to write to \\
+\hline
+{\em value} & \-Value to write to the register reg \\
+\hline
+\end{DoxyParams}
+
+
+\-Definition at line 35 of file \-L3\-G.\-cpp.
+
+
+
+\subsection{\-Member \-Data \-Documentation}
+\hypertarget{class_l3_g_a0cb874e50a2ea4753d81e9a46c7e45ce}{\index{\-L3\-G@{\-L3\-G}!g@{g}}
+\index{g@{g}!L3G@{\-L3\-G}}
+\subsubsection[{g}]{\setlength{\rightskip}{0pt plus 5cm}int {\bf \-L3\-G\-::g}\mbox{[}3\mbox{]}}}\label{class_l3_g_a0cb874e50a2ea4753d81e9a46c7e45ce}
+\-Gyro raw angular velocity readings 
+
+\-Definition at line 54 of file \-L3\-G.\-h.
+
+
+
+\-The documentation for this class was generated from the following files\-:\begin{DoxyCompactItemize}
+\item 
+include/\hyperlink{_l3_g_8h}{\-L3\-G.\-h}\item 
+src/\hyperlink{_l3_g_8cpp}{\-L3\-G.\-cpp}\end{DoxyCompactItemize}

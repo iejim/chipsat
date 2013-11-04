@@ -1,0 +1,293 @@
+\hypertarget{class_i2_c_bus}{\section{\-I2\-C\-Bus \-Class \-Reference}
+\label{class_i2_c_bus}\index{\-I2\-C\-Bus@{\-I2\-C\-Bus}}
+}
+
+
+\-Wrapper class for \-I2\-C-\/bus communication.  
+
+
+
+
+{\ttfamily \#include $<$\-I2\-C\-Bus.\-h$>$}
+
+\subsection*{\-Public \-Member \-Functions}
+\begin{DoxyCompactItemize}
+\item 
+\hyperlink{class_i2_c_bus_afc250c51eed417b2726c53353cae4083}{\-I2\-C\-Bus} (const char $\ast$device\-Name)
+\begin{DoxyCompactList}\small\item\em \-Constructor. \end{DoxyCompactList}\item 
+\hyperlink{class_i2_c_bus_a70dac2923cd16ce06f0e73f7fc5bca89}{$\sim$\-I2\-C\-Bus} ()
+\begin{DoxyCompactList}\small\item\em \-Destructor. \end{DoxyCompactList}\item 
+void \hyperlink{class_i2_c_bus_a3df26769808e1e948dda57cd02680c3d}{address\-Set} (uint8\-\_\-t address)
+\begin{DoxyCompactList}\small\item\em \-Set the address of the \-I2\-C device the bus will read and write data to. \end{DoxyCompactList}\item 
+void \hyperlink{class_i2_c_bus_a0f9c9c32bff6152119b4ee79f003a1bd}{write\-Byte} (uint8\-\_\-t command, uint8\-\_\-t data)
+\begin{DoxyCompactList}\small\item\em \-Write a byte to the register command. \end{DoxyCompactList}\item 
+void \hyperlink{class_i2_c_bus_a1e64669ddb6db1efda2525d51e6a99e8}{write\-Byte} (uint8\-\_\-t data)
+\begin{DoxyCompactList}\small\item\em \-Write a byte without a specifying a register. \end{DoxyCompactList}\item 
+uint8\-\_\-t \hyperlink{class_i2_c_bus_a3b7cd32f752e2a5eeb6a5bdaf9267282}{read\-Byte} (uint8\-\_\-t command)
+\begin{DoxyCompactList}\small\item\em \-Read a byte from the register command. \end{DoxyCompactList}\item 
+uint8\-\_\-t \hyperlink{class_i2_c_bus_a1f9b4e6e0771e3de031aab0f8c5bc691}{read\-Byte} ()
+\begin{DoxyCompactList}\small\item\em \-Read a byte directly without specifying a register. \end{DoxyCompactList}\item 
+uint16\-\_\-t \hyperlink{class_i2_c_bus_a4db730c58bf5bab95bae47c976ccd825}{read\-Word} (uint8\-\_\-t command)
+\begin{DoxyCompactList}\small\item\em \-Read a word (2 bytes) from the register command. \end{DoxyCompactList}\item 
+uint16\-\_\-t \hyperlink{class_i2_c_bus_a09abdc7887db46a7f9a26f37754ad6d1}{read\-Word} ()
+\begin{DoxyCompactList}\small\item\em \-Read a word (2 bytes) directly without specifying a register. \end{DoxyCompactList}\item 
+int \hyperlink{class_i2_c_bus_a9aefab7f4230de3dc45385d1c79d4fe5}{try\-Read\-Byte} (uint8\-\_\-t command)
+\begin{DoxyCompactList}\small\item\em \-Tries to read a byte from register command. \end{DoxyCompactList}\item 
+void \hyperlink{class_i2_c_bus_a3f0bed946e8431cacbac1f214ba03232}{read\-Block} (uint8\-\_\-t command, uint8\-\_\-t size, uint8\-\_\-t $\ast$data)
+\begin{DoxyCompactList}\small\item\em \-Read a block of data from the device starting at register command. \end{DoxyCompactList}\end{DoxyCompactItemize}
+
+
+\subsection{\-Detailed \-Description}
+\-Wrapper class for \-I2\-C-\/bus communication. 
+
+\-Definition at line 16 of file \-I2\-C\-Bus.\-h.
+
+
+
+\subsection{\-Constructor \& \-Destructor \-Documentation}
+\hypertarget{class_i2_c_bus_afc250c51eed417b2726c53353cae4083}{\index{\-I2\-C\-Bus@{\-I2\-C\-Bus}!\-I2\-C\-Bus@{\-I2\-C\-Bus}}
+\index{\-I2\-C\-Bus@{\-I2\-C\-Bus}!I2CBus@{\-I2\-C\-Bus}}
+\subsubsection[{\-I2\-C\-Bus}]{\setlength{\rightskip}{0pt plus 5cm}{\bf \-I2\-C\-Bus\-::\-I2\-C\-Bus} (
+\begin{DoxyParamCaption}
+\item[{const char $\ast$}]{device\-Name}
+\end{DoxyParamCaption}
+)}}\label{class_i2_c_bus_afc250c51eed417b2726c53353cae4083}
+
+
+\-Constructor. 
+
+\-Sets up the interface to the \-I2\-C-\/bus device\-Name
+
+
+\begin{DoxyParams}{\-Parameters}
+{\em device\-Name} & \-Name of the \-I2\-C-\/bus device \\
+\hline
+\end{DoxyParams}
+
+
+\-Definition at line 8 of file \-I2\-C\-Bus.\-cpp.
+
+\hypertarget{class_i2_c_bus_a70dac2923cd16ce06f0e73f7fc5bca89}{\index{\-I2\-C\-Bus@{\-I2\-C\-Bus}!$\sim$\-I2\-C\-Bus@{$\sim$\-I2\-C\-Bus}}
+\index{$\sim$\-I2\-C\-Bus@{$\sim$\-I2\-C\-Bus}!I2CBus@{\-I2\-C\-Bus}}
+\subsubsection[{$\sim$\-I2\-C\-Bus}]{\setlength{\rightskip}{0pt plus 5cm}{\bf \-I2\-C\-Bus\-::$\sim$\-I2\-C\-Bus} (
+\begin{DoxyParamCaption}
+{}
+\end{DoxyParamCaption}
+)}}\label{class_i2_c_bus_a70dac2923cd16ce06f0e73f7fc5bca89}
+
+
+\-Destructor. 
+
+
+
+\-Definition at line 17 of file \-I2\-C\-Bus.\-cpp.
+
+
+
+\subsection{\-Member \-Function \-Documentation}
+\hypertarget{class_i2_c_bus_a3df26769808e1e948dda57cd02680c3d}{\index{\-I2\-C\-Bus@{\-I2\-C\-Bus}!address\-Set@{address\-Set}}
+\index{address\-Set@{address\-Set}!I2CBus@{\-I2\-C\-Bus}}
+\subsubsection[{address\-Set}]{\setlength{\rightskip}{0pt plus 5cm}void {\bf \-I2\-C\-Bus\-::address\-Set} (
+\begin{DoxyParamCaption}
+\item[{uint8\-\_\-t}]{address}
+\end{DoxyParamCaption}
+)}}\label{class_i2_c_bus_a3df26769808e1e948dda57cd02680c3d}
+
+
+\-Set the address of the \-I2\-C device the bus will read and write data to. 
+
+
+\begin{DoxyParams}{\-Parameters}
+{\em address} & 7-\/bit address (trailing 0) \\
+\hline
+\end{DoxyParams}
+
+
+\-Definition at line 22 of file \-I2\-C\-Bus.\-cpp.
+
+\hypertarget{class_i2_c_bus_a3f0bed946e8431cacbac1f214ba03232}{\index{\-I2\-C\-Bus@{\-I2\-C\-Bus}!read\-Block@{read\-Block}}
+\index{read\-Block@{read\-Block}!I2CBus@{\-I2\-C\-Bus}}
+\subsubsection[{read\-Block}]{\setlength{\rightskip}{0pt plus 5cm}void {\bf \-I2\-C\-Bus\-::read\-Block} (
+\begin{DoxyParamCaption}
+\item[{uint8\-\_\-t}]{command, }
+\item[{uint8\-\_\-t}]{size, }
+\item[{uint8\-\_\-t $\ast$}]{data}
+\end{DoxyParamCaption}
+)}}\label{class_i2_c_bus_a3f0bed946e8431cacbac1f214ba03232}
+
+
+\-Read a block of data from the device starting at register command. 
+
+
+\begin{DoxyParams}{\-Parameters}
+{\em command} & \-Register to start reading from \\
+\hline
+{\em size} & \-Number of bytes to read \\
+\hline
+{\em data} & \-Allocated buffer with length of at least size \\
+\hline
+\end{DoxyParams}
+
+
+\-Definition at line 98 of file \-I2\-C\-Bus.\-cpp.
+
+\hypertarget{class_i2_c_bus_a3b7cd32f752e2a5eeb6a5bdaf9267282}{\index{\-I2\-C\-Bus@{\-I2\-C\-Bus}!read\-Byte@{read\-Byte}}
+\index{read\-Byte@{read\-Byte}!I2CBus@{\-I2\-C\-Bus}}
+\subsubsection[{read\-Byte}]{\setlength{\rightskip}{0pt plus 5cm}uint8\-\_\-t {\bf \-I2\-C\-Bus\-::read\-Byte} (
+\begin{DoxyParamCaption}
+\item[{uint8\-\_\-t}]{command}
+\end{DoxyParamCaption}
+)}}\label{class_i2_c_bus_a3b7cd32f752e2a5eeb6a5bdaf9267282}
+
+
+\-Read a byte from the register command. 
+
+
+\begin{DoxyParams}{\-Parameters}
+{\em command} & \-Register to read from \\
+\hline
+\end{DoxyParams}
+\begin{DoxyReturn}{\-Returns}
+uint8\-\_\-t \-Value of the register command 
+\end{DoxyReturn}
+
+
+\-Definition at line 49 of file \-I2\-C\-Bus.\-cpp.
+
+\hypertarget{class_i2_c_bus_a1f9b4e6e0771e3de031aab0f8c5bc691}{\index{\-I2\-C\-Bus@{\-I2\-C\-Bus}!read\-Byte@{read\-Byte}}
+\index{read\-Byte@{read\-Byte}!I2CBus@{\-I2\-C\-Bus}}
+\subsubsection[{read\-Byte}]{\setlength{\rightskip}{0pt plus 5cm}uint8\-\_\-t {\bf \-I2\-C\-Bus\-::read\-Byte} (
+\begin{DoxyParamCaption}
+{}
+\end{DoxyParamCaption}
+)}}\label{class_i2_c_bus_a1f9b4e6e0771e3de031aab0f8c5bc691}
+
+
+\-Read a byte directly without specifying a register. 
+
+\-Read a byte directly from the device set with \hyperlink{class_i2_c_bus_a3df26769808e1e948dda57cd02680c3d}{address\-Set()} without specifying a register.
+
+\begin{DoxyReturn}{\-Returns}
+uint8\-\_\-t \-Value of the read data byte 
+\end{DoxyReturn}
+
+
+\-Definition at line 61 of file \-I2\-C\-Bus.\-cpp.
+
+\hypertarget{class_i2_c_bus_a4db730c58bf5bab95bae47c976ccd825}{\index{\-I2\-C\-Bus@{\-I2\-C\-Bus}!read\-Word@{read\-Word}}
+\index{read\-Word@{read\-Word}!I2CBus@{\-I2\-C\-Bus}}
+\subsubsection[{read\-Word}]{\setlength{\rightskip}{0pt plus 5cm}uint16\-\_\-t {\bf \-I2\-C\-Bus\-::read\-Word} (
+\begin{DoxyParamCaption}
+\item[{uint8\-\_\-t}]{command}
+\end{DoxyParamCaption}
+)}}\label{class_i2_c_bus_a4db730c58bf5bab95bae47c976ccd825}
+
+
+\-Read a word (2 bytes) from the register command. 
+
+
+\begin{DoxyParams}{\-Parameters}
+{\em command} & \-Register to read the word from \\
+\hline
+\end{DoxyParams}
+\begin{DoxyReturn}{\-Returns}
+uint16\-\_\-t \-Value of the register command 
+\end{DoxyReturn}
+
+
+\-Definition at line 71 of file \-I2\-C\-Bus.\-cpp.
+
+\hypertarget{class_i2_c_bus_a09abdc7887db46a7f9a26f37754ad6d1}{\index{\-I2\-C\-Bus@{\-I2\-C\-Bus}!read\-Word@{read\-Word}}
+\index{read\-Word@{read\-Word}!I2CBus@{\-I2\-C\-Bus}}
+\subsubsection[{read\-Word}]{\setlength{\rightskip}{0pt plus 5cm}uint16\-\_\-t {\bf \-I2\-C\-Bus\-::read\-Word} (
+\begin{DoxyParamCaption}
+{}
+\end{DoxyParamCaption}
+)}}\label{class_i2_c_bus_a09abdc7887db46a7f9a26f37754ad6d1}
+
+
+\-Read a word (2 bytes) directly without specifying a register. 
+
+\-Read a word (2 bytes) directly from the device set with \hyperlink{class_i2_c_bus_a3df26769808e1e948dda57cd02680c3d}{address\-Set()} without specifying a register
+
+\begin{DoxyReturn}{\-Returns}
+uint16\-\_\-t \-Value of the read data word 
+\end{DoxyReturn}
+
+
+\-Definition at line 81 of file \-I2\-C\-Bus.\-cpp.
+
+\hypertarget{class_i2_c_bus_a9aefab7f4230de3dc45385d1c79d4fe5}{\index{\-I2\-C\-Bus@{\-I2\-C\-Bus}!try\-Read\-Byte@{try\-Read\-Byte}}
+\index{try\-Read\-Byte@{try\-Read\-Byte}!I2CBus@{\-I2\-C\-Bus}}
+\subsubsection[{try\-Read\-Byte}]{\setlength{\rightskip}{0pt plus 5cm}int {\bf \-I2\-C\-Bus\-::try\-Read\-Byte} (
+\begin{DoxyParamCaption}
+\item[{uint8\-\_\-t}]{command}
+\end{DoxyParamCaption}
+)}}\label{class_i2_c_bus_a9aefab7f4230de3dc45385d1c79d4fe5}
+
+
+\-Tries to read a byte from register command. 
+
+\-Difference to \hyperlink{class_i2_c_bus_a3b7cd32f752e2a5eeb6a5bdaf9267282}{read\-Byte(uint8\-\_\-t)} is, that this function won't check if the reading was successful. \-Returns the value of the register if successful and -\/1 if the read failed.
+
+
+\begin{DoxyParams}{\-Parameters}
+{\em command} & \\
+\hline
+\end{DoxyParams}
+\begin{DoxyReturn}{\-Returns}
+int 
+\end{DoxyReturn}
+
+
+\-Definition at line 92 of file \-I2\-C\-Bus.\-cpp.
+
+\hypertarget{class_i2_c_bus_a0f9c9c32bff6152119b4ee79f003a1bd}{\index{\-I2\-C\-Bus@{\-I2\-C\-Bus}!write\-Byte@{write\-Byte}}
+\index{write\-Byte@{write\-Byte}!I2CBus@{\-I2\-C\-Bus}}
+\subsubsection[{write\-Byte}]{\setlength{\rightskip}{0pt plus 5cm}void {\bf \-I2\-C\-Bus\-::write\-Byte} (
+\begin{DoxyParamCaption}
+\item[{uint8\-\_\-t}]{command, }
+\item[{uint8\-\_\-t}]{data}
+\end{DoxyParamCaption}
+)}}\label{class_i2_c_bus_a0f9c9c32bff6152119b4ee79f003a1bd}
+
+
+\-Write a byte to the register command. 
+
+
+\begin{DoxyParams}{\-Parameters}
+{\em command} & \-Register to write the byte to \\
+\hline
+{\em data} & \-Byte of data to write to the device set with \hyperlink{class_i2_c_bus_a3df26769808e1e948dda57cd02680c3d}{address\-Set()} \\
+\hline
+\end{DoxyParams}
+
+
+\-Definition at line 31 of file \-I2\-C\-Bus.\-cpp.
+
+\hypertarget{class_i2_c_bus_a1e64669ddb6db1efda2525d51e6a99e8}{\index{\-I2\-C\-Bus@{\-I2\-C\-Bus}!write\-Byte@{write\-Byte}}
+\index{write\-Byte@{write\-Byte}!I2CBus@{\-I2\-C\-Bus}}
+\subsubsection[{write\-Byte}]{\setlength{\rightskip}{0pt plus 5cm}void {\bf \-I2\-C\-Bus\-::write\-Byte} (
+\begin{DoxyParamCaption}
+\item[{uint8\-\_\-t}]{data}
+\end{DoxyParamCaption}
+)}}\label{class_i2_c_bus_a1e64669ddb6db1efda2525d51e6a99e8}
+
+
+\-Write a byte without a specifying a register. 
+
+
+\begin{DoxyParams}{\-Parameters}
+{\em data} & \-Byte of data which will be written directly to the device set with \hyperlink{class_i2_c_bus_a3df26769808e1e948dda57cd02680c3d}{address\-Set()} \\
+\hline
+\end{DoxyParams}
+
+
+\-Definition at line 40 of file \-I2\-C\-Bus.\-cpp.
+
+
+
+\-The documentation for this class was generated from the following files\-:\begin{DoxyCompactItemize}
+\item 
+include/\hyperlink{_i2_c_bus_8h}{\-I2\-C\-Bus.\-h}\item 
+src/\hyperlink{_i2_c_bus_8cpp}{\-I2\-C\-Bus.\-cpp}\end{DoxyCompactItemize}
