@@ -56,7 +56,7 @@ public:
      \param serialDevice Name of the serial device
      \param baudRate Baud rate for the serial device (if different from 115200)
      */
-    GX3Communicator(int priority, const char* serialDevice,
+    GX3Communicator(int priority, const char *serialDevice, int samplingRate = 20,
                     SerialPort::BaudRate baudRate = SerialPort::BAUD_115200);
 
 
@@ -82,10 +82,26 @@ public:
     void stop() {mKeepRunning = false;}
 
     /*!
+    \brief Adds a command to the list of request outputs from IMU
+
+    \param command  constant from command list in messages.h
+    */
+    void addCommand(uint8_t cmd) {mCommandQueue.push(cmd); }
+
+    /*!
+    \brief Sets the IMU to send data continuously. Only one command supported.
+
+    The first command on the list of requests will be used
+
+    \param cont     flag to decide if running continuously (default= false)
+    */
+    void runContinuously() {mRunContinuous = true; }
+
+
+    /*!
      \brief Delete the first element of the FIFO.
     */
     void pop() { mQueue.pop();}
-
 
     /*!
      \brief Check if the FIFO is empty
@@ -106,9 +122,14 @@ public:
 
      TODO: Make a blocking version of it
 
-     \return AccAngMag the first element
+     \return packet the first element
     */
     packet_ptr &front() { return mQueue.front(); }
+
+    ~GX3Communicator(){
+        delete mPacketList;
+        delete mCommandList;
+    }
 
 private:
     GX3Communicator(const GX3Communicator& thread); /*!< Copy constructor made inaccessible by declaring it private */
@@ -118,8 +139,15 @@ private:
     SerialPort mSerialPort; /*!< Handles the serial port communication */
     SharedQueue<packet_ptr> mQueue;
     SerialPort::BaudRate mBaudRate;
-
+    int mSamplingPeriod;
     volatile bool mKeepRunning;  /*!< Indicates if the Thread should keep running. volatile to prevent optimizing */
+
+    SharedQueue<uint8_t> mCommandQueue;
+    packet_ptr* mPacketList; /*! List of data packets to expect (based on the given commands). */
+    bool mRunContinuous;
+    uint8_t* mCommandList; /*! Iterable list of requests to be sent to the IMU */
+    uint8_t  mCommandNumber;
+
 };
 
 }

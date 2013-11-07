@@ -97,7 +97,25 @@ public:
      */
      virtual void print(std::ostream &os) const = 0;
 
+     /*!
+     \brief Accessor for the vectors in a packet.
+    It copies the vectors on a queue passed the caller
+
+     \param vecQueue  A shared queue of vectors
+    */
+    virtual bool getVectors(sharedQueue<vector> vecQueue) = 0;
+
     /*!
+     \brief Accessor for the matrix in a packet(never more than one).
+    It copies the matrix values the caller
+
+     \param matQueue  A shared queue of matrices
+    */
+    virtual bool getMatrix(sharedQueue<matrix> matQueue) = 0;
+
+    virtual bool hasVectors();
+    virtual bool hasMatrix();
+
      \brief Calculates the checksum of a received byte array
 
      \param buffer pointer to the byte array
@@ -158,6 +176,12 @@ protected:
                *(float*) &buffer[12], *(float*) &buffer[16], *(float*) &buffer[20],
                *(float*) &buffer[24], *(float*) &buffer[28], *(float*) &buffer[32];
     }
+
+    bool mHasVectors;
+    bool mHasMatrix;
+    uint8_t mPacketType;
+
+
 };
 
 /*!
@@ -193,7 +217,12 @@ public:
    /*!
     \brief Creates an empty packet object
     */
-    RawAccAng() {}
+    RawAccAng()
+    {
+        mHasMatrix = false;
+        mHasVectors = true;
+        mPacketType = RAW_ACC_ANG;
+    }
 
     bool readFromSerial(SerialPort &serialPort)
     {
@@ -245,7 +274,7 @@ public:
  The units are:
     - acceleration: g
     - angular rate: rad/s
-    - magnetic field: gau√ü
+    - magnetic field: gauﬂ
 
 */
 class AccAngMag : public GX3Packet
@@ -254,7 +283,12 @@ public:
     /*!
      \brief Creates an empty packet object
      */
-    AccAngMag() {}
+    AccAngMag()
+    {
+        mHasMatrix = false;
+        mHasVectors = true;
+        mPacketType = ACC_ANG_MAG_VEC;
+    }
 
     bool readFromSerial(SerialPort &serialPort)
     {
@@ -322,7 +356,12 @@ public:
     /*!
      \brief Creates an empty packet object
      */
-    Quaternion() {}
+    Quaternion()
+    {
+        mHasMatrix = false;
+        mHasVectors = true;
+        mPacketType = QUATERNION;
+    }
 
     bool readFromSerial(SerialPort &serialPort)
     {
@@ -366,14 +405,13 @@ public:
     enum{size = 23}; /*!< Size of the package (enum to avoid complications with static consts) */
 };
 
-
 /*!
  \brief Representation for packets containing the 3 sensor vectors and orientation matrix
   This class can be used with the commands which return 3 Vectors and a 3x3 Matrix.
   The units are:
     - acceleration: g
     - angular rate: rad/s
-    - magnetic field: gau√ü
+    - magnetic field: gauﬂ
 */
 class AccAngMagOrientationMat : public GX3Packet
 {
@@ -381,7 +419,12 @@ public:
     /*!
      \brief Creates an empty packet object
      */
-    AccAngMagOrientationMat() {}
+    AccAngMagOrientationMat()
+    {
+        mHasMatrix = true;
+        mHasVectors = true;
+        mPacketType = ACC_ANG_MAG_VEC_ORIENTATION_MAT;
+    }
 
     bool readFromSerial(SerialPort &serialPort)
     {
@@ -430,6 +473,216 @@ public:
     unsigned int timer; /*!< The value of the timestamp for the package */
 
     enum {size = 79}; /*!< Size of the package (enum to avoid complications with static consts) */
+};
+
+/*!
+ \brief Representation for receiving the Euler Angles
+ It returns a 3-item vector
+ The units are;
+    - angles: rad
+
+*/
+class Euler : public GX3Packet
+{
+public:
+    /*!
+     \brief Creates an empty packet object
+     */
+    Euler()
+    {
+        mHasMatrix = false;
+        mHasVectors = true;
+        mPacketType = EULER_ANGLES;
+    }
+
+    bool readFromSerial(SerialPort &serialPort)
+    {
+        uint8_t buffer[size];
+        buffer[0] = serialPort.ReadByte();
+        if(buffer[0] != EULER_ANGLES) return false;
+
+        serialPort.ReadRaw(&buffer[1], size-1);
+        if(GX3Packet::calculateChecksum(buffer, size) == false)
+            return false;
+
+        euler  = createVector(&buffer[1]);
+
+        timer = createUInt(&buffer[13]);
+
+        return true;
+    }
+
+    virtual void print(std::ostream &os) const
+    {
+        os << timer << ",\t" << euler(0)  << ", " << euler(1)  << ", " << euler(2);
+    }
+
+    vector euler; /*!< Vector containing the euler angles data */
+
+    enum {size = 79};
+};
+/*!
+ \brief Repgyro = createVector(&buffer[13]);
+        mag  = createVector(&buffer[25])resentation for receiving the Euler angles and Angular rates from the IMU
+  The class will return two 3-item vectors.
+  The units are:
+    - angles: rad
+    - angular rate: rad/s
+
+*/
+class EulerAng : public GX3Packet
+{
+public:
+    /*!
+     \brief Creates an empty packet object
+     */
+    EulerAng()
+    {
+        mHasMatrix = false;
+        mHasVectors = true;
+        mPacketType = EULER_ANGLES_ANG_RATES;
+    }
+
+
+    bool readFromSerial(SerialPort &serialPort)
+    {
+        uint8_t buffer[size];
+        buffer[0] = serialPort.ReadByte();
+        if(buffer[0] != EULER_ANGLES_ANG_RATES) return false;
+
+        serialPort.ReadRaw(&buffer[1], size-1);
+        if(GX3Packet::calculateChecksum(buffer, size) == false) return false;
+
+        euler = createVector(&buffer[1]);
+        gyro = createVector(&buffer[13]);
+
+        timer = createUInt(&buffer[25]);
+
+        return true;
+    }
+
+
+    virtual void print(std::ostream &os) const
+    {
+        os << timer << ",\t" << acc(0)  << ", " << acc(1)  << ", " << acc(2)
+                    << ",\t" << gyro(0) << ", " << gyro(1) << ", " << gyro(2);
+    }
+
+    vector euler; /*!< Vector containing the euler angles data */
+    vector gyro; /*!< Vector containing the gyroscope (angular rate) data */
+
+    enum {size = 79};
+};
+
+/*!
+ \brief Representation for receiving the Orientation Matrix from the IMU
+//Create a package with all the commands that will be sent on every request.
+        RequestCommands sessionCommands(mCommandList, mCommandNumber);
+
+        //TODO Loop over the list of commands and create a packet_ptr for each
+        //I could make this list also part of the RequestCommands class
+        //That way it takes just one call no matter how many commands are sent
+ The class will return a 3x3 Matrix
+
+*/
+class OrientationMat : public GX3Packet
+{
+public:
+    /*!
+     \brief Creates an empty packet object
+     */
+    OrientationMat()
+    {
+        mHasMatrix = true;
+        mHasVectors = false;
+        mPacketType = ORIENTATION_MATRIX;
+    }
+
+
+    bool readFromSerial(SerialPort &serialPort)
+    {
+        uint8_t buffer[size];
+        buffer[0] = serialPort.ReadByte();
+        if(buffer[0] != ORIENTATION_MATRIX) return false;
+
+        serialPort.ReadRaw(&buffer[1], size-1);
+        if(GX3Packet::calculateChecksum(buffer, size) == false) return false;
+
+        createMatrix(&buffer[1], orientation);
+        timer = createUInt(&buffer[37]);
+
+        return true;
+    }
+
+    virtual void print(std::ostream &os) const
+    {
+        os << timer << ",\t" << orientation(0,0) << ", " << orientation(0,1) << ", " << orientation(0,1)
+                    << ",\t" << orientation(1,0) << ", " << orientation(1,1) << ", " << orientation(1,2)
+                    << ",\t" << orientation(2,0) << ", " << orientation(2,1) << ", " << orientation(2,2);
+    }
+
+    matrix orientation; /*!< 3x3 Matrix containing the orientation */
+    unsigned int timer; /*!< The value of the timestamp for the package */
+
+    enum {size = 79};
+};
+
+/*!
+ \brief Representation for receiving the Acceleration, Angular Rates
+ and the Orientation Matrix from the IMU
+
+ The class retunrs two 3-item vectors and a 3x3 matrix
+ The units are:
+    - acceleration: g
+    - angular rate: rad/s
+
+*/
+class AccAngOrientationMat : public GX3Packet
+{
+public:
+    /*!
+     \brief Creates an empty packet object
+     */
+    AccAngOrientationMat()
+    {
+        mHasMatrix = true;
+        mHasVectors = true;
+        mPacketType = ACC_ANG_ORIENTATION_MAT;
+    }
+
+
+    bool readFromSerial(SerialPort &serialPort)
+    {
+        uint8_t buffer[size];
+        buffer[0] = serialPort.ReadByte();
+        if(buffer[0] != ACC_ANG_MAG_VEC_ORIENTATION_MAT) return false;
+
+        serialPort.ReadRaw(&buffer[1], size-1);
+        if(GX3Packet::calculateChecksum(buffer, size) == false) return false;
+
+        acc  = createVector(&buffer[1]);
+        gyro = createVector(&buffer[13]);
+
+        createMatrix(&buffer[25], orientation);
+        timer = createUInt(&buffer[61]);
+
+        return true;
+    }
+
+    virtual void print(std::ostream &os) const
+    {
+        os << timer << ",\t" << acc(0)  << ", " << acc(1)  << ", " << acc(2)
+                    << ",\t" << gyro(0) << ", " << gyro(1) << ", " << gyro(2)
+                    << ",\t" << orientation(0,0) << ", " << orientation(0,1) << ", " << orientation(0,1)
+                    << ",\t" << orientation(1,0) << ", " << orientation(1,1) << ", " << orientation(1,2)
+                    << ",\t" << orientation(2,0) << ", " << orientation(2,1) << ", " << orientation(2,2);
+    }
+    vector acc; /*!< Vector containing the accelerometer data */
+    vector gyro; /*!< Vector containing the gyroscope (angular rate) data */
+    matrix orientation; /*!< 3x3 Matrix containing the orientation */
+    unsigned int timer; /*!< The value of the timestamp for the package */
+
+    enum {size = 79};
 };
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -629,6 +882,107 @@ public:
 
 };
 
+/*!
+\brief Sends a list of of request to IMU. Does not check the response.
+
+*/
+class RequestCommands: public GX3Command
+{
+public:
+
+    /*!
+    \brief Creates a buffer with the commands to be sent.
+
+    \param commandList  List of commands to be sent
+    \param commandNum   Total number of commands to be sent (buffer size)
+    */
+    RequestCommands(uint8_t* commandList, uint8_t commandNum, bool runContinuous = false)
+    {
+        /*
+        In case the one below doesn't work
+        mCommandList = new uint8_t[commandNum];
+        memcpy(mCommandList, commandList, commandNum);
+        */
+        mCommandList = commandList;
+        mCommandNum = commandNum;
+        mRunContinuous = runContinuous;
+    }
+
+    /*!
+    \brief Sends the commands directly without checking
+
+    \param serialPort   Serial port connection instance to use
+    */
+    bool sendCommand(SerialPort& serialPort)
+    {
+        if(mRunContinuous){
+            // Activate Continuous mode
+            SetContinuousMode setCont(mCommandList[0]);
+            if(setCont.sendCommand(mSerialPort) == false)
+            {
+                std::cerr << "REQUESTCOMMANDS: Set continuous mode failed " << std::endl;
+                return false;
+            }
+            return true;
+
+        }else {
+            if(serialPort.WriteRaw(mCommandList, mCommandNum))
+                return true;
+        }
+        return false;
+
+    }
+
+    /*!
+    \brief Checks the serial buffer for the responses to each command.
+        These responses should arrive in order and are stored on
+        a queue.
+
+    \param buffer Pointer to Serial buffer (ignored)
+    */
+    bool checkResponse(uint8_t *buffer)
+    {
+        return false;
+    }
+
+    bool stopContinuous()
+    {
+        SetContinuousMode setCont(0);
+        if(setCont.sendCommand(mSerialPort) == false)
+        {
+            std::cerr << "REQUESTCOMMANDS: Stop continuous mode failed " << std::endl; /// TODO: Error?
+            return false;
+        }
+        return true;
+    }
+    /*!
+    \brief Checks the serial buffer for the responses to each command.
+        These responses should arrive in order and are stored on
+        a queue.
+
+    \param buffer Pointer to Serial buffer (ignored)
+    */
+    /*
+    bool fetchResponse(SerialPort& serialPort, packet_ptr* packList,
+                        SharedQueue<packet_ptr> *mQueue)
+    {
+        return false;
+    }*/
+
+    /*
+    ~RequestCommands(){
+        delete mCommandList;
+
+    }
+    */
+
+private:
+    uint8_t* mCommandList;
+    uint8_t mCommandNum;
+    bool mRunContinuous;
+//    packet_ptr mPacketList;
+
+};
 /*! @}*/
 
 }

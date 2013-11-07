@@ -21,33 +21,14 @@ using namespace USU;
 
 #include "messages.h"
 
-//int timeval_subtract (struct timeval * result, struct timeval * x, struct timeval * y)
-//{
-//    /* Perform the carry for the later subtraction by updating y. */
-//    if (x->tv_usec < y->tv_usec) {
-//        int nsec = (y->tv_usec - x->tv_usec) / 1000000 + 1;
-//        y->tv_usec -= 1000000 * nsec;
-//        y->tv_sec += nsec;
-//    }
-//    if (x->tv_usec - y->tv_usec > 1000000) {
-//        int nsec = (x->tv_usec - y->tv_usec) / 1000000;
-//        y->tv_usec += 1000000 * nsec;
-//        y->tv_sec -= nsec;
-//    }
 
-//    /* Compute the time remaining to wait.
-//          tv_usec is certainly positive. */
-//    result->tv_sec = x->tv_sec - y->tv_sec;
-//    result->tv_usec = x->tv_usec - y->tv_usec;
 
-//    /* Return 1 if result is negative. */
-//    return x->tv_sec < y->tv_sec;
-//}
-
-GX3Communicator::GX3Communicator(int priority, const char *serialDevice, SerialPort::BaudRate baudRate)
-    :RtThread(priority), mSerialPort(serialDevice), mBaudRate(baudRate), mKeepRunning(false)
+GX3Communicator::GX3Communicator(int priority, const char *serialDevice, int samplingPeriod, SerialPort::BaudRate baudRate)
+    :RtThread(priority), mSerialPort(serialDevice), mBaudRate(baudRate), mSamplingPeriod(samplingPeriod), mKeepRunning(false)
 {
-
+    mRunContinous = false;
+    mCommandList = NULL;
+    mCommandNumber = 0;
 }
 
 void GX3Communicator::initialize()
@@ -57,17 +38,60 @@ void GX3Communicator::initialize()
         throw std::runtime_error("Opening SerialPort failed");
 
     /*
-       Set up the 3DM-GX25 with the following settings (different from default):
-        - Data rate 50 Hz (20 ms)
+       Set up the 3DM-GX25 with the following settings (different from IMU default):
+        - Data rate defaults to 20ms (50 Hz)
         - Enable little endian for floating points
+        - Enable quaternions
      */
-    SamplingSettings initSettings(SamplingSettings::Change,  20,
+    SamplingSettings initSettings(SamplingSettings::Change,  mSamplingPeriod,
                                   SamplingSettings::FlagDefault | SamplingSettings::FlagFloatLittleEndian
                                   | SamplingSettings::FlagEnableQuaternion);
 
     if(initSettings.sendCommand(mSerialPort) == false)
         throw std::runtime_error("Setting SamplingSettings failed");
 
+    //Prepare the list of commands
+    mCommandNumber = mCommandQueue.size();
+    if (mCommandNumber>0){
+        mCommandList = new uint8_t[mCommandNumber];
+        mPacketList = new packet_ptr[mCommandNumber];
+        for (int i=0; i<mCommandNumber; i++){
+            mCommandList[i] = mCommandQueue.pop();
+
+            switch(mCommandList[i]){
+                case RAW_ACC_ANG:
+                    mPacketList[i] = new RawAccAng;
+                    break;
+                case ACC_ANG_MAG_VEC:
+                    mPacketList[i] = new AccAngMag;
+                    break;
+                case QUATERNION:
+                    mPacketList[i] = new Quaternion;
+                    break;
+                case ACC_ANG_MAG_VEC_ORIENTATION_MAT:
+                    mPacketList[i] = new AccAngMagOrientationMat;
+                    break;
+                case EULER_ANGLES:
+                    mPacketList[i] = new Euler;
+                    break;
+                case EULER_ANGLES_ANG_RATES:
+                    mPacketList[i] = new EulerAng;
+                    break;
+                case ORIENTATION_MATRIX:
+                    mPacketList[i] = new OrientationMat;
+                    break;
+                case ACC_ANG_ORIENTATION_MAT:
+                    mPacketList[i] = new AccAngOrientationMat;
+                    break;
+                default:
+                    mPacketList[i] = new GX3Packet;
+            }
+        }
+
+
+    } else {
+        throw std::runtime_error("No commands are set to be requested");
+    }
 }
 
 void GX3Communicator::run()
@@ -75,40 +99,49 @@ void GX3Communicator::run()
 
     mKeepRunning = true;
 
-    // Activate Continuous mode
-    SetContinuousMode setCont(ACC_ANG_MAG_VEC_ORIENTATION_MAT);
-    if(setCont.sendCommand(mSerialPort) == false)
-        std::cerr << " Set continuous mode failed " << std::endl;/// TODO: Error
+
+    //Create a package with all the commands that will be sent on every request.
+    //Here for scope reasons
+    RequestCommands sessionCommands(mCommandList, mCommandNumber, mRunContinuous);
+    //That way it takes just one call no matter how many commands are sent
 
 //    struct timeval start, now, elapsed;
 
 //    gettimeofday(&start, NULL);
+
+    if(mRunContinuous)
+        sessionCommands.sendCommand(mSerialPort);
+
     while(mKeepRunning)
     {
-        packet_ptr data(new AccAngMagOrientationMat);
-        if(data->readFromSerial(mSerialPort))
+
+        if (!mRunContinuous)
         {
-            mQueue.push(data);
-            //        gettimeofday(&now, NULL);
-            //        timeval_subtract(&elapsed, &now, &start);
-//                    unsigned long long timestamp = elapsed.tv_sec * 1000 + elapsed.tv_usec / 1000; // in ms since start
-//                    std::cout << (*data) << std::endl;
-        }
-        else
-        {
-//            std::cout << "readFromSerial failed" << std::endl;
-            //            throw std::runtime_error("Getting PackageData failed"); /// TODO: Error?
+            //This line will request the data and has to be
+            //sent before we try to read any data
+            if(sessionCommands.sendCommand(mSerialPort) == false)
+                std::cerr << "GX3COMMUNICATOR: Requesting multiple commands failed " << std::endl;
 
         }
+
+        for(int i=0; i<mCommandNumber; i++)
+        {
+            if(mPacketList[i]->readFromSerial(mSerialPort))
+                mQueue.push(mPacketList[i]); //Should I use 'new'?
+            else
+                std::cout << "readFromSerial failed" << std::endl;
+        }
+
+        //throw std::runtime_error("Getting PackageData failed"); /// TODO: Error?
+
     }
 
     std::cerr << "GX3COMMUNICATOR: Got signal to terminate" << std::endl;
-    std::cerr << "GX3COMMUNICATOR: Stopping IMU continuous mode..." << std::endl;
-    // Stop continuous mode
-    setCont.mCommand[3] = 0;
-    if(setCont.sendCommand(mSerialPort) == false)
-        ; /// TODO: Error?
 
+    if (mRunContinuous){
+        std::cerr << "GX3COMMUNICATOR: Stopping IMU continuous mode..." << std::endl;
+        sessionCommands.stopContinuous();
+    }
     std::cerr << "GX3COMMUNICATOR: IMU continuous mode stopped" << std::endl;
     std::cerr << "GX3COMMUNICATOR: Terminating now..." << std::endl;
 }
