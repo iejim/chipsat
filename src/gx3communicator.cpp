@@ -115,7 +115,7 @@ void GX3Communicator::run()
     while(mKeepRunning)
     {
 
-        if (!mRunContinuous)
+        if (!mRunContinuous) //No need to keep resend if continuous
         {
             //This line will request the data and has to be
             //sent before we try to read any data
@@ -141,8 +141,10 @@ void GX3Communicator::run()
     if (mRunContinuous){
         std::cerr << "GX3COMMUNICATOR: Stopping IMU continuous mode..." << std::endl;
         sessionCommands.stopContinuous();
+
+        std::cerr << "GX3COMMUNICATOR: IMU continuous mode stopped" << std::endl;
     }
-    std::cerr << "GX3COMMUNICATOR: IMU continuous mode stopped" << std::endl;
+
     std::cerr << "GX3COMMUNICATOR: Terminating now..." << std::endl;
 }
 

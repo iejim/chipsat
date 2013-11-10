@@ -36,7 +36,11 @@ const uint8_t MAG_VEC                         = 0xC7; /*!< Magnetometer Vector *
 const uint8_t ACC_ANG_ORIENTATION_MAT         = 0xC8; /*!< Acceleration, Angular Rate & Orientation Matrix */
 const uint8_t WRITE_ACC_BIAS_CORRECTION       = 0xC9; /*!< Write Accel Bias Correction */
 const uint8_t WRITE_GYRO_BIAS_CORRECTION      = 0xCA; /*!< Write Gyro Bias Correction */
-const uint8_t ACC_ANG_MAG_VEC                 = 0xCB; /*!< Acceleration, Angular Rate & Magnetometer Vector */
+const uint8_t ACC_ANG_MAG_VEC                 = 0xCB; /*!< PC,BEAGLEBONE BLACK,1GHZ,
+USB,512MB RAM,uSD CARD SLOT	2176149	2	$44.95	$89.90
+Subtotal:	$89.90
+Shipping:	$3.35
+Total for this Order:	$93.25Acceleration, Angular Rate & Magnetometer Vector */
 const uint8_t ACC_ANG_MAG_VEC_ORIENTATION_MAT = 0xCC; /*!< Acceleration, Angular Rate & Magnetometer Vectors & Orientation Matrix */
 const uint8_t CAPTURE_GYRO_BIAS               = 0xCD; /*!< Capture Gyro Bias */
 const uint8_t EULER_ANGLES                    = 0xCE; /*!< Euler Angles */
@@ -103,7 +107,7 @@ public:
 
      \param vecQueue  A shared queue of vectors
     */
-    virtual bool getVectors(sharedQueue<vector> vecQueue) = 0;
+    virtual bool getVectors(sharedQueue<vector>& vecQueue) = 0;
 
     /*!
      \brief Accessor for the matrix in a packet(never more than one).
@@ -111,11 +115,14 @@ public:
 
      \param matQueue  A shared queue of matrices
     */
-    virtual bool getMatrix(sharedQueue<matrix> matQueue) = 0;
+    virtual bool getMatrix(sharedQueue<matrix>& matQueue) = 0;
 
-    virtual bool hasVectors();
-    virtual bool hasMatrix();
+    uint8_t hasVectors(){ return mHasVectors; }
+    uint8_t hasMatrix(){ return mHasMatrix; }
 
+    uint8_t getPacketType(){ return mPacketType;}
+
+    /*!
      \brief Calculates the checksum of a received byte array
 
      \param buffer pointer to the byte array
@@ -177,8 +184,8 @@ protected:
                *(float*) &buffer[24], *(float*) &buffer[28], *(float*) &buffer[32];
     }
 
-    bool mHasVectors;
-    bool mHasMatrix;
+    uint8_t mHasVectors;
+    uint8_t mHasMatrix;
     uint8_t mPacketType;
 
 
@@ -219,8 +226,8 @@ public:
     */
     RawAccAng()
     {
-        mHasMatrix = false;
-        mHasVectors = true;
+        mHasMatrix = matrices;
+        mHasVectors = vectors;
         mPacketType = RAW_ACC_ANG;
     }
 
@@ -259,12 +266,24 @@ public:
                     << ",\t" << gyro(0) << ", " << gyro(1) << ", " << gyro(2);
     }
 
+    bool getVectors(sharedQueue<vector>& vecQueue){
+        vecQueue->push(acc);
+        vecQueue->push(gyro);
+
+        return true;
+    }
+
+    bool getMatrix(sharedQueue<matrix>& matQueue){
+
+        return false;
+    }
+
     vector acc; /*!< Vector containing the accelerometer data */
     vector gyro; /*!< Vector containing the gyroscope (angular rate) data */
 
     unsigned int timer; /*!< The value of the timestamp for the package */
 
-    enum{size = 31}; /*!< Size of the package (enum to avoid complications with static consts) */
+    enum{size = 31, vectors = 2, matrices = 0}; /*!< Size of the package (enum to avoid complications with static consts) */
 };
 
 /*!
@@ -285,8 +304,8 @@ public:
      */
     AccAngMag()
     {
-        mHasMatrix = false;
-        mHasVectors = true;
+        mHasMatrix = matrices;
+        mHasVectors = vectors;
         mPacketType = ACC_ANG_MAG_VEC;
     }
 
@@ -335,13 +354,27 @@ public:
                     << ",\t" << gyro(0) << ", " << gyro(1) << ", " << gyro(2);
     }
 
+
+    bool getVectors(sharedQueue<vector>& vecQueue){
+        vecQueue->push(acc);
+        vecQueue->push(gyro);
+        vecQueue->push(mag);
+
+        return true;
+    }
+
+    bool getMatrix(sharedQueue<matrix>& matQueue){
+
+        return false;
+    }
+
     vector acc; /*!< Vector containing the accelerometer data */
     vector gyro; /*!< Vector containing the gyroscope (angular rate) data */
     vector mag; /*!< Vector containing the magnetometer data */
 
     unsigned int timer; /*!< The value of the timestamp for the package */
 
-    enum{size = 43}; /*!< Size of the package (enum to avoid complications with static consts) */
+    enum{size = 43, vectors = 3, matrices = 0}; /*!< Size of the package (enum to avoid complications with static consts) */
 };
 
 /*!
@@ -358,8 +391,8 @@ public:
      */
     Quaternion()
     {
-        mHasMatrix = false;
-        mHasVectors = true;
+        mHasMatrix = matrices;
+        mHasVectors = vectors;
         mPacketType = QUATERNION;
     }
 
@@ -398,11 +431,25 @@ public:
         os << timer << ",\t" << quat.w()  << ", " << quat.x() << ", " << quat.y() << ", " << quat.z();
     }
 
+    bool getQuaternion(sharedQueue<quaternion>& quatQueue){
+        vecQueue->push(quat);
+
+        return true;
+    }
+
+    bool getVectors(sharedQueue<vector>& quatQueue){
+        return false;
+    }
+    bool getMatrix(sharedQueue<matrix>& matQueue){
+
+        return false;
+    }
+
     quaternion quat; /*!< Eigen::Quaternionf representing the Orientation of the IMU*/
 
     unsigned int timer; /*!< The value of the timestamp for the package */
 
-    enum{size = 23}; /*!< Size of the package (enum to avoid complications with static consts) */
+    enum{size = 23, vectors = 0, matrices = 0}; /*!< Size of the package (enum to avoid complications with static consts) */
 };
 
 /*!
@@ -421,8 +468,8 @@ public:
      */
     AccAngMagOrientationMat()
     {
-        mHasMatrix = true;
-        mHasVectors = true;
+        mHasMatrix = matrices;
+        mHasVectors = vectors;
         mPacketType = ACC_ANG_MAG_VEC_ORIENTATION_MAT;
     }
 
@@ -465,6 +512,21 @@ public:
 
     }
 
+    bool getVectors(sharedQueue<vector>& vecQueue){
+        vecQueue->push(acc);
+        vecQueue->push(gyro);
+        vecQueue->push(mag);
+
+        return true;
+    }
+
+    bool getMatrix(sharedQueue<matrix>& matQueue){
+
+        matQueue->push(orientation);
+
+        return false;
+    }
+
     vector acc; /*!< Vector containing the accelerometer data */
     vector gyro; /*!< Vector containing the gyroscope (angular rate) data */
     vector mag; /*!< Vector containing the magnetometer data */
@@ -472,7 +534,7 @@ public:
     matrix orientation; /*!< 3x3 Matrix containing the orientation */
     unsigned int timer; /*!< The value of the timestamp for the package */
 
-    enum {size = 79}; /*!< Size of the package (enum to avoid complications with static consts) */
+    enum {size = 79, vectors = 3, matrices =1}; /*!< Size of the package (enum to avoid complications with static consts) */
 };
 
 /*!
@@ -490,8 +552,8 @@ public:
      */
     Euler()
     {
-        mHasMatrix = false;
-        mHasVectors = true;
+        mHasMatrix = matrices;
+        mHasVectors = vectors;
         mPacketType = EULER_ANGLES;
     }
 
@@ -517,9 +579,21 @@ public:
         os << timer << ",\t" << euler(0)  << ", " << euler(1)  << ", " << euler(2);
     }
 
+    bool getVectors(sharedQueue<vector>& vecQueue){
+        vecQueue->push(euler);
+
+        return true;
+    }
+
+    bool getMatrix(sharedQueue<matrix>& matQueue){
+
+        return false;
+    }
+
     vector euler; /*!< Vector containing the euler angles data */
 
-    enum {size = 79};
+
+    enum {size = 19, vectors = 1, matrices = 0};
 };
 /*!
  \brief Repgyro = createVector(&buffer[13]);
@@ -538,8 +612,8 @@ public:
      */
     EulerAng()
     {
-        mHasMatrix = false;
-        mHasVectors = true;
+        mHasMatrix = matrices;
+        mHasVectors = vectors;
         mPacketType = EULER_ANGLES_ANG_RATES;
     }
 
@@ -568,10 +642,22 @@ public:
                     << ",\t" << gyro(0) << ", " << gyro(1) << ", " << gyro(2);
     }
 
+    bool getVectors(sharedQueue<vector>& vecQueue){
+        vecQueue->push(euler);
+        vecQueue->push(gyro);
+
+        return true;
+    }
+
+    bool getMatrix(sharedQueue<matrix>& matQueue){
+
+        return false;
+    }
+
     vector euler; /*!< Vector containing the euler angles data */
     vector gyro; /*!< Vector containing the gyroscope (angular rate) data */
 
-    enum {size = 79};
+    enum {size = 31, vectors = 2, matrices = 0};
 };
 
 /*!
@@ -593,8 +679,8 @@ public:
      */
     OrientationMat()
     {
-        mHasMatrix = true;
-        mHasVectors = false;
+        mHasMatrix = matrices;
+        mHasVectors = vectors;
         mPacketType = ORIENTATION_MATRIX;
     }
 
@@ -621,10 +707,22 @@ public:
                     << ",\t" << orientation(2,0) << ", " << orientation(2,1) << ", " << orientation(2,2);
     }
 
+    bool getVectors(sharedQueue<vector>& vecQueue){
+
+        return false;
+    }
+
+    bool getMatrix(sharedQueue<matrix>& matQueue){
+
+        matQueue->push(orientation);
+
+        return true;
+    }
+
     matrix orientation; /*!< 3x3 Matrix containing the orientation */
     unsigned int timer; /*!< The value of the timestamp for the package */
 
-    enum {size = 79};
+    enum {size = 43, vectors = 0, matrices = 1};
 };
 
 /*!
@@ -645,8 +743,8 @@ public:
      */
     AccAngOrientationMat()
     {
-        mHasMatrix = true;
-        mHasVectors = true;
+        mHasMatrix = matrices;
+        mHasVectors = vectors;
         mPacketType = ACC_ANG_ORIENTATION_MAT;
     }
 
@@ -677,12 +775,26 @@ public:
                     << ",\t" << orientation(1,0) << ", " << orientation(1,1) << ", " << orientation(1,2)
                     << ",\t" << orientation(2,0) << ", " << orientation(2,1) << ", " << orientation(2,2);
     }
+
+    bool getVectors(sharedQueue<vector>& vecQueue){
+        vecQueue->push(acc);
+        vecQueue->push(gyro);
+
+        return true;
+    }
+
+    bool getMatrix(sharedQueue<matrix>& matQueue){
+        matQueue->push(orientation);
+
+        return true;
+    }
+
     vector acc; /*!< Vector containing the accelerometer data */
     vector gyro; /*!< Vector containing the gyroscope (angular rate) data */
     matrix orientation; /*!< 3x3 Matrix containing the orientation */
     unsigned int timer; /*!< The value of the timestamp for the package */
 
-    enum {size = 79};
+    enum {size = 67, vectors = 2, matrices = 1};
 };
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -942,7 +1054,7 @@ public:
     */
     bool checkResponse(uint8_t *buffer)
     {
-        return false;
+        return true;
     }
 
     bool stopContinuous()

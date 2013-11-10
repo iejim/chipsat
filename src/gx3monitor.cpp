@@ -48,7 +48,7 @@ int timeval_subtract (struct timeval * result, struct timeval * x, struct timeva
 }
 
 GX3Monitor::GX3Monitor(int priority, unsigned int period_us, const char *imuserial)
-    :PeriodicRtThread(priority, period_us), mGX3(priority, imuserial), mKeepRunning(false)
+    :PeriodicRtThread(priority, period_us), mGX3(priority, imuserial), mKeepRunning(false),
 {
 
 }
@@ -59,17 +59,103 @@ void GX3Monitor:setCommandList(uint8_t* cList, uint8_t cNum)
     {
         mGX3.addCommand(cList[i]);
     }
+
+
+}
+
+void GX3Monitor::setContinuousMode()
+{
+    mGX3.runContinously();
 }
 void GX3Monitor::run()
 {
     mKeepRunning = true;
 
-    //TODO Should probably be set before run()
-    //Add Commands
-    //mGX3.addCommand();
+    //At this point, the ser should have already added the desired commands
+    //And setup continous mode, if needed
 
     mGX3.initialize();
     mGX3.start();
+
+    uint8_t count = mGX3.getCommandCount();
+    packet_ptr* packetList = new packet_ptr[count]; //Since dealing with addresses, should not need be more dynamic than this.
+    uint8_t i;
+    uint8_t j;
+    SharedQueue<vector> dataVecQueue;
+    SharesQueue<matrix> dataMatQueue;
+    SharedQueue<quaternion> dataQuatQueue;
+    while(mKeepRunning){
+        //Get te packets to read their data, as many as were requested
+        //TODO Check if the Queue is always the same size of the count
+        if(count >= mGX3.size()){ //They should be at least the same
+            //TODO What should it do if its larger?
+            //     Maybe pop until only _count_ are left
+            //     That's what Jan did.
+            for(i=0; i<count; i++){
+                packetList[i] = mGX3.pop();
+            }
+        }
+
+        /*
+        At this point I have the data. What should we do with it?
+        For now, just check what kind of data it contains and print.
+        Two ways to do this:
+            - Check the Packet Type with getPacketType()
+              and do something about it
+            - Check if the packet has vectors and/or a matrix
+              with hasVectors() and hasMatrix()
+        Remember the Monitor class is generic, so it can use both
+        */
+        for (i=0; i<count;i++){ //Better to do this in the previous loop
+            //If done above, packetList does not need to be an array.
+            if(packetList[i]->hasVectors()){
+                packetList[i]->getVectors(dataVecQueue);
+                for(j=0; j<packetList->hasVectors(); j++)
+                    cout << (*dataVecQueue.pop()) << endl;
+            }
+            if(packetList[i]->hasMatrix()){
+                packetList[i]->getMatrix(dataMatQueue);
+                cout << (*dataMatQueue.pop()) << endl;
+            }
+            if(packetList[i]->getPacketType == QUATERNION){
+                //The maybe way
+                Quaternion* quat = static_cast<Quaternion*>(packetList[i]);
+                quat->getVectors(dataQuatQueue);
+                cout << (*dataVecQueue.pop()) << endl;
+                /*
+                //The forceful way
+                SharedQueue<vector> tempQueue;
+                packetList[i]->getVectors(tempQueue);
+                float qData[4];
+                vector* part = tempQueue.pop();
+                qData[0] = *part[0];
+                qData[1] = *part[1];
+                qData[2] = *part[2];
+                part = tempQueue.pop();
+
+                qData[3] = *part[0];
+                dataQuatQueue.push(new quaternion(qData));
+                */
+
+            }
+
+        }
+        /*
+        Right now the Queues contain
+        */
+
+        //Wait the rest of the time
+        waitPeriod();
+    }
+
+
+    std::cerr << "GX3MONITOR: Got signal to terminate" << std::endl;
+    std::cerr << "GX3MONITOR: Stopping Gx3-communicator..." << std::endl;
+    mGX3.stop();
+    if(mGX3.join())
+        std::cerr << "KALMANFILTER: Gx3-communicator joined" << std::endl;
+    else
+        std::cerr << "KALMANFILTER: Joining Gx3-communicator failed" << std::endl;
 
     std::cerr << "GX3MONITOR: Terminating now..." << std::endl;
 }
@@ -79,42 +165,4 @@ bool GX3Monitor::getState()
     ScopedLock scLock(mStateLock);
     return mState;
 }
-
-void GX3Monitor::runCollect()
-{
-
-    while(mKeepRunning)
-    {
-        packet_ptr lastState;
-
-        if(mGX3.isEmpty() == false)
-        {
-            int length = mGX3.size();
-            while(length-->1)
-            {
-                mGX3.pop();
-            }
-
-            lastState = mGX3.front();
-            mGX3.pop();
-
-            cout << (*lastState) << endl;
-        }
-
-        waitPeriod();
-    }
-
-    std::cerr << "GX3MONITOR: Got signal to terminate" << std::endl;
-    std::cerr << "GX3MONITOR: Stopping Gx3-communicator..." << std::endl;
-    mGX3.stop();
-    if(mGX3.join() )
-    {
-        std::cerr << "GX3MONITOR: Gx3-communicator joined" << std::endl;
-    }
-    else
-    {
-        std::cerr << "GX3MONITOR: Joining Gx3-communicator failed" << std::endl;
-    }
-}
-
 

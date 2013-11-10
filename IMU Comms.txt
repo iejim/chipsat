@@ -1,0 +1,82 @@
+Access the IMU
+
+If I wish to collect data from the IMU I would need a program that will take a list of packets I need and return the data in them.
+
+This requires several steps
+
+Monitor
+{
+
+    - Get command list from user
+    - Add the commands ( Communicator.addCommand())
+    - Set to run continuously (if needed)
+    Communicator
+    {
+        - Opening a serial port
+        - Connecting to the IMU
+        - Setup the IMU
+        - Create commands list
+        - Create a packet list (for storing data)
+        RequestCommands
+        {
+            - Create a list of commands
+            - Setup continuous mode if needed
+            - Request the packets (sendCommand())
+        }
+        - Put the packet data in a Queue  
+            - Using each packet in packet list
+            
+    }
+    - Access the data from the packets
+        - By popping the Communicator Queue
+    
+    - Now use the data (print, save, controller, whatever)
+}
+
+Communicator: RtThread
+Talks to the IMU by sending commands
+and reading the packets from the seial line
+
+    initialize()
+        - Open the serial port
+        - Connect to the IMU
+        - Setup the IMU
+        - Create command list using RequestCommands
+    
+    run()
+        - Send the commands using RequestCommands
+        - Put the data in a Queue
+            - Using each packet in List
+            
+    stop()
+    addCommand()
+    getCommandCount()
+    runContinuously()
+    pop()
+    isEmpty()
+    size()
+    &front()
+        
+Monitor: PeriodicRtThread      
+Uses the Communicator to access packets 
+and processes the data.
+This is meant to be part of a main program,
+but not necessarily the main program itself.            
+   
+    setCommandList():
+        - Takes a list of commands (HEX)
+        - Adds each command to the Communicator list
+    setContinuousMode():
+        - Sets the Communicator to run continuously
+    run(): ( this runs periodically)
+        - Initialize the Communicator (mGX3.initialize())
+        - Start the communicator (mGX3.start())
+        - Access the data from the packets
+            - Using mGX3.pop and mGX3.front() (like kalmanfilter)
+        - Process the Data and do something with the result:
+            - Send it to another program
+            - Print it
+            - Save it
+        - Wait and repeat
+        
+   

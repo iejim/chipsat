@@ -88,6 +88,7 @@ public:
     */
     void addCommand(uint8_t cmd) {mCommandQueue.push(cmd); }
 
+    uint8_t getCommandCount() { return mCommandNumber;}
     /*!
     \brief Sets the IMU to send data continuously. Only one command supported.
 

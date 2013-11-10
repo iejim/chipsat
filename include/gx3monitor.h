@@ -18,7 +18,7 @@
 #include "Lock.h"
 #include "gx3communicator.h"
 #include "messages.h"
-#include "motorcontrol.h"
+//#include "motorcontrol.h"
 
 namespace USU
 {
@@ -85,23 +85,11 @@ public:
     */
     bool getState();
 
-    void runCollect();
-
+    void setContinuous(bool runCont = true);
     void setCommandList(uint8_t* cList, uint8_t cNum);
 
-    Mode getMode() const;
-    void setMode(const Mode &value);
-
 private:
-    /*!
-    \brief Runs the MicroStrain IMU data collection
 
-    Initializes the IMU to send de requested data
-    and queues it for processing.
-
-    */
-
-    void runCollect();
 
 
     Mode mMode;
@@ -133,8 +121,6 @@ private:
 };
 
 }
-
-#endif // KALMANFILTER_H
 
 
 
