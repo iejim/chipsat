@@ -12,8 +12,8 @@
 #ifndef GX3COMMUNICATOR_H
 #define GX3COMMUNICATOR_H
 
-#include<SerialPort.h>
-#include<memory>
+#include <SerialPort.h>
+#include <memory>
 #include "RtThread.h"
 #include "sharedqueue.h"
 #include "messages.h"

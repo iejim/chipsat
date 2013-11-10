@@ -19,6 +19,7 @@
 #include<iostream>
 #include<iomanip>
 
+#include "sharedqueue.h"
 #include "vector.h"
 
 namespace USU
@@ -107,7 +108,7 @@ public:
 
      \param vecQueue  A shared queue of vectors
     */
-    virtual bool getVectors(sharedQueue<vector>& vecQueue) = 0;
+    virtual bool getVectors(SharedQueue<vector>& vecQueue) = 0;
 
     /*!
      \brief Accessor for the matrix in a packet(never more than one).
@@ -115,7 +116,7 @@ public:
 
      \param matQueue  A shared queue of matrices
     */
-    virtual bool getMatrix(sharedQueue<matrix>& matQueue) = 0;
+    virtual bool getMatrix(SharedQueue<matrix>& matQueue) = 0;
 
     uint8_t hasVectors(){ return mHasVectors; }
     uint8_t hasMatrix(){ return mHasMatrix; }
@@ -266,14 +267,14 @@ public:
                     << ",\t" << gyro(0) << ", " << gyro(1) << ", " << gyro(2);
     }
 
-    bool getVectors(sharedQueue<vector>& vecQueue){
-        vecQueue->push(acc);
-        vecQueue->push(gyro);
+    bool getVectors(SharedQueue<vector>& vecQueue){
+        vecQueue.push(acc);
+        vecQueue.push(gyro);
 
         return true;
     }
 
-    bool getMatrix(sharedQueue<matrix>& matQueue){
+    bool getMatrix(SharedQueue<matrix>& matQueue){
 
         return false;
     }
@@ -355,15 +356,15 @@ public:
     }
 
 
-    bool getVectors(sharedQueue<vector>& vecQueue){
-        vecQueue->push(acc);
-        vecQueue->push(gyro);
-        vecQueue->push(mag);
+    bool getVectors(SharedQueue<vector>& vecQueue){
+        vecQueue.push(acc);
+        vecQueue.push(gyro);
+        vecQueue.push(mag);
 
         return true;
     }
 
-    bool getMatrix(sharedQueue<matrix>& matQueue){
+    bool getMatrix(SharedQueue<matrix>& matQueue){
 
         return false;
     }
@@ -431,16 +432,16 @@ public:
         os << timer << ",\t" << quat.w()  << ", " << quat.x() << ", " << quat.y() << ", " << quat.z();
     }
 
-    bool getQuaternion(sharedQueue<quaternion>& quatQueue){
-        vecQueue->push(quat);
+    bool getQuaternion(SharedQueue<quaternion>& quatQueue){
+        quatQueue.push(quat);
 
         return true;
     }
 
-    bool getVectors(sharedQueue<vector>& quatQueue){
+    bool getVectors(SharedQueue<vector>& vecQueue){
         return false;
     }
-    bool getMatrix(sharedQueue<matrix>& matQueue){
+    bool getMatrix(SharedQueue<matrix>& matQueue){
 
         return false;
     }
@@ -512,17 +513,17 @@ public:
 
     }
 
-    bool getVectors(sharedQueue<vector>& vecQueue){
-        vecQueue->push(acc);
-        vecQueue->push(gyro);
-        vecQueue->push(mag);
+    bool getVectors(SharedQueue<vector>& vecQueue){
+        vecQueue.push(acc);
+        vecQueue.push(gyro);
+        vecQueue.push(mag);
 
         return true;
     }
 
-    bool getMatrix(sharedQueue<matrix>& matQueue){
+    bool getMatrix(SharedQueue<matrix>& matQueue){
 
-        matQueue->push(orientation);
+        matQueue.push(orientation);
 
         return false;
     }
@@ -579,19 +580,19 @@ public:
         os << timer << ",\t" << euler(0)  << ", " << euler(1)  << ", " << euler(2);
     }
 
-    bool getVectors(sharedQueue<vector>& vecQueue){
-        vecQueue->push(euler);
+    bool getVectors(SharedQueue<vector>& vecQueue){
+        vecQueue.push(euler);
 
         return true;
     }
 
-    bool getMatrix(sharedQueue<matrix>& matQueue){
+    bool getMatrix(SharedQueue<matrix>& matQueue){
 
         return false;
     }
 
     vector euler; /*!< Vector containing the euler angles data */
-
+    unsigned int timer; /*!< The value of the timestamp for the package */
 
     enum {size = 19, vectors = 1, matrices = 0};
 };
@@ -638,24 +639,25 @@ public:
 
     virtual void print(std::ostream &os) const
     {
-        os << timer << ",\t" << acc(0)  << ", " << acc(1)  << ", " << acc(2)
+        os << timer << ",\t" << euler(0)  << ", " << euler(1)  << ", " << euler(2)
                     << ",\t" << gyro(0) << ", " << gyro(1) << ", " << gyro(2);
     }
 
-    bool getVectors(sharedQueue<vector>& vecQueue){
-        vecQueue->push(euler);
-        vecQueue->push(gyro);
+    bool getVectors(SharedQueue<vector>& vecQueue){
+        vecQueue.push(euler);
+        vecQueue.push(gyro);
 
         return true;
     }
 
-    bool getMatrix(sharedQueue<matrix>& matQueue){
+    bool getMatrix(SharedQueue<matrix>& matQueue){
 
         return false;
     }
 
     vector euler; /*!< Vector containing the euler angles data */
     vector gyro; /*!< Vector containing the gyroscope (angular rate) data */
+    unsigned int timer; /*!< The value of the timestamp for the package */
 
     enum {size = 31, vectors = 2, matrices = 0};
 };
@@ -707,14 +709,14 @@ public:
                     << ",\t" << orientation(2,0) << ", " << orientation(2,1) << ", " << orientation(2,2);
     }
 
-    bool getVectors(sharedQueue<vector>& vecQueue){
+    bool getVectors(SharedQueue<vector>& vecQueue){
 
         return false;
     }
 
-    bool getMatrix(sharedQueue<matrix>& matQueue){
+    bool getMatrix(SharedQueue<matrix>& matQueue){
 
-        matQueue->push(orientation);
+        matQueue.push(orientation);
 
         return true;
     }
@@ -776,15 +778,15 @@ public:
                     << ",\t" << orientation(2,0) << ", " << orientation(2,1) << ", " << orientation(2,2);
     }
 
-    bool getVectors(sharedQueue<vector>& vecQueue){
-        vecQueue->push(acc);
-        vecQueue->push(gyro);
+    bool getVectors(SharedQueue<vector>& vecQueue){
+        vecQueue.push(acc);
+        vecQueue.push(gyro);
 
         return true;
     }
 
-    bool getMatrix(sharedQueue<matrix>& matQueue){
-        matQueue->push(orientation);
+    bool getMatrix(SharedQueue<matrix>& matQueue){
+        matQueue.push(orientation);
 
         return true;
     }
@@ -1030,7 +1032,7 @@ public:
         if(mRunContinuous){
             // Activate Continuous mode
             SetContinuousMode setCont(mCommandList[0]);
-            if(setCont.sendCommand(mSerialPort) == false)
+            if(setCont.sendCommand(serialPort) == false)
             {
                 std::cerr << "REQUESTCOMMANDS: Set continuous mode failed " << std::endl;
                 return false;
@@ -1057,10 +1059,10 @@ public:
         return true;
     }
 
-    bool stopContinuous()
+    bool stopContinuous(SerialPort& serialPort)
     {
         SetContinuousMode setCont(0);
-        if(setCont.sendCommand(mSerialPort) == false)
+        if(setCont.sendCommand(serialPort) == false)
         {
             std::cerr << "REQUESTCOMMANDS: Stop continuous mode failed " << std::endl; /// TODO: Error?
             return false;

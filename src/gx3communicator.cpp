@@ -23,10 +23,10 @@ using namespace USU;
 
 
 
-GX3Communicator::GX3Communicator(int priority, const char *serialDevice, int samplingPeriod, SerialPort::BaudRate baudRate)
-    :RtThread(priority), mSerialPort(serialDevice), mBaudRate(baudRate), mSamplingPeriod(samplingPeriod), mKeepRunning(false)
+GX3Communicator::GX3Communicator(int priority, const char *serialDevice, int samplingPeriod_ms, SerialPort::BaudRate baudRate)
+    :RtThread(priority), mSerialPort(serialDevice), mBaudRate(baudRate), mSamplingPeriod(samplingPeriod_ms), mKeepRunning(false)
 {
-    mRunContinous = false;
+    mRunContinuous = false;
     mCommandList = NULL;
     mCommandNumber = 0;
 }
@@ -56,36 +56,48 @@ void GX3Communicator::initialize()
         mCommandList = new uint8_t[mCommandNumber];
         mPacketList = new packet_ptr[mCommandNumber];
         for (int i=0; i<mCommandNumber; i++){
-            mCommandList[i] = mCommandQueue.pop();
+            mCommandList[i] = mCommandQueue.front();
+            mCommandQueue.pop();
 
+            packet_ptr* newPack;
             switch(mCommandList[i]){
                 case RAW_ACC_ANG:
-                    mPacketList[i] = new RawAccAng;
+                    newPack = new packet_ptr(new RawAccAng);
+//                    mPacketList[i] = new RawAccAng();
                     break;
                 case ACC_ANG_MAG_VEC:
-                    mPacketList[i] = new AccAngMag;
+                    newPack = new packet_ptr(new AccAngMag);
+//                    mPacketList[i] = new AccAngMag();
                     break;
                 case QUATERNION:
-                    mPacketList[i] = new Quaternion;
+                    newPack = new packet_ptr(new Quaternion);
+//                    mPacketList[i] = new Quaternion();
                     break;
                 case ACC_ANG_MAG_VEC_ORIENTATION_MAT:
-                    mPacketList[i] = new AccAngMagOrientationMat;
+                    newPack = new packet_ptr(new AccAngMagOrientationMat);
+//                    mPacketList[i] = new AccAngMagOrientationMat();
                     break;
                 case EULER_ANGLES:
-                    mPacketList[i] = new Euler;
+                    newPack = new packet_ptr(new Euler);
+//                    mPacketList[i] = new Euler();
                     break;
                 case EULER_ANGLES_ANG_RATES:
-                    mPacketList[i] = new EulerAng;
+                    newPack = new packet_ptr(new EulerAng);
+//                    mPacketList[i] = new EulerAng();
                     break;
                 case ORIENTATION_MATRIX:
-                    mPacketList[i] = new OrientationMat;
+                    newPack = new packet_ptr(new OrientationMat);
+//                    mPacketList[i] = new OrientationMat();
                     break;
                 case ACC_ANG_ORIENTATION_MAT:
-                    mPacketList[i] = new AccAngOrientationMat;
+                    newPack = new packet_ptr(new AccAngOrientationMat);
+//                    mPacketList[i] = new AccAngOrientationMat();
                     break;
                 default:
-                    mPacketList[i] = new GX3Packet;
+                    break;
+                    //mPacketList[i] = new GX3Packet; //Will throw and error (abstract class)
             }
+            mPacketList[i] = *newPack;
         }
 
 
@@ -140,7 +152,7 @@ void GX3Communicator::run()
 
     if (mRunContinuous){
         std::cerr << "GX3COMMUNICATOR: Stopping IMU continuous mode..." << std::endl;
-        sessionCommands.stopContinuous();
+        sessionCommands.stopContinuous(mSerialPort);
 
         std::cerr << "GX3COMMUNICATOR: IMU continuous mode stopped" << std::endl;
     }

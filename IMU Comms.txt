@@ -53,9 +53,11 @@ and reading the packets from the seial line
     getCommandCount()
     runContinuously()
     pop()
+        - REMOVES the first item
     isEmpty()
     size()
     &front()
+        - RETURNS the first item
         
 Monitor: PeriodicRtThread      
 Uses the Communicator to access packets 

@@ -14,7 +14,7 @@
 #define GX3MONITOR_H_INCLUDED
 
 #include "periodicrtthread.h"
-#include "minimu.h"
+//#include "minimu.h"
 #include "Lock.h"
 #include "gx3communicator.h"
 #include "messages.h"
@@ -83,36 +83,21 @@ public:
      TODO: Currently only dummy variable. Replace with actual state representation (quaternion?)
            Probably not necessary anymore
     */
-    bool getState();
+//    bool getState();
 
-    void setContinuous(bool runCont = true);
+    void setContinuousMode();
     void setCommandList(uint8_t* cList, uint8_t cNum);
 
 private:
 
-
-
-    Mode mMode;
-
-    /*!
-     \brief Struct representing a single command point
-
-     At the point time the corresponding motor will be
-     set to the desired speed
-
-    */
-    struct Command
-    {
-        unsigned int time; /*!< Time (in ms)*/
-        Eigen::Vector3f angVel; /*!< The angular velocity set until the command is processed*/
-    };
-    std::vector<Command> mCommandList; /*!< The list with the commands*/
+    void printVector(vector vec);
+    void printMatrix(matrix mat);
 
     GX3Communicator mGX3;  /*!< Class for accessing the 3DM-GX3*/
 
     ///TODO: queue to ethernet
 
-    Lock mStateLock; /*!< Mutex to access the State variable*/
+//    Lock mStateLock; /*!< Mutex to access the State variable*/
     volatile bool mKeepRunning; /*!< Indicates if the Thread should keep running. volatile to prevent optimizing */
 
 

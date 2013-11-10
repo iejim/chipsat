@@ -24,36 +24,37 @@ using std::endl;
 using namespace USU;
 
 
-int timeval_subtract (struct timeval * result, struct timeval * x, struct timeval * y)
-{
-    /* Perform the carry for the later subtraction by updating y. */
-    if (x->tv_usec < y->tv_usec) {
-        int nsec = (y->tv_usec - x->tv_usec) / 1000000 + 1;
-        y->tv_usec -= 1000000 * nsec;
-        y->tv_sec += nsec;
-    }
-    if (x->tv_usec - y->tv_usec > 1000000) {
-        int nsec = (x->tv_usec - y->tv_usec) / 1000000;
-        y->tv_usec += 1000000 * nsec;
-        y->tv_sec -= nsec;
-    }
+//int timeval_subtract (struct timeval * result, struct timeval * x, struct timeval * y)
+//{
+//    /* Perform the carry for the later subtraction by updating y. */
+//    if (x->tv_usec < y->tv_usec) {
+//        int nsec = (y->tv_usec - x->tv_usec) / 1000000 + 1;
+//        y->tv_usec -= 1000000 * nsec;
+//        y->tv_sec += nsec;
+//    }
+//    if (x->tv_usec - y->tv_usec > 1000000) {
+//        int nsec = (x->tv_usec - y->tv_usec) / 1000000;
+//        y->tv_usec += 1000000 * nsec;
+//        y->tv_sec -= nsec;
+//    }
+//
+//    /* Compute the time remaining to wait.
+//          tv_usec is certainly positive. */
+//    result->tv_sec = x->tv_sec - y->tv_sec;
+//    result->tv_usec = x->tv_usec - y->tv_usec;
+//
+//    /* Return 1 if result is negative. */
+//    return x->tv_sec < y->tv_sec;
+//}
 
-    /* Compute the time remaining to wait.
-          tv_usec is certainly positive. */
-    result->tv_sec = x->tv_sec - y->tv_sec;
-    result->tv_usec = x->tv_usec - y->tv_usec;
-
-    /* Return 1 if result is negative. */
-    return x->tv_sec < y->tv_sec;
-}
 
 GX3Monitor::GX3Monitor(int priority, unsigned int period_us, const char *imuserial)
-    :PeriodicRtThread(priority, period_us), mGX3(priority, imuserial), mKeepRunning(false),
+    :PeriodicRtThread(priority, period_us), mGX3(priority, imuserial), mKeepRunning(false)
 {
 
 }
 
-void GX3Monitor:setCommandList(uint8_t* cList, uint8_t cNum)
+void GX3Monitor::setCommandList(uint8_t* cList, uint8_t cNum)
 {
     for(int i=0; i<cNum; i++)
     {
@@ -65,7 +66,7 @@ void GX3Monitor:setCommandList(uint8_t* cList, uint8_t cNum)
 
 void GX3Monitor::setContinuousMode()
 {
-    mGX3.runContinously();
+    mGX3.runContinuously();
 }
 void GX3Monitor::run()
 {
@@ -82,7 +83,7 @@ void GX3Monitor::run()
     uint8_t i;
     uint8_t j;
     SharedQueue<vector> dataVecQueue;
-    SharesQueue<matrix> dataMatQueue;
+    SharedQueue<matrix> dataMatQueue;
     SharedQueue<quaternion> dataQuatQueue;
     while(mKeepRunning){
         //Get te packets to read their data, as many as were requested
@@ -92,7 +93,8 @@ void GX3Monitor::run()
             //     Maybe pop until only _count_ are left
             //     That's what Jan did.
             for(i=0; i<count; i++){
-                packetList[i] = mGX3.pop();
+                packetList[i] = mGX3.front();
+                mGX3.pop();
             }
         }
 
@@ -110,18 +112,23 @@ void GX3Monitor::run()
             //If done above, packetList does not need to be an array.
             if(packetList[i]->hasVectors()){
                 packetList[i]->getVectors(dataVecQueue);
-                for(j=0; j<packetList->hasVectors(); j++)
-                    cout << (*dataVecQueue.pop()) << endl;
+                for(j=0; j<packetList[i]->hasVectors(); j++){
+                    printVector(dataVecQueue.front());
+                    dataVecQueue.pop();
+                }
             }
             if(packetList[i]->hasMatrix()){
                 packetList[i]->getMatrix(dataMatQueue);
-                cout << (*dataMatQueue.pop()) << endl;
+                printMatrix(dataMatQueue.front());
+                dataMatQueue.pop();
             }
-            if(packetList[i]->getPacketType == QUATERNION){
+            if(packetList[i]->getPacketType() == QUATERNION){
                 //The maybe way
-                Quaternion* quat = static_cast<Quaternion*>(packetList[i]);
-                quat->getVectors(dataQuatQueue);
-                cout << (*dataVecQueue.pop()) << endl;
+                //Quaternion* quat = static_cast<Quaternion*>(packetList[i]);
+                packet_ptr quat = packetList[i];
+                //quat->getQuaternion(dataQuatQueue);
+                cout << (*quat) << endl;
+                //dataQuatQueue.pop();
                 /*
                 //The forceful way
                 SharedQueue<vector> tempQueue;
@@ -160,9 +167,22 @@ void GX3Monitor::run()
     std::cerr << "GX3MONITOR: Terminating now..." << std::endl;
 }
 
+void GX3Monitor::printVector(vector vec){
+    cout << "\t" << vec(0)  << ", " << vec(1)  << ", " << vec(2)
+         << endl;
+}
+
+void GX3Monitor::printMatrix(matrix mat){
+    cout << "\t" << mat(0,0) << ", " << mat(0,1) << ", " << mat(0,1)
+        << ",\t" << mat(1,0) << ", " << mat(1,1) << ", " << mat(1,2)
+        << ",\t" << mat(2,0) << ", " << mat(2,1) << ", " << mat(2,2)
+        << endl;
+}
+
+/*
 bool GX3Monitor::getState()
 {
     ScopedLock scLock(mStateLock);
     return mState;
 }
-
+*/
