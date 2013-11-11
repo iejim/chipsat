@@ -56,7 +56,7 @@ public:
      \param serialDevice Name of the serial device
      \param baudRate Baud rate for the serial device (if different from 115200)
      */
-    GX3Communicator(int priority, const char *serialDevice, int samplingRate = 20,
+    GX3Communicator(int priority, const char *serialDevice, int samplingPeriod_ms = 20,
                     SerialPort::BaudRate baudRate = SerialPort::BAUD_115200);
 
 

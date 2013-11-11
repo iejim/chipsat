@@ -17,6 +17,9 @@
 #include <sys/time.h>
 
 #include "gx3communicator.h"
+using std::cout;
+using std::endl;
+
 using namespace USU;
 
 #include "messages.h"
@@ -33,7 +36,9 @@ GX3Communicator::GX3Communicator(int priority, const char *serialDevice, int sam
 
 void GX3Communicator::initialize()
 {
+    cout << "COMMUNICATOR: Opening serial port ..." <<endl;
     mSerialPort.Open(mBaudRate);
+    cout << "COMMUNICATOR: Checking for serial connection... " << endl;
     if(mSerialPort.IsOpen() == false)
         throw std::runtime_error("Opening SerialPort failed");
 

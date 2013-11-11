@@ -4,6 +4,7 @@
 
 #include <iostream>
 #include <string>
+#include <exception>
 using std::string;
 
 #include "tclap/CmdLine.h"
@@ -49,13 +50,15 @@ int main(int argc, char **argv)
     std::cerr << "MAIN: Begin ..." << std::endl;
     struct sigaction sigIntHandler;
     sigIntHandler.sa_handler = endProgram;
+    std::cerr << "MAIN: 1 ..." << std::endl;
     sigemptyset(&sigIntHandler.sa_mask);
+    std::cerr << "MAIN: 2 ..." << std::endl;
     sigIntHandler.sa_flags = 0;
-
+    std::cerr << "MAIN: 3 ..." << std::endl;
     sigaction(SIGINT, &sigIntHandler, NULL);
-
-    //try
-    //{
+    std::cerr << "MAIN: Try ..." << std::endl;
+    try
+    {
         // Register commandline options to parser
 //        cmd.add(trajFile);
 //        cmd.add(pgain);
@@ -65,7 +68,8 @@ int main(int argc, char **argv)
         std::cerr << "MAIN: Creating command list ..." << std::endl;
         uint8_t commandList[3] = {EULER_ANGLES, QUATERNION, ORIENTATION_MATRIX};
         imuMonitor.setCommandList(commandList, 3);
-        imuMonitor.start();
+
+        /*imuMonitor.start();
 
         if(imuMonitor.join() )
         {
@@ -79,10 +83,12 @@ int main(int argc, char **argv)
             std::cerr << "MAIN: Terminating now..." << std::endl;
             return 1;
         }
-//    } catch (TCLAP::ArgException &e)  // catch any exceptions
-//    {
-//        std::cerr << "error: " << e.error() << " for arg " << e.argId() << std::endl;
-//        return 1;
-//    }
+
+        */
+    } catch (exception &e)  // catch any exceptions
+    {
+        std::cerr << "error: " << e.error() std::endl;
+        return 1;
+    }
 
 }

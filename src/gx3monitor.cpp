@@ -69,15 +69,16 @@ void GX3Monitor::setContinuousMode()
     mGX3.runContinuously();
 }
 void GX3Monitor::run()
-{
+{   cout << "MONITOR: Running" <<endl;
     mKeepRunning = true;
 
     //At this point, the ser should have already added the desired commands
     //And setup continous mode, if needed
-
+    cout << "MONITOR: Initializing Communicator... "<< endl;
     mGX3.initialize();
+    cout << "MONITOR: Starting Communicator... " << endl;
     mGX3.start();
-
+    cout << "MONITOR: Entering the loop ... " <<endl;
     uint8_t count = mGX3.getCommandCount();
     packet_ptr* packetList = new packet_ptr[count]; //Since dealing with addresses, should not need be more dynamic than this.
     uint8_t i;
