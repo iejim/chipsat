@@ -5,10 +5,13 @@
 #include <iostream>
 #include <string>
 #include <exception>
+#include <stdexcept>
 using std::string;
 
 #include "tclap/CmdLine.h"
 #include "gx3monitor.h"
+
+//#include "testSamplingSettings.cpp"
 using namespace USU;
 
 /*
@@ -31,9 +34,8 @@ TCLAP::ValueArg<string> mode("", "mode",  modeText , true, string(), "mode name"
 // Example for switching arg
 //TCLAP::SwitchArg stats("s", "stats", "Print statistics (number of spots, number of identified spots, ratio");
 
+GX3Monitor imuMonitor(5, 20000, "/dev/ttyO4");
 
-GX3Monitor imuMonitor(5, 20000, "/dev/tty04");
-//bool run = true;
 
 void endProgram(int s)
 {
@@ -50,13 +52,10 @@ int main(int argc, char **argv)
     std::cerr << "MAIN: Begin ..." << std::endl;
     struct sigaction sigIntHandler;
     sigIntHandler.sa_handler = endProgram;
-    std::cerr << "MAIN: 1 ..." << std::endl;
     sigemptyset(&sigIntHandler.sa_mask);
-    std::cerr << "MAIN: 2 ..." << std::endl;
     sigIntHandler.sa_flags = 0;
-    std::cerr << "MAIN: 3 ..." << std::endl;
     sigaction(SIGINT, &sigIntHandler, NULL);
-    std::cerr << "MAIN: Try ..." << std::endl;
+
     try
     {
         // Register commandline options to parser
@@ -65,11 +64,14 @@ int main(int argc, char **argv)
 //        cmd.add(mode);
 //
 //        cmd.parse(argc, argv);
+//////////////////////
         std::cerr << "MAIN: Creating command list ..." << std::endl;
-        uint8_t commandList[3] = {EULER_ANGLES, QUATERNION, ORIENTATION_MATRIX};
-        imuMonitor.setCommandList(commandList, 3);
-
-        /*imuMonitor.start();
+//        uint8_t commandList[3] = {EULER_ANGLES, QUATERNION, ORIENTATION_MATRIX};
+        uint8_t commandList = EULER_ANGLES_ANG_RATES;
+        imuMonitor.setCommandList(&commandList, 1);
+        std::cerr << "MAIN: Start Monitor ..." << std::endl;
+        imuMonitor.setContinuousMode();
+        imuMonitor.start();
 
         if(imuMonitor.join() )
         {
@@ -84,10 +86,9 @@ int main(int argc, char **argv)
             return 1;
         }
 
-        */
-    } catch (exception &e)  // catch any exceptions
+    } catch (std::exception e)  // catch any exceptions
     {
-        std::cerr << "error: " << e.error() std::endl;
+        std::cerr << "MAIN: Error: " << e.what() << std::endl;
         return 1;
     }
 

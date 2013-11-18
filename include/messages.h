@@ -22,6 +22,7 @@
 #include "sharedqueue.h"
 #include "vector.h"
 
+#define TIMEOUT_MS 20
 namespace USU
 {
 
@@ -403,11 +404,13 @@ public:
         buffer[0] = serialPort.ReadByte();
         if(buffer[0] != QUATERNION)
         {
+            std::cout << "Wrong package" << std::endl;
             return false; //throw std::runtime_error("Wrong package identifier");
         }
         serialPort.ReadRaw(&buffer[1], size-1);
         if(GX3Packet::calculateChecksum(buffer, size) == false)
         {
+            std::cout << "Bad checksum" << std::endl;
             return false;
         }
 
@@ -561,10 +564,11 @@ public:
     bool readFromSerial(SerialPort &serialPort)
     {
         uint8_t buffer[size];
-        buffer[0] = serialPort.ReadByte();
+        buffer[0] = serialPort.ReadByte(400);
         if(buffer[0] != EULER_ANGLES) return false;
 
-        serialPort.ReadRaw(&buffer[1], size-1);
+//        serialPort.ReadRaw(&buffer[1], size-1);
+        serialPort.ReadRaw(&buffer[1], size-1, 400);
         if(GX3Packet::calculateChecksum(buffer, size) == false)
             return false;
 
@@ -961,12 +965,35 @@ public:
 
     bool sendCommand(SerialPort &serialPort)
     {
+        std::cout << "Sending command" << std::endl;
         serialPort.WriteRaw(mCommand, size);
         uint8_t buffer[responseSize];
-        buffer[0] = serialPort.ReadByte();
-        if(buffer[0] != SAMPLING_SETTINGS) return false;
+        try{
+            std::cout << "Confirm command" << std::endl;
+            buffer[0] = serialPort.ReadByte();
+        } catch (SerialPort::NotOpen e){
+            std::cout << "Port not open: " << e.what() << std::endl;
+        } catch (SerialPort::ReadTimeout e){
+            std::cout << "Read timeout" << e.what() << std::endl;
+        } catch (std::runtime_error e){
+            std::cout << "Serial Error: " << e.what() << std::endl;
+        } catch (std::exception e){
+            std::cout << "Error: " << e.what() << std::endl; //std::runtime_error("Timed out getting response on IMU setup");
+        }
+        std::cout << "Check response" << std::endl;
+        try{
+            std::cout << "Confirm command" << std::endl;
+            serialPort.ReadRaw(&buffer[1], responseSize-1);
+        } catch (SerialPort::NotOpen e){
+            std::cout << "Port not open: " << e.what() << std::endl;
+        } catch (SerialPort::ReadTimeout e){
+            std::cout << "Read timeout" << e.what() << std::endl;
+        } catch (std::runtime_error e){
+            std::cout << "Serial Error: " << e.what() << std::endl;
+        } catch (std::exception e){
+            std::cout << "Error: " << e.what() << std::endl; //std::runtime_error("Timed out getting response on IMU setup");
+        }
 
-        serialPort.ReadRaw(&buffer[1], responseSize-1);
         return checkResponse(buffer);
     }
 

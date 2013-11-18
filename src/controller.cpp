@@ -1,3 +1,4 @@
+
 #include "controller.h"
 #include "messages.h"
 
@@ -37,6 +38,9 @@ void Controller::run()
 {
     //This is where the controller magic begins
 
+    //Before it does anything, it has to wait for one IMU package to arrive
+    //so the threads synchronize (or something like that)
+
     //readInput()
 
     //Call state = mGX3.front()
@@ -56,10 +60,11 @@ void Controller::readInput()
     //Read the input file from here
     //Probably one line at a time
     //and store it somewhere
-    //float q0, q1, q2, q3;
+    float q0, q1, q2, q3;
     mInputFile >> mRefTime; //Read timestamp
-    Eigen::Vector3f qref;
-    std::cin >> &qref;
+    mInputFile >> q0 >> q1 >> q2 >> q3;
+    Eigen::Vector4f quat(q0,q1,q2,q3);
+    mReference = quat;
 }
 
 void Controller::setInputFile(const char* inputFile)

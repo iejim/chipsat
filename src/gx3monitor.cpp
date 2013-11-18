@@ -69,9 +69,15 @@ void GX3Monitor::setContinuousMode()
     mGX3.runContinuously();
 }
 void GX3Monitor::run()
-{   cout << "MONITOR: Running" <<endl;
+{
+//    cout << "MONITOR: Trying to open serial port" <<endl;
+//    mSerialPort.Open(SerialPort::BAUD_115200);
+//    cout << "MONITOR: Checking for serial connection... " << endl;
+//    if(mSerialPort.IsOpen() == false)
+//        throw std::runtime_error("Opening SerialPort failed");
+    cout << "MONITOR: Running" <<endl;
     mKeepRunning = true;
-
+//    Euler pack;
     //At this point, the ser should have already added the desired commands
     //And setup continous mode, if needed
     cout << "MONITOR: Initializing Communicator... "<< endl;
@@ -87,18 +93,21 @@ void GX3Monitor::run()
     SharedQueue<matrix> dataMatQueue;
     SharedQueue<quaternion> dataQuatQueue;
     while(mKeepRunning){
-        //Get te packets to read their data, as many as were requested
+
+
+        //Get te packets to read their data; as many as were requested
         //TODO Check if the Queue is always the same size of the count
-        if(count >= mGX3.size()){ //They should be at least the same
+//        cout << "MONITOR: Checking for packets" << endl;
+        if(count <= mGX3.size()){ //They should be at least the same
             //TODO What should it do if its larger?
             //     Maybe pop until only _count_ are left
             //     That's what Jan did.
+//            cout << "MONITOR: Got "<< mGX3.size() << " packets. Reading..." << endl;
             for(i=0; i<count; i++){
+//                cout << "MONITOR: Packet: "<< i << endl;
                 packetList[i] = mGX3.front();
                 mGX3.pop();
             }
-        }
-
         /*
         At this point I have the data. What should we do with it?
         For now, just check what kind of data it contains and print.
@@ -109,61 +118,70 @@ void GX3Monitor::run()
               with hasVectors() and hasMatrix()
         Remember the Monitor class is generic, so it can use both
         */
-        for (i=0; i<count;i++){ //Better to do this in the previous loop
-            //If done above, packetList does not need to be an array.
-            if(packetList[i]->hasVectors()){
-                packetList[i]->getVectors(dataVecQueue);
-                for(j=0; j<packetList[i]->hasVectors(); j++){
-                    printVector(dataVecQueue.front());
-                    dataVecQueue.pop();
+//            cout << "MONITOR: Iterating through packets" << endl;
+            for (i=0; i<count;i++){ //Better to do this in the previous loop
+                //If done above, packetList does not need to be an array.
+                if(packetList[i]->hasVectors()){
+//                    cout << "MONITOR: Printing vectors" << endl;
+                    packetList[i]->getVectors(dataVecQueue);
+                    for(j=0; j<packetList[i]->hasVectors(); j++){
+                        printVector(dataVecQueue.front());
+                        dataVecQueue.pop();
+                    }
+                }
+                if(packetList[i]->hasMatrix()){
+//                    cout << "MONITOR: Printing matrix" << endl;
+                    packetList[i]->getMatrix(dataMatQueue);
+                    printMatrix(dataMatQueue.front());
+                    dataMatQueue.pop();
+                }
+                if(packetList[i]->getPacketType() == QUATERNION){
+//                    cout << "MONITOR: Printing quaternion" << endl;
+                    //The maybe way
+                    //Quaternion* quat = static_cast<Quaternion*>(packetList[i]);
+                    packet_ptr quat = packetList[i];
+                    //quat->getQuaternion(dataQuatQueue);
+                    cout << (*quat) << endl;
+                    //dataQuatQueue.pop();
+                    /*
+                    //The forceful way
+                    SharedQueue<vector> tempQueue;
+                    packetList[i]->getVectors(tempQueue);
+                    float qData[4];
+                    vector* part = tempQueue.pop();
+                    qData[0] = *part[0];
+                    qData[1] = *part[1];
+                    qData[2] = *part[2];
+                    part = tempQueue.pop();
+
+                    qData[3] = *part[0];
+                    dataQuatQueue.push(new quaternion(qData));
+                    */
+
                 }
             }
-            if(packetList[i]->hasMatrix()){
-                packetList[i]->getMatrix(dataMatQueue);
-                printMatrix(dataMatQueue.front());
-                dataMatQueue.pop();
-            }
-            if(packetList[i]->getPacketType() == QUATERNION){
-                //The maybe way
-                //Quaternion* quat = static_cast<Quaternion*>(packetList[i]);
-                packet_ptr quat = packetList[i];
-                //quat->getQuaternion(dataQuatQueue);
-                cout << (*quat) << endl;
-                //dataQuatQueue.pop();
-                /*
-                //The forceful way
-                SharedQueue<vector> tempQueue;
-                packetList[i]->getVectors(tempQueue);
-                float qData[4];
-                vector* part = tempQueue.pop();
-                qData[0] = *part[0];
-                qData[1] = *part[1];
-                qData[2] = *part[2];
-                part = tempQueue.pop();
-
-                qData[3] = *part[0];
-                dataQuatQueue.push(new quaternion(qData));
-                */
-
-            }
-
         }
-        /*
-        Right now the Queues contain
-        */
-
-        //Wait the rest of the time
+        else{
+            cout << "MONITOR: No packets received" << endl;
+        }
+//        /*
+//        Right now the Queues contain
+//        */
+//
+//        //Wait the rest of the time
         waitPeriod();
     }
 
 
     std::cerr << "GX3MONITOR: Got signal to terminate" << std::endl;
+    delete [] packetList;
+
     std::cerr << "GX3MONITOR: Stopping Gx3-communicator..." << std::endl;
     mGX3.stop();
     if(mGX3.join())
-        std::cerr << "KALMANFILTER: Gx3-communicator joined" << std::endl;
+        std::cerr << "GX3MONITOR: Gx3-communicator joined" << std::endl;
     else
-        std::cerr << "KALMANFILTER: Joining Gx3-communicator failed" << std::endl;
+        std::cerr << "GX3MONITOR: Joining Gx3-communicator failed" << std::endl;
 
     std::cerr << "GX3MONITOR: Terminating now..." << std::endl;
 }

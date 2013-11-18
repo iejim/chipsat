@@ -14,11 +14,10 @@
 #define GX3MONITOR_H_INCLUDED
 
 #include "periodicrtthread.h"
-//#include "minimu.h"
 #include "Lock.h"
 #include "gx3communicator.h"
 #include "messages.h"
-//#include "motorcontrol.h"
+
 
 namespace USU
 {
@@ -103,6 +102,10 @@ private:
 
     GX3Monitor(const GX3Monitor& thread); /*!< Copy constructor made inaccessible by declaring it private */
     GX3Monitor& operator=(const GX3Monitor& rhs); /*!< Assignment constructor made inaccessible by declaring it private */
+
+///////////////////////////////////////
+
+//    SerialPort mSerialPort; /*!< Handles the serial port communication */
 };
 
 }

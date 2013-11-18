@@ -6,12 +6,6 @@
 **/
 
 
-/**
-  \defgroup minimu Classes related to communication with Pololu MinIMU
-
-  TODO: Write something here
-**/
-
 
 /**
   \defgroup 3dm Classes related to communication with MicroStrain 3DM-GX3

@@ -8,9 +8,10 @@
  *
  */
 #include <stdio.h>
+#include <iostream>
 #include <time.h>
 #include <errno.h>
-
+#include <stdexcept>
 #include "RtThread.h"
 using namespace USU;
 
@@ -98,11 +99,16 @@ void RtThread::start(void *arg)
     * the function exec. Here we use this pointer, which is an instance
     * of the Thread class.
     */
-
-    if ( (ret = pthread_create(&mId, &mAttr, &RtThread::exec, this)) !=0)
+    ret = pthread_create(&mId, &mAttr, &RtThread::exec, (void *)this);
+    if ( ret !=0)
     {
         perror("thread_create ");
-        throw "Error";
+        if (ret == EAGAIN)
+            throw std::runtime_error("Cannot create a new thread");
+        else if (ret == EINVAL)
+            throw std::runtime_error("Attr invalid");
+        else// (ret == EPERM)
+            throw std::runtime_error("Insufficient permisions");
     }
     mStarted = true;
 }

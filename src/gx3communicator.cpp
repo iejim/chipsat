@@ -26,7 +26,7 @@ using namespace USU;
 
 
 
-GX3Communicator::GX3Communicator(int priority, const char *serialDevice, int samplingPeriod_ms, SerialPort::BaudRate baudRate)
+GX3Communicator::GX3Communicator(int priority, const char *serialDevice, uint16_t samplingPeriod_ms, SerialPort::BaudRate baudRate)
     :RtThread(priority), mSerialPort(serialDevice), mBaudRate(baudRate), mSamplingPeriod(samplingPeriod_ms), mKeepRunning(false)
 {
     mRunContinuous = false;
@@ -36,9 +36,9 @@ GX3Communicator::GX3Communicator(int priority, const char *serialDevice, int sam
 
 void GX3Communicator::initialize()
 {
-    cout << "COMMUNICATOR: Opening serial port ..." <<endl;
+    cout << "GX3COMMUNICATOR: Opening serial port ..." <<endl;
     mSerialPort.Open(mBaudRate);
-    cout << "COMMUNICATOR: Checking for serial connection... " << endl;
+    cout << "GX3COMMUNICATOR: Checking for serial connection... " << endl;
     if(mSerialPort.IsOpen() == false)
         throw std::runtime_error("Opening SerialPort failed");
 
@@ -46,14 +46,20 @@ void GX3Communicator::initialize()
        Set up the 3DM-GX25 with the following settings (different from IMU default):
         - Data rate defaults to 20ms (50 Hz)
         - Enable little endian for floating points
-        - Enable quaternions
+//        - Enable quaternions
      */
-    SamplingSettings initSettings(SamplingSettings::Change,  mSamplingPeriod,
-                                  SamplingSettings::FlagDefault | SamplingSettings::FlagFloatLittleEndian
-                                  | SamplingSettings::FlagEnableQuaternion);
 
-    if(initSettings.sendCommand(mSerialPort) == false)
+    SamplingSettings initSettings(SamplingSettings::Change,  mSamplingPeriod,
+                                  SamplingSettings::FlagDefault | SamplingSettings::FlagFloatLittleEndian);
+//                                  | SamplingSettings::FlagEnableQuaternion);
+
+    std::cerr << "GX3COMMUNICATOR: Initializing IMU " << std::endl;
+
+    try{
+        initSettings.sendCommand(mSerialPort);
+    } catch (std::exception e){
         throw std::runtime_error("Setting SamplingSettings failed");
+    }
 
     //Prepare the list of commands
     mCommandNumber = mCommandQueue.size();
@@ -109,6 +115,7 @@ void GX3Communicator::initialize()
     } else {
         throw std::runtime_error("No commands are set to be requested");
     }
+    std::cerr << "GX3COMMUNICATOR: Initialization successful! " << std::endl;
 }
 
 void GX3Communicator::run()
@@ -126,9 +133,11 @@ void GX3Communicator::run()
 
 //    gettimeofday(&start, NULL);
 
-    if(mRunContinuous)
+    if(mRunContinuous){
+        std::cerr << "GX3COMMUNICATOR: Setting up continuous data " << std::endl;
         sessionCommands.sendCommand(mSerialPort);
-
+    }
+    std::cerr << "GX3COMMUNICATOR: Begin reading data... " << std::endl;
     while(mKeepRunning)
     {
 
@@ -136,24 +145,33 @@ void GX3Communicator::run()
         {
             //This line will request the data and has to be
             //sent before we try to read any data
+//            std::cerr << "GX3COMMUNICATOR: Requesting commands " << std::endl;
             if(sessionCommands.sendCommand(mSerialPort) == false)
                 std::cerr << "GX3COMMUNICATOR: Requesting multiple commands failed " << std::endl;
 
         }
-
+//        std::cerr << "GX3COMMUNICATOR: Fetching data " << std::endl;
         for(int i=0; i<mCommandNumber; i++)
         {
+            //I think this method fails because the IMU might not be sending
+            //the packets in the same order
             if(mPacketList[i]->readFromSerial(mSerialPort))
-                mQueue.push(mPacketList[i]); //Should I use 'new'?
+                mQueue.push(mPacketList[i]);
             else
-                std::cout << "readFromSerial failed" << std::endl;
+                std::cout << "readFromSerial failed. Packet: " << std::endl;
         }
-
+//        std::cerr << "GX3COMMUNICATOR: Done fetching data " << std::endl;
         //throw std::runtime_error("Getting PackageData failed"); /// TODO: Error?
 
     }
 
     std::cerr << "GX3COMMUNICATOR: Got signal to terminate" << std::endl;
+
+    //Clean up the queue
+    std::cout << "Left " << mQueue.size() << " packets in the queue. Removing ..." << std::endl;
+    while (mQueue.size()>0){
+        mQueue.pop();
+    }
 
     if (mRunContinuous){
         std::cerr << "GX3COMMUNICATOR: Stopping IMU continuous mode..." << std::endl;
@@ -161,6 +179,7 @@ void GX3Communicator::run()
 
         std::cerr << "GX3COMMUNICATOR: IMU continuous mode stopped" << std::endl;
     }
+    mSerialPort.Close();
 
     std::cerr << "GX3COMMUNICATOR: Terminating now..." << std::endl;
 }

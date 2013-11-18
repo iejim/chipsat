@@ -45,6 +45,14 @@ class Controller : public PeriodicRtThread
         volatile bool mKeepRunning; /*!< Indicates if the Thread should keep running. volatile to prevent optimizing */
 
         quaternion mCurrentState; /*!< Current state */
+        quaternion mLastState; /*!< Last state */
+
+        Eigen::Vector4f mTorque; /*!< Current motor torque state for ALL motors */
+        Eigen::Vector4f mSpeed; /*!< Current motor speed state for ALL motors */
+
+        Eigen::Vector4f mLastTorque; /*!< Last motor torque state for ALL motors */
+        Eigen::Vector4f mLastSpeed; /*!< Last motor speed state for ALL motors */
+
 
         std::ifstream mInputFile; /*!< Input file with trajectory */
         quaternion mReference; /*!< Reference input state */

@@ -1,4 +1,4 @@
-//#include <sys/ioctl.h>
+#include <sys/ioctl.h>
 #include <unistd.h>
 #include <linux/i2c-dev.h>
 #include <fcntl.h>

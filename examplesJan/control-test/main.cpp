@@ -4,13 +4,13 @@ using std::cout;
 using std::endl;
 
 #include <cmath>
-#include <Eigen/Dense>
-#include <Eigen/Geometry>
+#include "Eigen/Dense"
+#include "Eigen/Geometry"
 
 // Function to read in a matrix from an input stream
 namespace Eigen {
 template<typename Derived>
-std::istream & operator >>(std::istream & Inp, MatrixBase<Derived> & m) 
+std::istream & operator >>(std::istream & Inp, MatrixBase<Derived> & m)
 {
   for (int i = 0; i < m.rows(); ++i)
     for (int j = 0; j < m.cols(); j++)
@@ -63,7 +63,7 @@ void controlTest(Eigen::Matrix3f &orientation, Eigen::Vector3f &gyro, Eigen::Vec
  \return int
 */
 int main()
-{   
+{
     // No validation of input values! Make sure you match the expected types.
     unsigned numDataSet; // number data sets with sampling data
     cin >> numDataSet;
@@ -72,15 +72,18 @@ int main()
     {
         Eigen::Matrix3f m;
         Eigen::Vector3f gyro;
-        Eigen::Vector4f ch1, ch2;
+        Eigen::Vector4f ch1, ch2, quat;
+        Eigen::Quaternionf qref;
 
         cin >> m;
         cin >> gyro;
         cin >> ch1;
         cin >> ch2;
+        cin >> quat;
+        qref = quat;
 
         controlTest(m, gyro, ch1, ch2);
     }
- 
+
  return 0;
 }
