@@ -1,7 +1,8 @@
 
 #include "controller.h"
-#include "messages.h"
 
+using std::cout;
+using std::endl;
 using namespace USU;
 
 Controller::Controller(int priority, unsigned int period_us, const char* imuserial, const char* i2cDevice):
@@ -53,6 +54,67 @@ void Controller::run()
     //if (time == mRefTime){
     //   qerror = mRefence - mCurrentState
     //}
+//    startIMU();
+
+    mKeepRunning = true;
+    int step = 10;
+    int count  = 200;
+
+    vector euler, rates;
+    float motorData0[2], motorData1[2], motorData2[2], motorData3[2];
+
+    //Read from the IMU
+//    readIMU(euler, rates);
+    std::cout << "Running..." << std::endl;
+    while (mKeepRunning){
+
+        //Read IMU
+//        readIMU(euler, rates);
+        readMotors(motorData0, motorData1, motorData2, motorData3);
+
+        count--;
+        if(!count){
+            step++;
+            sendDutyCycles(step, step, step, step); //Increase the command by 1
+            cout << "Command: " << step << endl;
+            count = 100;
+
+
+//          cout << "Angles: " << euler << ", Rates: " << rates << endl;
+            cout << "Motor 0: " << motorData0[0] << " rad/s, " << motorData0[1] << " A" << endl;
+            cout << "Motor 1: " << motorData1[0] << " rad/s, " << motorData1[1] << " A" << endl;
+            cout << "Motor 2: " << motorData2[0] << " rad/s, " << motorData2[1] << " A" << endl;
+            cout << "Motor 3: " << motorData3[0] << " rad/s, " << motorData3[1] << " A" << endl;
+        }
+
+        if(step == 60)
+            step = 10; //restart
+
+
+
+        waitPeriod();
+    }
+
+    std::cout << "Terminating " << std::endl;
+    sendDutyCycles(0,0,0,0);
+}
+
+int Controller::startIMU()
+{
+    cout << "Start IMU..."  << endl;
+        mGX3.start();
+
+        if (mGX3.join())
+        {
+            cout << "IMU thread joined" << endl;
+            cout << "IMU terminaning ... "<< endl;
+            return 0;
+        } else
+        {
+            cout << "IMU thread joining failed" << endl;
+            cout << "IMU terminaning ... "<< endl;
+            return 1;
+        }
 }
 
 void Controller::readInput()
@@ -80,6 +142,121 @@ void Controller::sendDutyCycles(int d0, int d1, int d2, int d3)
     mMotors.setMotor(2, d2);
     mMotors.setMotor(3, d3);
 
+}
+
+
+void Controller::readIMU(vector &euler, vector &rates)
+{
+    //Wait to see if there is an IMU packet available
+    //TODO Is this
+    cout<< "Waiting: " << mGX3.size() <<endl;
+    while (mGX3.isEmpty()) //Should work to synchronize the first time everything in run.
+    {                      //After that, it should not stay here for long
+        ;
+    }
+
+    packet_ptr pack;
+    pack  = mGX3.front();
+    mGX3.pop();
+
+    pack->getVectors(mVectorQueue);
+
+    euler = mVectorQueue.front();
+    mVectorQueue.pop();
+
+    rates = mVectorQueue.front();
+    mVectorQueue.pop();
+
+
+}
+
+void Controller::readMotors(float* m0, float* m1, float* m2, float* m3)
+{
+    float currents[4], speeds[4]; //Hold the current and speed readings
+
+    mMotors.getAnalogs(speeds, currents); //TODO Check the orded
+
+    //Rearrange
+    //TODO perform the necessary conversions
+    m0[0] = V_TO_RADS*speeds[0];
+    m0[1] = V_TO_CURR*currents[0];
+    m1[0] = V_TO_RADS*speeds[1];
+    m1[1] = V_TO_CURR*currents[1];
+    m2[0] = V_TO_RADS*speeds[2];
+    m2[1] = V_TO_CURR*currents[2];
+    m3[0] = V_TO_RADS*speeds[3];
+    m3[1] = V_TO_CURR*currents[3];
+
+
+}
+
+quaternion Controller::createQuaternion(vector euler)
+{
+    Eigen::Matrix3f M;
+    float theta, phi, psi;
+    theta = euler(0);
+    phi = euler(1);
+    psi = euler(2);
+
+    //Create roation matrix
+    M << cos(psi)*cos(theta),                           sin(psi)*cos(theta),                              -sin(theta),
+        cos(psi)*sin(theta)*sin(phi)-sin(psi)*cos(phi), sin(psi)*sin(theta)*sin(phi)+cos(psi)*cos(phi), cos(theta)*sin(phi),
+        cos(psi)*sin(theta)*cos(phi)+sin(psi)*sin(phi), sin(psi)*sin(theta)*cos(phi)-cos(psi)*sin(phi), cos(theta)*cos(phi);
+
+    //Perform quaternion tests
+    Eigen::Array4f test;
+    test << M(0,0)+M(1,1)+M(2,2),
+            M(0,0)-M(1,1)-M(2,2),
+           -M(0,0)+M(1,1)-M(2,2),
+           -M(0,0)-M(1,1)+M(2,2);
+    int i;
+    test.maxCoeff(&i);
+
+    float s;
+    Eigen::Vector4f q;
+
+    switch(i){
+        case 0:
+                s = 2*sqrt(1.+M(0,0)+M(1,1)+M(2,2));
+                q <<  s/4.,
+                    (M(1,2)-M(2,1))/s,
+                    (M(2,0)-M(0,2))/s,
+                    (M(0,1)-M(1,0))/s;
+                break;
+        case 1:
+                s = 2*sqrt(1.+M(0,0)-M(1,1)-M(2,2));
+                q << (M(2,1)-M(1,2))/s,
+                        -s/4.,
+                     -(M(1,0)+M(0,1))/s,
+                     -(M(0,2)+M(2,0))/s;
+                break;
+        case 2:
+                s = 2*sqrt(1.-M(0,0)+M(1,1)-M(2,2));
+                q << (M(0,2)-M(2,0))/s,
+                     -(M(1,0)+M(0,1))/s,
+                        -s/4.,
+                     -(M(2,1)+M(1,2))/s;
+                break;
+        case 3:
+                s = 2*sqrt(1.-M(0,0)-M(1,1)+M(2,2));
+                q << (M(1,0)-M(0,1))/s,
+                     -(M(0,2)+M(2,0))/s,
+                     -(M(2,1)+M(1,2))/s,
+                     -s/4.;
+                break;
+
+    }
+
+    quaternion quat;
+    quat = q;
+
+    return quat;
+}
+
+quaternion integrate(quaternion state)
+{
+    quaternion q(0.,0.,0.,0.);
+    return q;
 }
 
 Controller::~Controller()

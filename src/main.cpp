@@ -7,9 +7,11 @@
 #include <exception>
 #include <stdexcept>
 using std::string;
+using std::cout;
+using std::endl;
 
 #include "tclap/CmdLine.h"
-#include "gx3monitor.h"
+#include "controller.h"
 
 //#include "testSamplingSettings.cpp"
 using namespace USU;
@@ -34,14 +36,14 @@ TCLAP::ValueArg<string> mode("", "mode",  modeText , true, string(), "mode name"
 // Example for switching arg
 //TCLAP::SwitchArg stats("s", "stats", "Print statistics (number of spots, number of identified spots, ratio");
 
-GX3Monitor imuMonitor(5, 20000, "/dev/ttyO4");
+Controller control(5, 20000);
 
 
 void endProgram(int s)
 {
     std::cerr << "MAIN: Got signal for termination" << std::endl;
     std::cerr << "MAIN: Stopping monitor thread..." << std::endl;
-    imuMonitor.stop();
+    control.stop();
 }
 
 
@@ -65,26 +67,48 @@ int main(int argc, char **argv)
 //
 //        cmd.parse(argc, argv);
 //////////////////////
-        std::cerr << "MAIN: Creating command list ..." << std::endl;
-//        uint8_t commandList[3] = {EULER_ANGLES, QUATERNION, ORIENTATION_MATRIX};
-        uint8_t commandList = EULER_ANGLES_ANG_RATES;
-        imuMonitor.setCommandList(&commandList, 1);
-        std::cerr << "MAIN: Start Monitor ..." << std::endl;
-        imuMonitor.setContinuousMode();
-        imuMonitor.start();
+        cout  << "Initializing..." << endl;
+        control.initialize();
 
-        if(imuMonitor.join() )
+        cout << "Start ..."  << endl;
+        control.start();
+
+        if (control.join())
         {
-            std::cerr << "MAIN: IMU Monitor thread joined" << std::endl;
-            std::cerr << "MAIN: Terminating now..." << std::endl;
+            cout << "Thread joined" << endl;
+            cout << "MAIN: Terminaning ... "<< endl;
             return 0;
-        }
-        else
+        } else
         {
-            std::cerr << "MAIN: Joining IMU Monitor thread failed" << std::endl;
-            std::cerr << "MAIN: Terminating now..." << std::endl;
+            cout << "Thread joining failed" << endl;
+            cout << "MAIN: Terminaning ... "<< endl;
             return 1;
         }
+
+////////////////////////////
+//        std::cerr << "MAIN: Creating command list ..." << std::endl;
+////        uint8_t commandList[3] = {EULER_ANGLES, QUATERNION, ORIENTATION_MATRIX};
+//        uint8_t commandList = EULER_ANGLES_ANG_RATES;
+//        imuMonitor.setCommandList(&commandList, 1);
+//        std::cerr << "MAIN: Start Monitor ..." << std::endl;
+//        imuMonitor.setContinuousMode();
+//        imuMonitor.start();
+//
+//        if(imuMonitor.join() )
+//        {
+//            std::cerr << "MAIN: IMU Monitor thread joined" << std::endl;
+//            std::cerr << "MAIN: Terminating now..." << std::endl;
+//            return 0;
+//        }
+//        else
+//        {
+//            std::cerr << "MAIN: Joining IMU Monitor thread failed" << std::endl;
+//            std::cerr << "MAIN: Terminating now..." << std::endl;
+//            return 1;
+//        }
+///////////////////////////////
+
+
 
     } catch (std::exception e)  // catch any exceptions
     {
