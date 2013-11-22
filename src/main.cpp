@@ -42,7 +42,7 @@ Controller control(5, 20000);
 void endProgram(int s)
 {
     std::cerr << "MAIN: Got signal for termination" << std::endl;
-    std::cerr << "MAIN: Stopping monitor thread..." << std::endl;
+    std::cerr << "MAIN: Stopping controller thread..." << std::endl;
     control.stop();
 }
 
@@ -64,7 +64,7 @@ int main(int argc, char **argv)
 //        cmd.add(trajFile);
 //        cmd.add(pgain);
 //        cmd.add(mode);
-//
+//6
 //        cmd.parse(argc, argv);
 //////////////////////
         cout  << "Initializing..." << endl;

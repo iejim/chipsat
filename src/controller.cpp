@@ -1,5 +1,6 @@
 
 #include "controller.h"
+#include <unistd.h>
 
 using std::cout;
 using std::endl;
@@ -51,10 +52,11 @@ void Controller::run()
 
     //mCurrentState = createQuaternion(euler);
 
-    //if (time == mRefTime){
+    //if (time == mRefTime)
     //   qerror = mRefence - mCurrentState
-    //}
-//    startIMU();
+    //
+    cout << "Start IMU..."  << endl;
+    mGX3.start();
 
     mKeepRunning = true;
     int step = 10;
@@ -63,24 +65,32 @@ void Controller::run()
     vector euler, rates;
     float motorData0[2], motorData1[2], motorData2[2], motorData3[2];
 
-    //Read from the IMU
-//    readIMU(euler, rates);
+    //Wait for the first IMU packet to arrive (as a way of synchronization)
+    while(!readIMU(euler, rates)){
+        cout << "." ;
+        usleep(5000);
+    }
+    cout << endl;
+
     std::cout << "Running..." << std::endl;
+    bool gotIMU = false;
     while (mKeepRunning){
 
         //Read IMU
-//        readIMU(euler, rates);
+        gotIMU = readIMU(euler, rates);
         readMotors(motorData0, motorData1, motorData2, motorData3);
 
+        mCurrentState = createQuaternion(euler);
         count--;
         if(!count){
             step++;
-            sendDutyCycles(step, step, step, step); //Increase the command by 1
+            sendDutyCycles(step, step,  step, step); //Send the command
             cout << "Command: " << step << endl;
             count = 100;
 
 
-//          cout << "Angles: " << euler << ", Rates: " << rates << endl;
+            cout << "Angles: " << euler << endl << "Rates: " << rates << endl;
+            cout << "Quaternion" << mCurrentState.x() << mCurrentState.y() << mCurrentState.z() << mCurrentState.w() << endl;
             cout << "Motor 0: " << motorData0[0] << " rad/s, " << motorData0[1] << " A" << endl;
             cout << "Motor 1: " << motorData1[0] << " rad/s, " << motorData1[1] << " A" << endl;
             cout << "Motor 2: " << motorData2[0] << " rad/s, " << motorData2[1] << " A" << endl;
@@ -95,26 +105,26 @@ void Controller::run()
         waitPeriod();
     }
 
-    std::cout << "Terminating " << std::endl;
+
+    std::cout << "CONTROLLER: Terminating " << std::endl;
     sendDutyCycles(0,0,0,0);
+    joinIMU();
 }
 
-int Controller::startIMU()
+bool Controller::joinIMU()
 {
-    cout << "Start IMU..."  << endl;
-        mGX3.start();
-
-        if (mGX3.join())
-        {
-            cout << "IMU thread joined" << endl;
-            cout << "IMU terminaning ... "<< endl;
-            return 0;
-        } else
-        {
-            cout << "IMU thread joining failed" << endl;
-            cout << "IMU terminaning ... "<< endl;
-            return 1;
-        }
+    mGX3.stop();
+    if (mGX3.join())
+    {
+        cout << "IMU thread joined" << endl;
+        cout << "IMU terminaning ... "<< endl;
+        return 0;
+    } else
+    {
+        cout << "IMU thread joining failed" << endl;
+        cout << "IMU terminaning ... "<< endl;
+        return 1;
+    }
 }
 
 void Controller::readInput()
@@ -145,15 +155,12 @@ void Controller::sendDutyCycles(int d0, int d1, int d2, int d3)
 }
 
 
-void Controller::readIMU(vector &euler, vector &rates)
+bool Controller::readIMU(vector &euler, vector &rates)
 {
     //Wait to see if there is an IMU packet available
     //TODO Is this
-    cout<< "Waiting: " << mGX3.size() <<endl;
-    while (mGX3.isEmpty()) //Should work to synchronize the first time everything in run.
-    {                      //After that, it should not stay here for long
-        ;
-    }
+    if (mGX3.size()==0)
+        return false;//Should work to synchronize the first time everything in run.
 
     packet_ptr pack;
     pack  = mGX3.front();
@@ -166,7 +173,7 @@ void Controller::readIMU(vector &euler, vector &rates)
 
     rates = mVectorQueue.front();
     mVectorQueue.pop();
-
+    return true;
 
 }
 
@@ -178,9 +185,9 @@ void Controller::readMotors(float* m0, float* m1, float* m2, float* m3)
 
     //Rearrange
     //TODO perform the necessary conversions
-    m0[0] = V_TO_RADS*speeds[0];
+    m0[0] = 261.7994*speeds[0];
     m0[1] = V_TO_CURR*currents[0];
-    m1[0] = V_TO_RADS*speeds[1];
+    m1[0] = 261.7994*speeds[1];
     m1[1] = V_TO_CURR*currents[1];
     m2[0] = V_TO_RADS*speeds[2];
     m2[1] = V_TO_CURR*currents[2];

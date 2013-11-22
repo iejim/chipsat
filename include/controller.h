@@ -34,13 +34,11 @@ class Controller : public PeriodicRtThread
 
         void stop() { mKeepRunning = false; }
 
-        int startIMU();
-
         void setInputFile(const char* inputFile);
 
         void sendDutyCycles(int d0, int d1, int d2, int d3); /*!< Sets the duty cycle for all motors */
 
-        void readIMU(vector &euler, vector &rates);
+        bool readIMU(vector &euler, vector &rates);
 
         void readMotors(float* m0, float* m1, float* m2, float* m3); /*<! Reads the motors and return the scaled values */
 
@@ -54,6 +52,7 @@ class Controller : public PeriodicRtThread
     private:
 
         void readInput(); /*!< Reads an the reference input from a file (for now) */
+        bool joinIMU();
 
         GX3Communicator mGX3;               /*!< Class for accessing the 3DM-GX3*/
         MotorCommunicator mMotors;          /*!< Class for accessing the motors */

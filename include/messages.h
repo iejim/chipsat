@@ -22,7 +22,7 @@
 #include "sharedqueue.h"
 #include "vector.h"
 
-#define TIMEOUT_MS 20
+#define TIMEOUT_MS 2000
 namespace USU
 {
 
@@ -236,10 +236,10 @@ public:
     bool readFromSerial(SerialPort &serialPort)
     {
         uint8_t buffer[size];
-        buffer[0] = serialPort.ReadByte();
+        buffer[0] = serialPort.ReadByte(TIMEOUT_MS);
         if(buffer[0] != RAW_ACC_ANG && buffer[0] != ACC_ANG) return false;
 
-        serialPort.ReadRaw(&buffer[1], size-1);
+        serialPort.ReadRaw(&buffer[1], size-1,TIMEOUT_MS);
         if(GX3Packet::calculateChecksum(buffer, size) == false)
         {
             using namespace std;
@@ -317,7 +317,7 @@ public:
         uint8_t buffer[size];
         do
         {
-            buffer[0] = serialPort.ReadByte();
+            buffer[0] = serialPort.ReadByte(TIMEOUT_MS);
         } while(--count && buffer[0] != ACC_ANG_MAG_VEC);
 
         if(count == 0)
@@ -325,7 +325,7 @@ public:
             return false; //throw std::runtime_error("Wrong package identifier");
         }
 
-        serialPort.ReadRaw(&buffer[1], size-1);
+        serialPort.ReadRaw(&buffer[1], size-1, TIMEOUT_MS);
         if(GX3Packet::calculateChecksum(buffer, size) == false)
         {
             using namespace std;
@@ -401,13 +401,13 @@ public:
     bool readFromSerial(SerialPort &serialPort)
     {
         uint8_t buffer[size];
-        buffer[0] = serialPort.ReadByte();
+        buffer[0] = serialPort.ReadByte(TIMEOUT_MS);
         if(buffer[0] != QUATERNION)
         {
             std::cout << "Wrong package" << std::endl;
             return false; //throw std::runtime_error("Wrong package identifier");
         }
-        serialPort.ReadRaw(&buffer[1], size-1);
+        serialPort.ReadRaw(&buffer[1], size-1, TIMEOUT_MS);
         if(GX3Packet::calculateChecksum(buffer, size) == false)
         {
             std::cout << "Bad checksum" << std::endl;
@@ -480,10 +480,10 @@ public:
     bool readFromSerial(SerialPort &serialPort)
     {
         uint8_t buffer[size];
-        buffer[0] = serialPort.ReadByte();
+        buffer[0] = serialPort.ReadByte(TIMEOUT_MS);
         if(buffer[0] != ACC_ANG_MAG_VEC_ORIENTATION_MAT) return false;
 
-        serialPort.ReadRaw(&buffer[1], size-1);
+        serialPort.ReadRaw(&buffer[1], size-1, TIMEOUT_MS);
         if(GX3Packet::calculateChecksum(buffer, size) == false) return false;
 
         acc  = createVector(&buffer[1]);
@@ -564,11 +564,11 @@ public:
     bool readFromSerial(SerialPort &serialPort)
     {
         uint8_t buffer[size];
-        buffer[0] = serialPort.ReadByte(400);
+        buffer[0] = serialPort.ReadByte(TIMEOUT_MS);
         if(buffer[0] != EULER_ANGLES) return false;
 
 //        serialPort.ReadRaw(&buffer[1], size-1);
-        serialPort.ReadRaw(&buffer[1], size-1, 400);
+        serialPort.ReadRaw(&buffer[1], size-1, TIMEOUT_MS);
         if(GX3Packet::calculateChecksum(buffer, size) == false)
             return false;
 
@@ -626,10 +626,10 @@ public:
     bool readFromSerial(SerialPort &serialPort)
     {
         uint8_t buffer[size];
-        buffer[0] = serialPort.ReadByte();
+        buffer[0] = serialPort.ReadByte(TIMEOUT_MS);
         if(buffer[0] != EULER_ANGLES_ANG_RATES) return false;
 
-        serialPort.ReadRaw(&buffer[1], size-1);
+        serialPort.ReadRaw(&buffer[1], size-1, TIMEOUT_MS);
         if(GX3Packet::calculateChecksum(buffer, size) == false) return false;
 
         euler = createVector(&buffer[1]);
@@ -694,10 +694,10 @@ public:
     bool readFromSerial(SerialPort &serialPort)
     {
         uint8_t buffer[size];
-        buffer[0] = serialPort.ReadByte();
+        buffer[0] = serialPort.ReadByte(TIMEOUT_MS);
         if(buffer[0] != ORIENTATION_MATRIX) return false;
 
-        serialPort.ReadRaw(&buffer[1], size-1);
+        serialPort.ReadRaw(&buffer[1], size-1, TIMEOUT_MS);
         if(GX3Packet::calculateChecksum(buffer, size) == false) return false;
 
         createMatrix(&buffer[1], orientation);
@@ -758,10 +758,10 @@ public:
     bool readFromSerial(SerialPort &serialPort)
     {
         uint8_t buffer[size];
-        buffer[0] = serialPort.ReadByte();
+        buffer[0] = serialPort.ReadByte(TIMEOUT_MS);
         if(buffer[0] != ACC_ANG_MAG_VEC_ORIENTATION_MAT) return false;
 
-        serialPort.ReadRaw(&buffer[1], size-1);
+        serialPort.ReadRaw(&buffer[1], size-1, TIMEOUT_MS);
         if(GX3Packet::calculateChecksum(buffer, size) == false) return false;
 
         acc  = createVector(&buffer[1]);
@@ -846,7 +846,7 @@ public:
     {
         serialPort.WriteRaw(mCommand, size);
         uint8_t buffer[responseSize];
-        buffer[0] = serialPort.ReadByte();
+        buffer[0] = serialPort.ReadByte(TIMEOUT_MS);
         if(buffer[0] != SET_CONTINUOUS_MODE) return false;
 
         serialPort.ReadRaw(&buffer[1], responseSize-1);
@@ -970,7 +970,7 @@ public:
         uint8_t buffer[responseSize];
         try{
             std::cout << "Confirm command" << std::endl;
-            buffer[0] = serialPort.ReadByte();
+            buffer[0] = serialPort.ReadByte(TIMEOUT_MS);
         } catch (SerialPort::NotOpen e){
             std::cout << "Port not open: " << e.what() << std::endl;
         } catch (SerialPort::ReadTimeout e){
