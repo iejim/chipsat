@@ -22,9 +22,9 @@ FILE(GLOB chipsat_HEADER include/*.h)
 add_subdirectory(src)
 
 # Build the examples only in Debug-builds
-if(CMAKE_BUILD_TYPE STREQUAL Debug)
-    add_subdirectory(examples)
-endif(CMAKE_BUILD_TYPE STREQUAL Debug)
+#if(CMAKE_BUILD_TYPE STREQUAL Debug)
+#    add_subdirectory(examples)
+#endif(CMAKE_BUILD_TYPE STREQUAL Debug)
 
 
 

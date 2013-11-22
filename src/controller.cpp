@@ -14,6 +14,7 @@ Controller::Controller(int priority, unsigned int period_us, const char* imuseri
 {
     mRefTime = 0;
     mDutyC << 0, 0, 0, 0;
+    mLastSpeed << 0,0,0,0;
 }
 
 void Controller::initialize()
@@ -81,12 +82,15 @@ void Controller::run()
     float Iw = 0.462; //lbm-in^2, mass moment of inertia of momentum wheel
     float bIw = 1/(b+Iw); //come back and give number
     Matrix3f Inertia;
-    Inertia << 102.322878, -0.035566, 0.315676,   -0.035566, 103.65751, 0.006317,    0.315676, 0.006317, 159.537290; //lbm-in^2 inertia of tables
+    Inertia << 102.322878, -0.035566, 0.315676, -0.035566, 103.65751, 0.006317, 0.315676, 0.006317, 159.537290; //lbm-in^2 inertia of tables
     Matrix3x4 Kp;
-    wn=0.2; //choose natural damping frequency
-    Kp <<   2.2*Inertia(1,1)*wn*wn,0,0,0
-            0,2.2*Inertia(2,2)*wn*wn,0,0
-            0,0,2.2*Inertia(3,3)*wn*wn,0;
+    float wn=0.2; //choose natural damping frequency
+    Kp <<   2.2*Inertia(0,0)*wn*wn,0,0,0,
+            0,2.2*Inertia(1,1)*wn*wn,0,0,
+            0,0,2.2*Inertia(2,2)*wn*wn,0;
+
+    //For now
+    mReference = quaternion(1.2, 0.3, 0.4, 0.1);
 
     while (mKeepRunning){
 
@@ -99,28 +103,30 @@ void Controller::run()
 
         //calculate quaternion error
         Matrix4f Qt;
-        Qt << qt.w(),qt.z(),-qt.y(),qt.x(),
-              -qt.z(),qt.w(),qt.x(),qt.y(),
-              qt.y(),-qt.x(),qt.w(),qt.z(),
-              -qt.x(),-qt.y(),-qt.z(),qt.w();
-        Vector4f qs(-q.x(),-q.y(),-q.z(),-q.w());
+        Qt << mReference.w(),mReference.z(),-mReference.y(),mReference.x(),
+              -mReference.z(),mReference.w(),mReference.x(),mReference.y(),
+              mReference.y(),-mReference.x(),mReference.w(),mReference.z(),
+              -mReference.x(),-mReference.y(),-mReference.z(),mReference.w();
+        Vector4f qs(-mCurrentQuat.x(),-mCurrentQuat.y(),-mCurrentQuat.z(),-mCurrentQuat.w());
         Vector4f qe = Qt*qs;
 
         //calculate required torque on each of 3 axes
-        Vector3f Tc3 =2*Kp*qe*qe(4);
+        Vector3f Tc3 =2*Kp*qe*qe.w();
 
         //calculate required torque on each of 4 wheels
-        Matrix3f Tc3to4;
+        Matrix4f Tc3to4;
         Tc3to4 << 0.5,0,0.25,0.25,  0,0.5,0.25,-0.25,   -0.5,0,0.25,0.25,     0,-0.5,0.25,-0.25;
-        Vector4f Tc4 = Tc3to4*Tc3;
+        Vector4f Tc3Comp(Tc3(0), Tc3(1), Tc3(2), 0.);
+        Vector4f Tc4 = Tc3to4*Tc3Comp;
 
         //calculate required speeds (rad/s)
-        Vector4f speedscmd =(Tc+Iw*wlast)*bIw; // check bIw
+        Vector4f speedscmd =(Tc4+Iw*mLastSpeed)*bIw; // check bIw
 
         //calculate required duty cycles
-
-        mDutyC = speedscmd*(80/618.7262)+10; //if speedscmd is in rad/s
-
+        speedscmd = speedscmd*(80/618.7262);
+        mDutyC = Vector4i(int(speedscmd(0)), int(speedscmd(1)), int(speedscmd(2)), int(speedscmd(3)));  //if speedscmd is in rad/s
+        mDutyC += Vector4i(10,10,10,10);
+        sendDutyCycles(mDutyC);
 //        count--;
 //        if(!count){
 //            step++;
@@ -129,14 +135,15 @@ void Controller::run()
 //            cout << "Command: " << step << endl;
 //            count = 100;
 //
-//
-//            cout << "Angles: " << mEuler << endl << "Rates: " << mCurrentRates << endl;
-//            cout << "Quaternion" << mCurrentQuat.x() << "," <<  mCurrentQuat.y()
-//                 << "," << mCurrentQuat.z() << "," << mCurrentQuat.w() << endl;
-//            cout << "Motor 0: " << mSpeed(0) << " rad/s, " << mAmps(0) << " A" << endl;
-//            cout << "Motor 1: " << mSpeed(1) << " rad/s, " << mAmps(1) << " A" << endl;
-//            cout << "Motor 2: " << mSpeed(2) << " rad/s, " << mAmps(2) << " A" << endl;
-//            cout << "Motor 3: " << mSpeed(3) << " rad/s, " << mAmps(3) << " A" << endl;
+        readMotors(speedscmd, mAmps);
+            cout << "Angles: " << mEuler << endl << "Rates: " << mCurrentRates << endl;
+            cout << "Quaternion" << mCurrentQuat.x() << "," <<  mCurrentQuat.y()
+                 << "," << mCurrentQuat.z() << "," << mCurrentQuat.w() << endl;
+            cout << "Motor 0: " << "DC: " << mDutyC(0) << " "<< speedscmd(0) << " rad/s, " << mAmps(0) << " A" << endl;
+            cout << "Motor 1: " << "DC: " << mDutyC(1) << " "<< speedscmd(1) << " rad/s, " << mAmps(1) << " A" << endl;
+            cout << "Motor 2: " << "DC: " << mDutyC(2) << " "<< speedscmd(2) << " rad/s, " << mAmps(2) << " A" << endl;
+            cout << "Motor 3: " << "DC: " << mDutyC(3) << " "<<
+            speedscmd(3) << " rad/s, " << mAmps(3) << " A" << endl;
 //        }
 
 //        if(step == 60)
