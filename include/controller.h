@@ -87,8 +87,8 @@ class Controller : public PeriodicRtThread
         Vector4f mLastAmps;                 /*!< Last motor current (Amps) state for ALL motors */
         Vector4i mLastDutyC;                /*!< Last motor duty cycle */
 
-        uint16_t mImuTime;
-        uint16_t mLastImuTime;
+        unsigned int mImuTime;
+        unsigned int mLastImuTime;
 
         std::ifstream mInputFile;           /*!< Input file with trajectory */
         quaternion mReference;              /*!< Reference input state */

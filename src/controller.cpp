@@ -276,7 +276,7 @@ void Controller::updateStates()
     mLastQuat = mCurrentQuat;
     mLastQuatError = mQuatError;
     mLastEuler = mEuler;
-    mLastRates = mRates;
+    mLastRates = mCurrentRates;
     mLastSpeed = mSpeed;
 
     mLastTorque = mTorque;
