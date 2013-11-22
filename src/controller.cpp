@@ -10,6 +10,7 @@ Controller::Controller(int priority, unsigned int period_us, const char* imuseri
      PeriodicRtThread(priority, period_us), mGX3(priority, imuserial, period_us/1000), mMotors(i2cDevice), mKeepRunning(false)
 {
     mRefTime = 0;
+    mDutyC << 0, 0, 0, 0;
 }
 
 void Controller::initialize()
@@ -23,7 +24,8 @@ void Controller::initialize()
     mGX3.initialize();
 
     //Motors
-    sendDutyCycles(0,0,0,0); //Initialized motors to zero
+    mDutyC = Vector4i(0, 0, 0, 0);
+    sendDutyCycles(mDutyC); //Initialized motors to zero
 
     //Gains
     //mPGain = 1;
@@ -62,11 +64,8 @@ void Controller::run()
     int step = 10;
     int count  = 200;
 
-    vector euler, rates;
-    float motorData0[2], motorData1[2], motorData2[2], motorData3[2];
-
     //Wait for the first IMU packet to arrive (as a way of synchronization)
-    while(!readIMU(euler, rates)){
+    while(!readIMU(mEuler, mCurrentRates)){
         cout << "." ;
         usleep(5000);
     }
@@ -77,24 +76,28 @@ void Controller::run()
     while (mKeepRunning){
 
         //Read IMU
-        gotIMU = readIMU(euler, rates);
-        readMotors(motorData0, motorData1, motorData2, motorData3);
+        gotIMU = readIMU(mEuler, mCurrentRates);
 
-        mCurrentState = createQuaternion(euler);
+        readMotors(mSpeed, mAmps);
+
+        mCurrentQuat = createQuaternion(mEuler);
+
         count--;
         if(!count){
             step++;
-            sendDutyCycles(step, step,  step, step); //Send the command
+            mDutyC = Vector4i(step, step, step, step);
+            sendDutyCycles(mDutyC); //Send the command
             cout << "Command: " << step << endl;
             count = 100;
 
 
-            cout << "Angles: " << euler << endl << "Rates: " << rates << endl;
-            cout << "Quaternion" << mCurrentState.x() << mCurrentState.y() << mCurrentState.z() << mCurrentState.w() << endl;
-            cout << "Motor 0: " << motorData0[0] << " rad/s, " << motorData0[1] << " A" << endl;
-            cout << "Motor 1: " << motorData1[0] << " rad/s, " << motorData1[1] << " A" << endl;
-            cout << "Motor 2: " << motorData2[0] << " rad/s, " << motorData2[1] << " A" << endl;
-            cout << "Motor 3: " << motorData3[0] << " rad/s, " << motorData3[1] << " A" << endl;
+            cout << "Angles: " << mEuler << endl << "Rates: " << mCurrentRates << endl;
+            cout << "Quaternion" << mCurrentQuat.x() << "," <<  mCurrentQuat.y()
+                 << "," << mCurrentQuat.z() << "," << mCurrentQuat.w() << endl;
+            cout << "Motor 0: " << mSpeed(0) << " rad/s, " << mAmps(0) << " A" << endl;
+            cout << "Motor 1: " << mSpeed(1) << " rad/s, " << mAmps(1) << " A" << endl;
+            cout << "Motor 2: " << mSpeed(2) << " rad/s, " << mAmps(2) << " A" << endl;
+            cout << "Motor 3: " << mSpeed(3) << " rad/s, " << mAmps(3) << " A" << endl;
         }
 
         if(step == 60)
@@ -107,7 +110,8 @@ void Controller::run()
 
 
     std::cout << "CONTROLLER: Terminating " << std::endl;
-    sendDutyCycles(0,0,0,0);
+    mDutyC = Vector4i(0, 0, 0, 0);
+    sendDutyCycles(mDutyC);
     joinIMU();
 }
 
@@ -145,12 +149,12 @@ void Controller::setInputFile(const char* inputFile)
     //Do other stuff here (like checks)
 }
 
-void Controller::sendDutyCycles(int d0, int d1, int d2, int d3)
+void Controller::sendDutyCycles(Vector4i dc)
 {
-    mMotors.setMotor(0, d0);
-    mMotors.setMotor(1, d1);
-    mMotors.setMotor(2, d2);
-    mMotors.setMotor(3, d3);
+    mMotors.setMotor(0, dc(0));
+    mMotors.setMotor(1, dc(1));
+    mMotors.setMotor(2, dc(2));
+    mMotors.setMotor(3, dc(3));
 
 }
 
@@ -177,7 +181,7 @@ bool Controller::readIMU(vector &euler, vector &rates)
 
 }
 
-void Controller::readMotors(float* m0, float* m1, float* m2, float* m3)
+void Controller::readMotors(Vector4f &speedVec, Vector4f &currentVec)
 {
     float currents[4], speeds[4]; //Hold the current and speed readings
 
@@ -185,16 +189,15 @@ void Controller::readMotors(float* m0, float* m1, float* m2, float* m3)
 
     //Rearrange
     //TODO perform the necessary conversions
-    m0[0] = 261.7994*speeds[0];
-    m0[1] = V_TO_CURR*currents[0];
-    m1[0] = 261.7994*speeds[1];
-    m1[1] = V_TO_CURR*currents[1];
-    m2[0] = V_TO_RADS*speeds[2];
-    m2[1] = V_TO_CURR*currents[2];
-    m3[0] = V_TO_RADS*speeds[3];
-    m3[1] = V_TO_CURR*currents[3];
+    speedVec << 261.7994*speeds[0],
+                261.7994*speeds[1],
+                V_TO_RADS*speeds[2],
+                V_TO_RADS*speeds[3];
 
-
+    currentVec << V_TO_CURR*currents[0],
+                V_TO_CURR*currents[1],
+                V_TO_CURR*currents[2],
+                V_TO_CURR*currents[3];
 }
 
 quaternion Controller::createQuaternion(vector euler)

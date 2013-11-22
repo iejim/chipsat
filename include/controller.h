@@ -15,6 +15,9 @@
 #define _USE_MATH_DEFINES
 #include <cmath>
 
+using Eigen::Vector4f;
+using Eigen::Vector4i;
+
 namespace USU
 {
 
@@ -36,11 +39,13 @@ class Controller : public PeriodicRtThread
 
         void setInputFile(const char* inputFile);
 
-        void sendDutyCycles(int d0, int d1, int d2, int d3); /*!< Sets the duty cycle for all motors */
+        void sendDutyCycles(Vector4i dc); /*!< Sets the duty cycle for all motors */
 
         bool readIMU(vector &euler, vector &rates);
 
-        void readMotors(float* m0, float* m1, float* m2, float* m3); /*<! Reads the motors and return the scaled values */
+        void readMotors(Vector4f &speeds, Vector4f &currents); /*!< Reads the motors and return the scaled values */
+
+//        void controlLaw(); /*!< Implements the control law using the class variables*/
 
         static quaternion createQuaternion(vector euler); /*!< Creates a quaternion based on euler angles */
 
@@ -60,17 +65,26 @@ class Controller : public PeriodicRtThread
 
         SharedQueue<vector> mVectorQueue;   /*!< Queue used to store the vectors from the IMU packet */
 
-        quaternion mCurrentState;           /*!< Current state */
-        quaternion mLastState;              /*!< Last state */
 
+        quaternion mCurrentQuat;            /*!< Current state */
+        quaternion mQuatError;              /*!< Current error */
+        vector mEuler;                      /*!< Current Euler angles */
         vector mCurrentRates;               /*!< Current angular rates */
+        Vector4f mSpeed;                    /*!< Current motor speed (rad/s) state for ALL motors */
+
+        quaternion mLastQuat;               /*!< Last state */
+        quaternion mLastQuatError;          /*!< Last error */
+        vector mLastEuler;                  /*!< Last Euler angles */
         vector mLastRates;                  /*!< Last angular rates */
+        Vector4f mLastSpeed;                /*!< Last motor speed state for ALL motors */
 
-        Eigen::Vector4f mTorque;            /*!< Current motor torque state for ALL motors */
-        Eigen::Vector4f mSpeed;             /*!< Current motor speed state for ALL motors */
+        Vector4f mTorque;                   /*!< Current motor torque state for ALL motors */
+        Vector4f mAmps;                     /*!< Current motor current (Amps) state for ALL motors */
+        Vector4i mDutyC;                    /*!< Current motor duty cycle */
 
-        Eigen::Vector4f mLastTorque;        /*!< Last motor torque state for ALL motors */
-        Eigen::Vector4f mLastSpeed;         /*!< Last motor speed state for ALL motors */
+        Vector4f mLastTorque;               /*!< Last motor torque state for ALL motors */
+        Vector4f mLastAmps;                 /*!< Last motor current (Amps) state for ALL motors */
+        Vector4i mLastDutyC;                /*!< Last motor duty cycle */
 
 
         std::ifstream mInputFile;           /*!< Input file with trajectory */
