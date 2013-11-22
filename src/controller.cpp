@@ -104,7 +104,7 @@ void Controller::run()
             step = 10; //restart
 
 
-
+        updateStates();
         waitPeriod();
     }
 
@@ -115,21 +115,6 @@ void Controller::run()
     joinIMU();
 }
 
-bool Controller::joinIMU()
-{
-    mGX3.stop();
-    if (mGX3.join())
-    {
-        cout << "IMU thread joined" << endl;
-        cout << "IMU terminaning ... "<< endl;
-        return 0;
-    } else
-    {
-        cout << "IMU thread joining failed" << endl;
-        cout << "IMU terminaning ... "<< endl;
-        return 1;
-    }
-}
 
 void Controller::readInput()
 {
@@ -269,6 +254,36 @@ quaternion integrate(quaternion state)
     return q;
 }
 
+bool Controller::joinIMU()
+{
+    mGX3.stop();
+    if (mGX3.join())
+    {
+        cout << "IMU thread joined" << endl;
+        cout << "IMU terminaning ... "<< endl;
+        return 0;
+    } else
+    {
+        cout << "IMU thread joining failed" << endl;
+        cout << "IMU terminaning ... "<< endl;
+        return 1;
+    }
+}
+
+
+void Controller::updateStates()
+{
+    mLastQuat = mCurrentQuat;
+    mLastQuatError = mQuatError;
+    mLastEuler = mEuler;
+    mLastRates = mRates;
+    mLastSpeed = mSpeed;
+
+    mLastTorque = mTorque;
+    mLastAmps = mAmps;
+    mLastDutyC = mDutyC;
+
+}
 Controller::~Controller()
 {
     //dtor

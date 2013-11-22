@@ -58,6 +58,7 @@ class Controller : public PeriodicRtThread
 
         void readInput(); /*!< Reads an the reference input from a file (for now) */
         bool joinIMU();
+        void updateStates();                /*!< Updates the members representing "Last" states */
 
         GX3Communicator mGX3;               /*!< Class for accessing the 3DM-GX3*/
         MotorCommunicator mMotors;          /*!< Class for accessing the motors */
@@ -86,10 +87,14 @@ class Controller : public PeriodicRtThread
         Vector4f mLastAmps;                 /*!< Last motor current (Amps) state for ALL motors */
         Vector4i mLastDutyC;                /*!< Last motor duty cycle */
 
+        uint16_t mImuTime;
+        uint16_t mLastImuTime;
 
         std::ifstream mInputFile;           /*!< Input file with trajectory */
         quaternion mReference;              /*!< Reference input state */
         uint16_t mRefTime;                  /*!< Timestamp for input state */
+
+
 
         Controller(const Controller& thread); /*!< Copy constructor made inaccessible by declaring it private */
         Controller& operator=(const Controller& rhs); /*!< Assignment constructor made inaccessible by declaring it private */
