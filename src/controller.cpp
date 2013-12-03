@@ -85,12 +85,13 @@ void Controller::run()
     Inertia << 102.322878, -0.035566, 0.315676, -0.035566, 103.65751, 0.006317, 0.315676, 0.006317, 159.537290; //lbm-in^2 inertia of tables
     Matrix3x4 Kp;
     float wn=0.2; //choose natural damping frequency
-    Kp <<   2.2*Inertia(0,0)*wn*wn,0,0,0,
-            0,2.2*Inertia(1,1)*wn*wn,0,0,
-            0,0,2.2*Inertia(2,2)*wn*wn,0;
-
+    Kp <<   50*2.2*Inertia(0,0)*wn*wn,0,0,0,
+            0,50*2.2*Inertia(1,1)*wn*wn,0,0,
+            0,0,50*2.2*Inertia(2,2)*wn*wn,0;
+//
     //For now
-    mReference = quaternion(1.2, 0.3, 0.4, 0.1);
+    mReference = quaternion(-0.034439, -0.54683, -0.836534, -0.00150478);
+    //(0.772131, 0.0352254, -0.0553593, 0.0.632067);
 
     while (mKeepRunning){
 
@@ -220,8 +221,8 @@ void Controller::readMotors(Vector4f &speedVec, Vector4f &currentVec)
 
     //Rearrange
     //TODO perform the necessary conversions
-    speedVec << 261.7994*speeds[0],
-                261.7994*speeds[1],
+    speedVec << V_TO_RADS*speeds[0],
+                V_TO_RADS*speeds[1],
                 V_TO_RADS*speeds[2],
                 V_TO_RADS*speeds[3];
 
