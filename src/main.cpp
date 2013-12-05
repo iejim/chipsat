@@ -16,27 +16,21 @@ using std::endl;
 //#include "testSamplingSettings.cpp"
 using namespace USU;
 
-/*
-// Text to explain the different modes (more elegant way to split strings over several lines?)
-const string modeText = string("Operation mode: \n\t") +
-                                 string("- pololu: Collect data from Pololu IMU and print it in csv format\n\t") +
-                                 string("- microstrain: Collect data from MicroStrain IMU and print it in csv format\n\t") +
-                                 string("- collect: Collect data from both IMUs and print it in csv format\n\t") +
-                                 string("- simpleControl: Run simple angular velocity control scheme");
 
 // Parse the command line arguments
 // Define possible arguments
-1
+
 TCLAP::CmdLine cmd("Program for the attitude determination and control of the USU simulation table",' ', "0.1");
 
-TCLAP::ValueArg<string> trajFile("", "trajfile", "Input file for the trajectory the table should follow", false, "input.txt", "filename");
-TCLAP::ValueArg<float> pgain("", "pgain", "The P-Gain for the simple proportional speed controller", false, 1.0, "float");
-TCLAP::ValueArg<string> mode("", "mode",  modeText , true, string(), "mode name");
-*/
+TCLAP::ValueArg<string> inputFile("i", "inputFile", "Input file with desired gains, constants and references", true, "input.txt", "filename");
+TCLAP::ValueArg<string> logFile("o", "logFile", "Log file to store the generated data", false, "datalog.csv", "filename");
+
 // Example for switching arg
 //TCLAP::SwitchArg stats("s", "stats", "Print statistics (number of spots, number of identified spots, ratio");
 
+//Controller control(5, 20000, "/dev/ttyS0", "/dev/i2c-1"); //ninkasi
 Controller control(5, 20000);
+
 
 
 void endProgram(int s)
@@ -61,12 +55,16 @@ int main(int argc, char **argv)
     try
     {
         // Register commandline options to parser
-//        cmd.add(trajFile);
-//        cmd.add(pgain);
-//        cmd.add(mode);
-//6
-//        cmd.parse(argc, argv);
-//////////////////////
+        cmd.add(inputFile);
+        cmd.add(logFile);
+        cmd.parse(argc, argv);
+
+        control.setInputFile(inputFile.getValue().data());
+
+        if(!logFile.isSet())
+            cout << "Logging to default file 'datalog.csv'..." << endl;
+        control.setLogFile(logFile.getValue().data());
+
         cout  << "Initializing..." << endl;
         control.initialize();
 

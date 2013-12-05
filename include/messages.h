@@ -124,6 +124,8 @@ public:
 
     uint8_t getPacketType(){ return mPacketType;}
 
+    unsigned int getTime() {return timer;}
+
     /*!
      \brief Calculates the checksum of a received byte array
 
@@ -141,6 +143,8 @@ public:
         uint16_t temp = (buffer[length-2] << 8)  + buffer[length-1];
         return (sum == temp );
     }
+
+    unsigned int timer;
 
 protected:
     /*!
@@ -283,7 +287,7 @@ public:
     vector acc; /*!< Vector containing the accelerometer data */
     vector gyro; /*!< Vector containing the gyroscope (angular rate) data */
 
-    unsigned int timer; /*!< The value of the timestamp for the package */
+//    unsigned int timer; /*!< The value of the timestamp for the package */
 
     enum{size = 31, vectors = 2, matrices = 0}; /*!< Size of the package (enum to avoid complications with static consts) */
 };
@@ -374,7 +378,7 @@ public:
     vector gyro; /*!< Vector containing the gyroscope (angular rate) data */
     vector mag; /*!< Vector containing the magnetometer data */
 
-    unsigned int timer; /*!< The value of the timestamp for the package */
+    //    unsigned int timer; /*!< The value of the timestamp for the package */
 
     enum{size = 43, vectors = 3, matrices = 0}; /*!< Size of the package (enum to avoid complications with static consts) */
 };
@@ -432,7 +436,7 @@ public:
     */
     virtual void print(std::ostream &os) const
     {
-        os << timer << ",\t" << quat.w()  << ", " << quat.x() << ", " << quat.y() << ", " << quat.z();
+        os << timer << ",\t" << quat(0)  << ", " << quat(1) << ", " << quat(2) << ", " << quat(3);
     }
 
     bool getQuaternion(SharedQueue<quaternion>& quatQueue){
@@ -451,7 +455,7 @@ public:
 
     quaternion quat; /*!< Eigen::Quaternionf representing the Orientation of the IMU*/
 
-    unsigned int timer; /*!< The value of the timestamp for the package */
+    //    unsigned int timer; /*!< The value of the timestamp for the package */
 
     enum{size = 23, vectors = 0, matrices = 0}; /*!< Size of the package (enum to avoid complications with static consts) */
 };
@@ -536,7 +540,7 @@ public:
     vector mag; /*!< Vector containing the magnetometer data */
 
     matrix orientation; /*!< 3x3 Matrix containing the orientation */
-    unsigned int timer; /*!< The value of the timestamp for the package */
+    //    unsigned int timer; /*!< The value of the timestamp for the package */
 
     enum {size = 79, vectors = 3, matrices =1}; /*!< Size of the package (enum to avoid complications with static consts) */
 };
@@ -596,7 +600,7 @@ public:
     }
 
     vector euler; /*!< Vector containing the euler angles data */
-    unsigned int timer; /*!< The value of the timestamp for the package */
+    //    unsigned int timer; /*!< The value of the timestamp for the package */
 
     enum {size = 19, vectors = 1, matrices = 0};
 };
@@ -661,7 +665,7 @@ public:
 
     vector euler; /*!< Vector containing the euler angles data */
     vector gyro; /*!< Vector containing the gyroscope (angular rate) data */
-    unsigned int timer; /*!< The value of the timestamp for the package */
+    //    unsigned int timer; /*!< The value of the timestamp for the package */
 
     enum {size = 31, vectors = 2, matrices = 0};
 };
@@ -726,7 +730,7 @@ public:
     }
 
     matrix orientation; /*!< 3x3 Matrix containing the orientation */
-    unsigned int timer; /*!< The value of the timestamp for the package */
+    //    unsigned int timer; /*!< The value of the timestamp for the package */
 
     enum {size = 43, vectors = 0, matrices = 1};
 };
@@ -798,7 +802,7 @@ public:
     vector acc; /*!< Vector containing the accelerometer data */
     vector gyro; /*!< Vector containing the gyroscope (angular rate) data */
     matrix orientation; /*!< 3x3 Matrix containing the orientation */
-    unsigned int timer; /*!< The value of the timestamp for the package */
+    //    unsigned int timer; /*!< The value of the timestamp for the package */
 
     enum {size = 67, vectors = 2, matrices = 1};
 };

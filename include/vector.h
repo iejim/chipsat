@@ -6,7 +6,8 @@
 typedef Eigen::Vector3f vector;
 typedef Eigen::Vector3i int_vector;
 typedef Eigen::Matrix3f matrix;
-typedef Eigen::Quaternionf quaternion;
+typedef Eigen::Vector4f quaternion;
+//typedef Eigen::Quaternionf;
 
 static inline vector vector_from_ints(int (*ints)[3])
 {

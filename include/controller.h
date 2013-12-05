@@ -15,14 +15,55 @@
 #define _USE_MATH_DEFINES
 #include <cmath>
 
-using Eigen::Vector4f;
-using Eigen::Vector4i;
+using namespace Eigen;
 
 namespace USU
 {
 
 #define V_TO_RADS 157.0010928631499 // 5997.0/4.0*2.0*M_PI/60.0
 #define V_TO_CURR 2.522522522522 // 9.0/3.996
+#define TIMER_TO_S 62500.0f
+
+#define toCSV(name) name << ','
+
+typedef Matrix<float,3,4> Matrix3x4;
+
+struct pidGains{
+    float KP;
+    float KI;
+    float KD;
+};
+
+//For use with trajectory generation
+struct pivGains{
+    float KP;
+    float KI;
+    float KV;
+};
+
+struct trajFFGains{
+    float KVff;  //KV feed-forward  (velocity)
+    float KAff;  //KA feed-forward  (acceleration)
+};
+
+//Structure to hold the system constants
+//All in SI units
+struct sysConsts{
+    float b;        //Average damping coefficent of wheels
+    float Iw;       //lbm-in^2, mass moment of inertia of momentum wheel
+    float wn;       //Natural damping frequency
+    Matrix3f Inertia; //Moment of inertia matrix
+    float hDotMax;  //Wheel torque saturation
+    float hMax;     //Wheel momentum saturation
+};
+
+//Struct containing reference information
+struct refData{
+    uint16_t num;   //Reference number (to keep track)
+    float time;     //Reference time (when to execute)
+    quaternion q;   //Reference quaternion
+};
+
 
 
 class Controller : public PeriodicRtThread
@@ -39,60 +80,84 @@ class Controller : public PeriodicRtThread
 
         void setInputFile(const char* inputFile);
 
+        void setLogFile(const char* logFile);
+
         void sendDutyCycles(Vector4i dc); /*!< Sets the duty cycle for all motors */
 
-        bool readIMU(vector &euler, vector &rates);
+        bool readIMU(vector &euler, vector &rates, float &timer);
 
         void readMotors(Vector4f &speeds, Vector4f &currents); /*!< Reads the motors and return the scaled values */
 
 //        void controlLaw(); /*!< Implements the control law using the class variables*/
 
+        void readNextReference(); /*!< Reads a new reference from the input file */
+
+        void logData(); /*!< Saves the current state data and readings to CSV file */
+
         static quaternion createQuaternion(vector euler); /*!< Creates a quaternion based on euler angles */
 
-        static quaternion integrate(quaternion state);
+        static quaternion integrateQ(quaternion input, quaternion old_input, quaternion old_output, float delta_time, float gain  = 1);
+
+        static quaternion multiplyQ(quaternion q1, quaternion q2);
+
 
         /** Default destructor */
         ~Controller();
 
     private:
 
-        void readInput(); /*!< Reads an the reference input from a file (for now) */
+        void readInputFile();               /*!< Reads an the reference input from a file (for now) */
         bool joinIMU();
         void updateStates();                /*!< Updates the members representing "Last" states */
-
         GX3Communicator mGX3;               /*!< Class for accessing the 3DM-GX3*/
         MotorCommunicator mMotors;          /*!< Class for accessing the motors */
         volatile bool mKeepRunning;         /*!< Indicates if the Thread should keep running. volatile to prevent optimizing */
-
         SharedQueue<vector> mVectorQueue;   /*!< Queue used to store the vectors from the IMU packet */
 
+        //// Program settings
+        float mClock;                       /*!< Program timer (for references and else) */
+        float mFirstImuTime;                /*!< Hold the timestamp of the first IMU reading */
+        std::ifstream mInputFile;           /*!< Input file with desired gains, constants and references */
+        std::ofstream mLogFile;             /*!< Log file to store calculated data */
+        bool mUseInput;                     /*!< Flag to know if we're using an input file */
+        bool mLogging;                      /*!< Flag to know if we are saving data */
 
+        //// System settings
+        pivGains mPIV;                      /*!< Struct holding the gains for the PIV controller */
+        sysConsts mSystem;                  /*!< Struct holdin1g the system constants */
+        trajFFGains mFFGains;               /*!< Trajectory generator feed-forward gains */
+        uint16_t mTotalRefs;                /*!< Total number of references to be used */
+        refData mReference;                 /*!< Current reference input and its data */
+        refData mNextReference;             /*!< Next reference input and its data */
+
+        //// State data
         quaternion mCurrentQuat;            /*!< Current state */
         quaternion mQuatError;              /*!< Current error */
+
+        //Sampled data
         vector mEuler;                      /*!< Current Euler angles */
         vector mCurrentRates;               /*!< Current angular rates */
         Vector4f mSpeed;                    /*!< Current motor speed (rad/s) state for ALL motors */
+        float mImuTime;                     /*!< Time stamp of the IMU packet */
 
+        //Storage
         quaternion mLastQuat;               /*!< Last state */
         quaternion mLastQuatError;          /*!< Last error */
         vector mLastEuler;                  /*!< Last Euler angles */
         vector mLastRates;                  /*!< Last angular rates */
+        float mLastImuTime;                 /*!< Last time stamp of the IMU packet */
         Vector4f mLastSpeed;                /*!< Last motor speed state for ALL motors */
-
-        Vector4f mTorque;                   /*!< Current motor torque state for ALL motors */
         Vector4f mAmps;                     /*!< Current motor current (Amps) state for ALL motors */
+
+
+        //// Calculated quantities
+        Vector4f mTorque;                   /*!< Current motor torque state for ALL motors */
         Vector4i mDutyC;                    /*!< Current motor duty cycle */
 
+        //Storage
         Vector4f mLastTorque;               /*!< Last motor torque state for ALL motors */
         Vector4f mLastAmps;                 /*!< Last motor current (Amps) state for ALL motors */
         Vector4i mLastDutyC;                /*!< Last motor duty cycle */
-
-        unsigned int mImuTime;
-        unsigned int mLastImuTime;
-
-        std::ifstream mInputFile;           /*!< Input file with trajectory */
-        quaternion mReference;              /*!< Reference input state */
-        uint16_t mRefTime;                  /*!< Timestamp for input state */
 
 
 
