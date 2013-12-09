@@ -4,31 +4,31 @@
  **      Francois Sugny      **
  **         01/07/12         **
  **                          **
- **          v1.0            ** 
+ **          v1.0            **
  ******************************/
- 
+
 //=======================================================
 //=======================================================
- 
+
 #ifndef beagle_gpio_hh
 #define beagle_gpio_hh
- 
+
 //=======================================================
 //=======================================================
- 
+
 #include <iostream>
 #include <sys/ioctl.h>
 #include <linux/types.h>
 #include <linux/spi/spidev.h>
- 
+
 //=======================================================
 //=======================================================
 
-#define GPIO_ERROR(msg)	std::cout << "[GPIO] Error : " << msg << std::endl;
- 
+#define GPIO_ERROR(msg)	std::cerr << "[GPIO] Error : " << msg << std::endl;
+
 #define BEAGLE_GPIO_DEBUG
 #ifdef BEAGLE_GPIO_DEBUG
-	#define GPIO_PRINT(msg)	std::cout << "[GPIO] : " << msg << std::endl;
+	#define GPIO_PRINT(msg)	std::cerr << "[GPIO] : " << msg << std::endl;
     #define gp_assert( condition ) 	\
 		if (!(condition))	\
 		{			\
@@ -40,11 +40,11 @@
 	#define GPIO_PRINT(msg)
     #define gp_assert( condition )
 #endif
- 
- 
+
+
 //=======================================================
 //=======================================================
- 
+
 /*!
  \brief Wrapper class to access the GPIOs of the BeagleBone
 
@@ -88,16 +88,16 @@ public:
 		kDEBOUNCEENABLE		= 0x150,
 		kDEBOUNCINGTIME		= 0x154,
 		kCLEARDATAOUT		= 0x190,
-		kSETDATAOUT		= 0x194	
+		kSETDATAOUT		= 0x194
 	} Beagle_GPIO_Registers;
-	
+
 	// Input/Output pin mode
 	typedef enum
 	{
 		kINPUT	= 0,
 		kOUTPUT = 1
 	} Beagle_GPIO_Direction;
-	
+
 	// GPIO Pins
     enum Pins
 	{
@@ -122,10 +122,10 @@ public:
 		P9_41, P9_42, P9_43, P9_44, P9_45,
 		P9_46
 	} GPIO_Pins;
-	
+
 	// IO Banks for GPIOs
 	static const int GPIO_Pin_Bank[];
-	
+
 	// Pin Id for GPIOs
 	static const int GPIO_Pin_Id[];
 
@@ -135,13 +135,13 @@ public:
 	// Base address of Control Module Registers
 	static const unsigned long GPIO_Control_Module_Registers;
 
-	// Base addresses of GPIO Modules	
+	// Base addresses of GPIO Modules
 	static const unsigned long GPIO_Base[];
-	
+
 public:
 	Beagle_GPIO();
 	~Beagle_GPIO();
-	
+
 public:
 	// Configure pin as input/output
 	Beagle_GPIO_Status configurePin( unsigned short _pin, Beagle_GPIO_Direction _direction );
@@ -162,7 +162,7 @@ public:
 		      unsigned short _delay=0 );
 
 	// Close SPI Channel
-	void closeSPI(); 
+	void closeSPI();
 
 	// Send SPI Buffer
 	void sendSPIBuffer( unsigned long buffer, int size );
@@ -182,15 +182,15 @@ private:
 	unsigned char 		m_spi_bits;
 	unsigned long 		m_spi_speed;
 	unsigned short 		m_spi_delay;
-	
+
 	struct spi_ioc_transfer m_spi_ioc_tr;
 };
- 
+
 //=======================================================
 //=======================================================
- 
+
 #endif
- 
+
 //=======================================================
 //=======================================================
- 
+

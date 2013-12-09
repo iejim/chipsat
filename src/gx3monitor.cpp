@@ -11,7 +11,7 @@
  */
 
 #include<iostream>
-using std::cout;
+using std::cerr;
 using std::endl;
 
 #include <sys/time.h>
@@ -70,21 +70,21 @@ void GX3Monitor::setContinuousMode()
 }
 void GX3Monitor::run()
 {
-//    cout << "MONITOR: Trying to open serial port" <<endl;
+//    cerr << "MONITOR: Trying to open serial port" <<endl;
 //    mSerialPort.Open(SerialPort::BAUD_115200);
-//    cout << "MONITOR: Checking for serial connection... " << endl;
+//    cerr << "MONITOR: Checking for serial connection... " << endl;
 //    if(mSerialPort.IsOpen() == false)
 //        throw std::runtime_error("Opening SerialPort failed");
-    cout << "MONITOR: Running" <<endl;
+    cerr << "MONITOR: Running" <<endl;
     mKeepRunning = true;
 //    Euler pack;
     //At this point, the ser should have already added the desired commands
     //And setup continous mode, if needed
-    cout << "MONITOR: Initializing Communicator... "<< endl;
+    cerr << "MONITOR: Initializing Communicator... "<< endl;
     mGX3.initialize();
-    cout << "MONITOR: Starting Communicator... " << endl;
+    cerr << "MONITOR: Starting Communicator... " << endl;
     mGX3.start();
-    cout << "MONITOR: Entering the loop ... " <<endl;
+    cerr << "MONITOR: Entering the loop ... " <<endl;
     uint8_t count = mGX3.getCommandCount();
     packet_ptr* packetList = new packet_ptr[count]; //Since dealing with addresses, should not need be more dynamic than this.
     uint8_t i;
@@ -97,14 +97,14 @@ void GX3Monitor::run()
 
         //Get te packets to read their data; as many as were requested
         //TODO Check if the Queue is always the same size of the count
-//        cout << "MONITOR: Checking for packets" << endl;
+//        cerr << "MONITOR: Checking for packets" << endl;
         if(count <= mGX3.size()){ //They should be at least the same
             //TODO What should it do if its larger?
             //     Maybe pop until only _count_ are left
             //     That's what Jan did.
-//            cout << "MONITOR: Got "<< mGX3.size() << " packets. Reading..." << endl;
+//            cerr << "MONITOR: Got "<< mGX3.size() << " packets. Reading..." << endl;
             for(i=0; i<count; i++){
-//                cout << "MONITOR: Packet: "<< i << endl;
+//                cerr << "MONITOR: Packet: "<< i << endl;
                 packetList[i] = mGX3.front();
                 mGX3.pop();
             }
@@ -118,11 +118,11 @@ void GX3Monitor::run()
               with hasVectors() and hasMatrix()
         Remember the Monitor class is generic, so it can use both
         */
-//            cout << "MONITOR: Iterating through packets" << endl;
+//            cerr << "MONITOR: Iterating through packets" << endl;
             for (i=0; i<count;i++){ //Better to do this in the previous loop
                 //If done above, packetList does not need to be an array.
                 if(packetList[i]->hasVectors()){
-//                    cout << "MONITOR: Printing vectors" << endl;
+//                    cerr << "MONITOR: Printing vectors" << endl;
                     packetList[i]->getVectors(dataVecQueue);
                     for(j=0; j<packetList[i]->hasVectors(); j++){
                         printVector(dataVecQueue.front());
@@ -130,18 +130,18 @@ void GX3Monitor::run()
                     }
                 }
                 if(packetList[i]->hasMatrix()){
-//                    cout << "MONITOR: Printing matrix" << endl;
+//                    cerr << "MONITOR: Printing matrix" << endl;
                     packetList[i]->getMatrix(dataMatQueue);
                     printMatrix(dataMatQueue.front());
                     dataMatQueue.pop();
                 }
                 if(packetList[i]->getPacketType() == QUATERNION){
-//                    cout << "MONITOR: Printing quaternion" << endl;
+//                    cerr << "MONITOR: Printing quaternion" << endl;
                     //The maybe way
                     //Quaternion* quat = static_cast<Quaternion*>(packetList[i]);
                     packet_ptr quat = packetList[i];
                     //quat->getQuaternion(dataQuatQueue);
-                    cout << (*quat) << endl;
+                    cerr << (*quat) << endl;
                     //dataQuatQueue.pop();
                     /*
                     //The forceful way
@@ -162,7 +162,7 @@ void GX3Monitor::run()
             }
         }
         else{
-            cout << "MONITOR: No packets received" << endl;
+            cerr << "MONITOR: No packets received" << endl;
         }
 //        /*
 //        Right now the Queues contain
@@ -187,12 +187,12 @@ void GX3Monitor::run()
 }
 
 void GX3Monitor::printVector(vector vec){
-    cout << "\t" << vec(0)  << ", " << vec(1)  << ", " << vec(2)
+    cerr << "\t" << vec(0)  << ", " << vec(1)  << ", " << vec(2)
          << endl;
 }
 
 void GX3Monitor::printMatrix(matrix mat){
-    cout << "\t" << mat(0,0) << ", " << mat(0,1) << ", " << mat(0,1)
+    cerr << "\t" << mat(0,0) << ", " << mat(0,1) << ", " << mat(0,1)
         << ",\t" << mat(1,0) << ", " << mat(1,1) << ", " << mat(1,2)
         << ",\t" << mat(2,0) << ", " << mat(2,1) << ", " << mat(2,2)
         << endl;

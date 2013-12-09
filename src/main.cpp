@@ -9,6 +9,7 @@
 using std::string;
 using std::cout;
 using std::endl;
+using std::cerr;
 
 #include "tclap/CmdLine.h"
 #include "controller.h"
@@ -35,8 +36,8 @@ Controller control(5, 20000);
 
 void endProgram(int s)
 {
-    std::cerr << "MAIN: Got signal for termination" << std::endl;
-    std::cerr << "MAIN: Stopping controller thread..." << std::endl;
+    cerr << "MAIN: Got signal for termination" << endl;
+    cerr << "MAIN: Stopping controller thread..." << endl;
     control.stop();
 }
 
@@ -45,7 +46,7 @@ int main(int argc, char **argv)
 {
     // Register endProgram function as
     // signal handler for the kill signal (ctrl+c)
-    std::cerr << "MAIN: Begin ..." << std::endl;
+    cerr << "MAIN: Begin ..." << endl;
     struct sigaction sigIntHandler;
     sigIntHandler.sa_handler = endProgram;
     sigemptyset(&sigIntHandler.sa_mask);
@@ -62,24 +63,24 @@ int main(int argc, char **argv)
         control.setInputFile(inputFile.getValue().data());
 
         if(!logFile.isSet())
-            cout << "Logging to default file 'datalog.csv'..." << endl;
+            cerr << "Logging to default file 'datalog.csv'..." << endl;
         control.setLogFile(logFile.getValue().data());
 
-        cout  << "Initializing..." << endl;
+        cerr  << "Initializing..." << endl;
         control.initialize();
 
-        cout << "Start ..."  << endl;
+        cerr << "Start ..."  << endl;
         control.start();
 
         if (control.join())
         {
-            cout << "Thread joined" << endl;
-            cout << "MAIN: Terminaning ... "<< endl;
+            cerr << "Thread joined" << endl;
+            cerr << "MAIN: Terminaning ... "<< endl;
             return 0;
         } else
         {
-            cout << "Thread joining failed" << endl;
-            cout << "MAIN: Terminaning ... "<< endl;
+            cerr << "Thread joining failed" << endl;
+            cerr << "MAIN: Terminaning ... "<< endl;
             return 1;
         }
 
@@ -110,7 +111,7 @@ int main(int argc, char **argv)
 
     } catch (std::exception e)  // catch any exceptions
     {
-        std::cerr << "MAIN: Error: " << e.what() << std::endl;
+        cerr << "MAIN: Error: " << e.what() << endl;
         return 1;
     }
 

@@ -17,7 +17,7 @@
 #include <sys/time.h>
 
 #include "gx3communicator.h"
-using std::cout;
+using std::cerr;
 using std::endl;
 
 using namespace USU;
@@ -36,9 +36,9 @@ GX3Communicator::GX3Communicator(int priority, const char *serialDevice, uint16_
 
 void GX3Communicator::initialize()
 {
-    cout << "GX3COMMUNICATOR: Opening serial port ..." <<endl;
+    cerr << "GX3COMMUNICATOR: Opening serial port ..." <<endl;
     mSerialPort.Open(mBaudRate);
-    cout << "GX3COMMUNICATOR: Checking for serial connection... " << endl;
+    cerr << "GX3COMMUNICATOR: Checking for serial connection... " << endl;
     if(mSerialPort.IsOpen() == false)
         throw std::runtime_error("Opening SerialPort failed");
 
@@ -53,7 +53,7 @@ void GX3Communicator::initialize()
                                   SamplingSettings::FlagDefault | SamplingSettings::FlagFloatLittleEndian);
 //                                  | SamplingSettings::FlagEnableQuaternion);
 
-    std::cerr << "GX3COMMUNICATOR: Initializing IMU " << std::endl;
+    cerr << "GX3COMMUNICATOR: Initializing IMU " << endl;
 
     try{
         initSettings.sendCommand(mSerialPort);
@@ -113,9 +113,9 @@ void GX3Communicator::initialize()
 
 
     } else {
-        throw std::runtime_error("No commands are set to be requested");
+        throw std::runtime_error("GX3COMMUNICATOR: No commands are set to be requested");
     }
-    std::cerr << "GX3COMMUNICATOR: Initialization successful! " << std::endl;
+    cerr << "GX3COMMUNICATOR: Initialization successful! " << endl;
 }
 
 void GX3Communicator::run()
@@ -133,55 +133,68 @@ void GX3Communicator::run()
 
 //    gettimeofday(&start, NULL);
 
-    if(mRunContinuous){
-        std::cerr << "GX3COMMUNICATOR: Setting up continuous data " << std::endl;
-        sessionCommands.sendCommand(mSerialPort);
-    }
-    std::cerr << "GX3COMMUNICATOR: Begin reading data... " << std::endl;
-    while(mKeepRunning)
+    try
     {
-
-        if (!mRunContinuous) //No need to keep resend if continuous
+        if(mRunContinuous){
+            cerr << "GX3COMMUNICATOR: Setting up continuous data " << endl;
+            sessionCommands.sendCommand(mSerialPort);
+        }
+        cerr << "GX3COMMUNICATOR: Begin reading data... " << endl;
+        while(mKeepRunning)
         {
-            //This line will request the data and has to be
-            //sent before we try to read any data
-//            std::cerr << "GX3COMMUNICATOR: Requesting commands " << std::endl;
-            if(sessionCommands.sendCommand(mSerialPort) == false)
-                std::cerr << "GX3COMMUNICATOR: Requesting multiple commands failed " << std::endl;
+
+            if (!mRunContinuous) //No need to keep resend if continuous
+            {
+                //This line will request the data and has to be
+                //sent before we try to read any data
+    //            cerr << "GX3COMMUNICATOR: Requesting commands " << endl;
+                if(sessionCommands.sendCommand(mSerialPort) == false)
+                    cerr << "GX3COMMUNICATOR: Requesting multiple commands failed " << endl;
+
+            }
+    //        std::cerr << "GX3COMMUNICATOR: Fetching data " << std::endl;
+            for(int i=0; i<mCommandNumber; i++)
+            {
+                //I think this method fails because the IMU might not be sending
+                //the packets in the same order
+                if(mPacketList[i]->readFromSerial(mSerialPort))
+                {
+                    mQueue.push(mPacketList[i]);
+                    int s = mQueue.size();
+                    cerr << "P: " << s << endl;
+                    if (s>2)
+                        throw std::runtime_error("Stuck");
+                }
+                else
+                    cerr << "readFromSerial failed. Packet: " << i+1 << " of " << int(mCommandNumber) << endl;
+            }
+    //        cerr << "GX3COMMUNICATOR: Done fetching data " << endl;
+            //throw std::runtime_error("Getting PackageData failed"); /// TODO: Error?
 
         }
-//        std::cerr << "GX3COMMUNICATOR: Fetching data " << std::endl;
-        for(int i=0; i<mCommandNumber; i++)
-        {
-            //I think this method fails because the IMU might not be sending
-            //the packets in the same order
-            if(mPacketList[i]->readFromSerial(mSerialPort))
-                mQueue.push(mPacketList[i]);
-            else
-                std::cout << "readFromSerial failed. Packet: " << std::endl;
-        }
-//        std::cerr << "GX3COMMUNICATOR: Done fetching data " << std::endl;
-        //throw std::runtime_error("Getting PackageData failed"); /// TODO: Error?
-
+    }catch (std::exception e)
+    {
+        cerr << "Error: " << e.what() <<endl <<  "GX3COMMUNICATOR: Stopping ... " << endl;
+        mKeepRunning = false;
     }
 
-    std::cerr << "GX3COMMUNICATOR: Got signal to terminate" << std::endl;
+    cerr << "GX3COMMUNICATOR: Got signal to terminate" << endl;
 
     //Clean up the queue
-    std::cout << "Left " << mQueue.size() << " packets in the queue. Removing ..." << std::endl;
+    cerr << "GX3COMMUNICATOR: Left " << mQueue.size() << " packets in the queue. Removing ..." << endl;
     while (mQueue.size()>0){
         mQueue.pop();
     }
 
     if (mRunContinuous){
-        std::cerr << "GX3COMMUNICATOR: Stopping IMU continuous mode..." << std::endl;
+        cerr << "GX3COMMUNICATOR: Stopping IMU continuous mode..." << endl;
         sessionCommands.stopContinuous(mSerialPort);
 
-        std::cerr << "GX3COMMUNICATOR: IMU continuous mode stopped" << std::endl;
+        cerr << "GX3COMMUNICATOR: IMU continuous mode stopped" << endl;
     }
     mSerialPort.Close();
 
-    std::cerr << "GX3COMMUNICATOR: Terminating now..." << std::endl;
+    cerr << "GX3COMMUNICATOR: Terminating now..." << endl;
 }
 
 

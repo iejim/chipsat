@@ -4,7 +4,7 @@
 #include <iostream>
 
 #include "messages.h"
-using std::cout;
+using std::cerr;
 using std::endl;
 
 using namespace USU;
@@ -23,29 +23,29 @@ public:
         Euler pack;
         running = true;
 
-        cout << "Opening serial port ..." <<endl;
+        cerr << "Opening serial port ..." <<endl;
         mSerial.Open(SerialPort::BAUD_115200);
-        cout << "Checking for serial connection... " << endl;
+        cerr << "Checking for serial connection... " << endl;
         if(mSerial.IsOpen() == false)
             throw std::runtime_error("Opening SerialPort failed");
 
     ////////////////////////////////////////////////////////
         while (running){
-            cout << "Reading port ..." << endl;
+            cerr << "Reading port ..." << endl;
             try {
                 mSerial.WriteByte(0xCE);
                 if(pack.readFromSerial(mSerial)){
-                    cout << pack << endl;
+                    cerr << pack << endl;
                 }else{
-                    cout << "No data" << endl;
+                    cerr << "No data" << endl;
                 }
             }
             catch (std::exception e){
-                cout << "Exception: " << e.what() <<endl;
+                cerr << "Exception: " << e.what() <<endl;
             }
             sleep(2);
         }
-        cout << "Done testing ... " << endl;
+        cerr << "Done testing ... " << endl;
     /////////////////////////////////////////////////////////
 
         SamplingSettings initSettings(SamplingSettings::Change,  20,

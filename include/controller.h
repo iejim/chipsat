@@ -86,13 +86,19 @@ class Controller : public PeriodicRtThread
 
         bool readIMU(vector &euler, vector &rates, float &timer);
 
+        void fixAngles(vector &euler); /*!< Fix the rates vector in case the position of the IMU requires it */
+
+        void fixRates(vector &rates); /*!< Fix the rates vector in case the position of the IMU requires it */
+
         void readMotors(Vector4f &speeds, Vector4f &currents); /*!< Reads the motors and return the scaled values */
 
 //        void controlLaw(); /*!< Implements the control law using the class variables*/
 
         void readNextReference(); /*!< Reads a new reference from the input file */
 
-        void logData(); /*!< Saves the current state data and readings to CSV file */
+        void logData(); /*!< Saves the current state data and readings to memory as CSV*/
+
+        void saveLogData(); /*! Writes the log data to a CSV file */
 
         static quaternion createQuaternion(vector euler); /*!< Creates a quaternion based on euler angles */
 
@@ -109,6 +115,7 @@ class Controller : public PeriodicRtThread
         void readInputFile();               /*!< Reads an the reference input from a file (for now) */
         bool joinIMU();
         void updateStates();                /*!< Updates the members representing "Last" states */
+
         GX3Communicator mGX3;               /*!< Class for accessing the 3DM-GX3*/
         MotorCommunicator mMotors;          /*!< Class for accessing the motors */
         volatile bool mKeepRunning;         /*!< Indicates if the Thread should keep running. volatile to prevent optimizing */
@@ -116,9 +123,11 @@ class Controller : public PeriodicRtThread
 
         //// Program settings
         float mClock;                       /*!< Program timer (for references and else) */
+        float mStopTime;
         float mFirstImuTime;                /*!< Hold the timestamp of the first IMU reading */
         std::ifstream mInputFile;           /*!< Input file with desired gains, constants and references */
         std::ofstream mLogFile;             /*!< Log file to store calculated data */
+        std::stringstream mLogBuf;         /*!< Buffer stream to store the data to be saved (stores on memory)*/
         bool mUseInput;                     /*!< Flag to know if we're using an input file */
         bool mLogging;                      /*!< Flag to know if we are saving data */
 

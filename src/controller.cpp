@@ -1,15 +1,17 @@
 
 #include "controller.h"
 #include <unistd.h>
+#include <sys/time.h>
 
 using std::cout;
+using std::cerr;
 using std::endl;
 using namespace USU;
 
 /////// Controller class
 
 Controller::Controller(int priority, unsigned int period_us, const char* imuserial, const char* i2cDevice):
-     PeriodicRtThread(priority, period_us), mGX3(priority, imuserial, period_us/1000), mMotors(i2cDevice), mKeepRunning(false)
+     PeriodicRtThread(priority, period_us), mGX3(priority-1, imuserial, period_us/1000), mMotors(i2cDevice), mKeepRunning(false)
 {
     mDutyC << 0, 0, 0, 0;
     mUseInput = false;
@@ -19,6 +21,7 @@ Controller::Controller(int priority, unsigned int period_us, const char* imuseri
     mPIV = {0.0f, 0.0f, 0.0f};
     mFFGains = {0.0, 0.0};
     mFirstImuTime = 0.0;
+    mStopTime = 0.0;
 }
 
 void Controller::initialize()
@@ -35,6 +38,7 @@ void Controller::initialize()
     mDutyC = Vector4i(0, 0, 0, 0);
     sendDutyCycles(mDutyC); //Initialized motors to zero
 
+    readInputFile();
     //Gains
     //mPGain = 1;
     //mIGain = 1;
@@ -53,23 +57,20 @@ void Controller::run()
     //Before it does anything, it has to wait for one IMU package to arrive
     //so the threads synchronize (or something like that)
 
-    cout << "Start IMU..."  << endl;
+    cerr << "Start IMU..."  << endl;
     mGX3.start();
 
-    mKeepRunning = true;
-    mClock = 0.0;
+
+    struct timeval start, now;
+
+
 //    int step = 10;
 //    int count  = 200;
 
-    //Wait for the first IMU packet to arrive (as a way of synchronization)
-    while(!readIMU(mEuler, mCurrentRates, mFirstImuTime)){
-        cout << "." ;
-        usleep(5000);
-    }
-    cout << endl;
+    mKeepRunning = true;
 
-    std::cout << "Running..." << std::endl;
-//    bool gotIMU = false;
+    cerr << "Running... " << endl;
+
 
 
     /////--------CONTROLLER CODE------------------//create temporary variables before while
@@ -94,10 +95,21 @@ void Controller::run()
 
 
     ///This is whe  re the periodic features of the controller happen
+//    gettimeofday(&start, NULL);
+//    gettimeofday(&now, NULL);
+//    mClock = now.tv_sec - start.tv_sec + (now.tv_usec - start.tv_usec)/1000.0;
+    bool inSync = false;
+    bool gotIMU = false;
     while (mKeepRunning){
 
         //Check if it is time to change reference values
         //The first reference on the input file is already stored in mNextReference
+        if (mStopTime <= mClock)
+        {
+            mKeepRunning = false;
+            break;
+        }
+
         if (mNextReference.time == mClock){ //The clock *should* be updated every 20ms
             mReference = mNextReference;
 
@@ -105,67 +117,101 @@ void Controller::run()
                 readNextReference();
         }
         //Read IMU
-        readIMU(mEuler, mCurrentRates, mImuTime);
-//        gotIMU = readIMU(mEuler, mCurrentRates, mImuTime);
+//        readIMU(mEuler, mCurrentRates, mImuTime);
 
-        readMotors(mSpeed, mAmps);
+        if(!inSync){
+        //Wait for the first IMU packet to arrive (as a way of synchronization)
+            mFirstImuTime = 0.0;
+            gotIMU = readIMU(mEuler, mCurrentRates, mFirstImuTime);
+            while(!gotIMU){
+                //cerr << "." ;
+                usleep(100);
+                gotIMU = readIMU(mEuler, mCurrentRates, mFirstImuTime);
+                cerr << ",";
+            }
+            gettimeofday(&start, NULL);
+            inSync = true;
+            //cerr << endl;
+        }else {
+            gotIMU = readIMU(mEuler, mCurrentRates, mImuTime);
+            while(!gotIMU)
+            {
+                usleep(100); //Give it some time for data to arrive to the queue
+                gotIMU = readIMU(mEuler, mCurrentRates, mImuTime);
+                cerr << ".";
+            }
+            cerr <<endl;
+        }
 
-        mCurrentQuat = createQuaternion(mEuler);
+        gettimeofday(&now, NULL);
+        mClock = (now.tv_sec - start.tv_sec) + (now.tv_usec - start.tv_usec)/1000000.0;
+        cerr << "Clock: " << mClock << endl;
 
-        //calculate quaternion error
-        //The quaternion used here will eventually change to one coming from the trajectory generator
-        Matrix4f Qt;
-        Qt << mReference.q(3),mReference.q(2),-mReference.q(1),mReference.q(0),
-              -mReference.q(2),mReference.q(3),mReference.q(0),mReference.q(1),
-              mReference.q(1),-mReference.q(0),mReference.q(3),mReference.q(2),
-              -mReference.q(0),-mReference.q(1),-mReference.q(2),mReference.q(3);
-        quaternion qs(-mCurrentQuat(0),-mCurrentQuat(1),-mCurrentQuat(2),-mCurrentQuat(3));
-//        Vector4f qe = Qt*qs;
-        mQuatError = Qt*qs; //Save the error (as a quaternion)
+//        if(gotIMU){
 
-        //calculate required torque on each of 3 axes
-        Vector3f Tc3 =2*Kp*mQuatError*mQuatError(3);
+            fixAngles(mEuler);
+            fixRates(mCurrentRates);
+            readMotors(mSpeed, mAmps);
+            mCurrentQuat = createQuaternion(mEuler);
 
-        //calculate required torque on each of 4 wheels
+            //calculate quaternion error
+            //The quaternion used here will eventually change to one coming from the trajectory generator
+            Matrix4f Qt;
+            Qt << mReference.q(3),mReference.q(2),-mReference.q(1),mReference.q(0),
+                  -mReference.q(2),mReference.q(3),mReference.q(0),mReference.q(1),
+                  mReference.q(1),-mReference.q(0),mReference.q(3),mReference.q(2),
+                  -mReference.q(0),-mReference.q(1),-mReference.q(2),mReference.q(3);
+            quaternion qs(-mCurrentQuat(0),-mCurrentQuat(1),-mCurrentQuat(2),-mCurrentQuat(3));
+    //        Vector4f qe = Qt*qs;
+            mQuatError = Qt*qs; //Save the error (as a quaternion)
 
-        Vector4f Tc3Comp(Tc3(0), Tc3(1), Tc3(2), 0.);
-        Vector4f Tc4 = Tc3to4*Tc3Comp;
+            //calculate required torque on each of 3 axes
+            Vector3f Tc3 =2*Kp*mQuatError*mQuatError(3);
 
-        //calculate required speeds (rad/s)
-        Vector4f speedscmd =(Tc4+mSystem.Iw*mLastSpeed)*bIw; // check bIw
+            //calculate required torque on each of 4 wheels
 
-        //calculate required duty cycles
-        speedscmd = speedscmd*(80/618.7262);
-        mDutyC = Vector4i(int(speedscmd(0)), int(speedscmd(1)), int(speedscmd(2)), int(speedscmd(3)));  //if speedscmd is in rad/s
-        mDutyC += Vector4i(10,10,10,10);
-        sendDutyCycles(mDutyC);
+            Vector4f Tc3Comp(Tc3(0), Tc3(1), Tc3(2), 0.);
+            Vector4f Tc4 = Tc3to4*Tc3Comp;
 
-        readMotors(speedscmd, mAmps);
-            cout << "Angles: " << mEuler << endl << "Rates: " << mCurrentRates << endl;
-            cout << "Quaternion" << mCurrentQuat(0) << "," <<  mCurrentQuat(1)
-                 << "," << mCurrentQuat(2) << "," << mCurrentQuat(3) << endl;
-            cout << "Motor 0: " << "DC: " << mDutyC(0) << " "<< speedscmd(0) << " rad/s, " << mAmps(0) << " A" << endl;
-            cout << "Motor 1: " << "DC: " << mDutyC(1) << " "<< speedscmd(1) << " rad/s, " << mAmps(1) << " A" << endl;
-            cout << "Motor 2: " << "DC: " << mDutyC(2) << " "<< speedscmd(2) << " rad/s, " << mAmps(2) << " A" << endl;
-            cout << "Motor 3: " << "DC: " << mDutyC(3) << " "<<
-            speedscmd(3) << " rad/s, " << mAmps(3) << " A" << endl;
+            //calculate required speeds (rad/s)
+            Vector4f speedscmd =(Tc4+mSystem.Iw*mLastSpeed)*bIw; // check bIw
 
-        //Save the data
-        if(mLogging)
-            logData();
+            //calculate required duty cycles
+            speedscmd = speedscmd*(80/618.7262);
+            mDutyC = Vector4i((int)speedscmd(0), (int)speedscmd(1), (int)speedscmd(2), (int)speedscmd(3));  //if speedscmd is in rad/s
+            mDutyC += Vector4i(10,10,10,10);
+            sendDutyCycles(mDutyC);
 
-        updateStates();
-        waitPeriod();
-        //TODO I could use the system time for this (in case something doesn't work correctly)
-        mClock += 0.02; //20ms
+            readMotors(speedscmd, mAmps);
+//                cerr << "Angles: " << mEuler << endl << "Rates: " << mCurrentRates << endl;
+//                cerr << "Quaternion" << mCurrentQuat(0) << "," <<  mCurrentQuat(1)
+//                     << "," << mCurrentQuat(2) << "," << mCurrentQuat(3) << endl;
+//                cerr << "Motor 0: " << "DC: " << mDutyC(0) << " "<< speedscmd(0) << " rad/s, " << mAmps(0) << " A" << endl;
+//                cerr << "Motor 1: " << "DC: " << mDutyC(1) << " "<< speedscmd(1) << " rad/s, " << mAmps(1) << " A" << endl;
+//                cerr << "Motor 2: " << "DC: " << mDutyC(2) << " "<< speedscmd(2) << " rad/s, " << mAmps(2) << " A" << endl;
+//                cerr << "Motor 3: " << "DC: " << mDutyC(3) << " "<<
+//                speedscmd(3) << " rad/s, " << mAmps(3) << " A" << endl;
+
+            //Save the data
+            if(mLogging)
+                logData();
+//        }
+            updateStates();
+
+            waitPeriod();
+            //TODO I could use the system time for this (in case something doesn't work correctly)
+
+
 
     }
 
 
-    std::cout << "CONTROLLER: Terminating " << std::endl;
+    cerr << "CONTROLLER: Terminating " << endl;
     mDutyC = Vector4i(0, 0, 0, 0);
-    sendDutyCycles(mDutyC);
-    joinIMU();
+    sendDutyCycles(mDutyC); //Stop the motors
+    joinIMU(); //Stop the IMU
+    saveLogData();
+
 }
 
 
@@ -179,6 +225,7 @@ void Controller::readInputFile()
         throw std::runtime_error("No input file has been set"); //Is this going to work if mInputFile hasn't been correctly set? It should.
         return;
     }
+
 
 //    //Read PID gains (KP, KI, KD)
 //    mInputFile >> mPID.KP >> mPID.KI >> mPID.KD;
@@ -197,10 +244,17 @@ void Controller::readInputFile()
 
     //Read the trajectory inputs (or references) along with timestamps
     mInputFile >> mTotalRefs; //Read how many lines have been set
+    mInputFile >> mStopTime;  //Read the running time limit
     //Read the first line
     readNextReference();
 
 }
+//50.0 0.0 0.0
+//0.0 0.0
+//0.000001 0.462 0.2 .25 .25
+//102.322878 -0.035566 0.315676 -0.035566 103.65751 0.006317 0.315676 0.006317 159.537290
+//1
+//1 0.0 -0.034439 -0.54683 -0.836534 -0.00150478
 
 void Controller::readNextReference()
 {
@@ -238,21 +292,34 @@ void Controller::setLogFile(const char* logFile)
 
 void Controller::logData()
 {
+    //if(!mLogFile.is_open())
+    //    throw std::runtime_error("Log file is not open for writing");
+    //Save timestamp
+    mLogBuf << toCSV(mClock);
+    //Save calculated values
+    //mLogBuf << toCSV(mCurrentQuat(0)) << toCSV(mCurrentQuat(1)) << toCSV(mCurrentQuat(2)) << toCSV(mCurrentQuat(3));
+    //mLogBuf << toCSV(mQuatError(0)) << toCSV(mQuatError(1)) << toCSV(mQuatError(2)) << toCSV(mQuatError(3));
+    //mLogBuf << toCSV(mTorque(0)) << toCSV(mTorque(1)) << toCSV(mTorque(2)) << toCSV(mTorque(3));
+    mLogBuf << toCSV(mDutyC(0)) << toCSV(mDutyC(1)) << toCSV(mDutyC(2)) << toCSV(mDutyC(3));
+//    mLogBuf.flush();
+    //Save readings
+    mLogBuf << toCSV(mImuTime) << toCSV(mEuler(0)) << toCSV(mEuler(1)) << toCSV(mEuler(2));
+    mLogBuf << toCSV(mCurrentRates(0)) << toCSV(mCurrentRates(1)) << toCSV(mCurrentRates(2));
+    mLogBuf << toCSV(mSpeed(0)) << toCSV(mSpeed(1)) << toCSV(mSpeed(2)) << toCSV(mSpeed(3));
+    mLogBuf << toCSV(mAmps(0)) << toCSV(mAmps(1)) << toCSV(mAmps(2)) << toCSV(mAmps(3));
+//    mLogBuf.flush();
+    mLogBuf << endl;
+    //sync(); //Synchronize ?
+}
+
+void Controller::saveLogData()
+{
     if(!mLogFile.is_open())
         throw std::runtime_error("Log file is not open for writing");
-    //Save timestamp
-    mLogFile << toCSV(mClock);
-    //Save calculated values
-    mLogFile << toCSV(mCurrentQuat(0)) << toCSV(mCurrentQuat(1)) << toCSV(mCurrentQuat(2)) << toCSV(mCurrentQuat(3));
-    mLogFile << toCSV(mQuatError(0)) << toCSV(mQuatError(1)) << toCSV(mQuatError(2)) << toCSV(mQuatError(3));
-    mLogFile << toCSV(mTorque(0)) << toCSV(mTorque(1)) << toCSV(mTorque(2)) << toCSV(mTorque(3));
-    mLogFile << toCSV(mDutyC(0)) << toCSV(mDutyC(1)) << toCSV(mDutyC(2)) << toCSV(mDutyC(3));
-    //Save readings
-    mLogFile << toCSV(mImuTime) << toCSV(mEuler(0)) << toCSV(mEuler(1)) << toCSV(mEuler(2));
-    mLogFile << toCSV(mCurrentRates(0)) << toCSV(mCurrentRates(1)) << toCSV(mCurrentRates(2));
-    mLogFile << toCSV(mSpeed(0)) << toCSV(mSpeed(1)) << toCSV(mSpeed(2)) << toCSV(mSpeed(3));
-    mLogFile << toCSV(mAmps(0)) << toCSV(mAmps(1)) << toCSV(mAmps(2)) << toCSV(mAmps(3));
-    mLogFile << endl;
+    mLogFile << mLogBuf.rdbuf();
+    mLogFile.flush();
+    cerr<< "Writing to file. Please wait...." << endl;
+    sync();
 }
 void Controller::sendDutyCycles(Vector4i dc)
 {
@@ -282,11 +349,28 @@ bool Controller::readIMU(vector &euler, vector &rates, float &timer)
     rates = mVectorQueue.front();
     mVectorQueue.pop();
 
-    timer = (pack->getTime()-mFirstImuTime)/TIMER_TO_S;
+    timer = pack->getTime()/TIMER_TO_S - mFirstImuTime;
+    cerr << " Imu: " << timer << "left " << mGX3.size() << endl;
     return true;
 
 }
 
+void Controller::fixAngles(vector& euler)
+{
+    //TODO Make this generic (by accepting bias and sign vectors?) for flexibility
+    //i.e. euler(0) = bias(0) + sign(0)*euler(0);
+    //This could actually be done with a matrix-vector multiplication
+    euler(0) = ((euler(0)>0)?M_PI:-M_PI) - euler(0); //Roll
+    euler(1) = -euler(1); //Pitch
+    euler(2) = -euler(2); //Yaw
+
+}
+
+void Controller::fixRates(vector& rates)
+{
+    rates(0) = -rates(0);
+
+}
 void Controller::readMotors(Vector4f &speedVec, Vector4f &currentVec)
 {
     float currents[4], speeds[4]; //Hold the current and speed readings
@@ -295,8 +379,8 @@ void Controller::readMotors(Vector4f &speedVec, Vector4f &currentVec)
 
     //Rearrange
     //TODO perform the necessary conversions
-    speedVec << 261.7994*speeds[0],
-                261.7994*speeds[1],
+    speedVec << V_TO_RADS*speeds[0],
+                V_TO_RADS*speeds[1],
                 V_TO_RADS*speeds[2],
                 V_TO_RADS*speeds[3];
 
@@ -311,13 +395,13 @@ bool Controller::joinIMU()
     mGX3.stop();
     if (mGX3.join())
     {
-        cout << "IMU thread joined" << endl;
-        cout << "IMU terminaning ... "<< endl;
+        cerr << "IMU thread joined" << endl;
+        cerr << "IMU terminaning ... "<< endl;
         return 0;
     } else
     {
-        cout << "IMU thread joining failed" << endl;
-        cout << "IMU terminaning ... "<< endl;
+        cerr << "IMU thread joining failed" << endl;
+        cerr << "IMU terminaning ... "<< endl;
         return 1;
     }
 }
