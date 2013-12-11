@@ -20,8 +20,8 @@ using namespace Eigen;
 namespace USU
 {
 
-#define V_TO_RADS 157.0010928631499 // 5997.0/4.0*2.0*M_PI/60.0
-#define V_TO_CURR 2.522522522522 // 9.0/3.996
+//#define V_TO_RADS 157.0010928631499 // 5997.0/4.0*2.0*M_PI/60.0
+//#define V_TO_CURR 2.522522522522 // 9.0/3.996
 #define TIMER_TO_S 62500.0f
 
 #define toCSV(name) name << ','
@@ -62,6 +62,12 @@ struct refData{
     uint16_t num;   //Reference number (to keep track)
     float time;     //Reference time (when to execute)
     quaternion q;   //Reference quaternion
+};
+
+//Struct containing the motor conversion values
+struct adcGains{
+    float vToRads;
+    float vToAmps;
 };
 
 
@@ -138,6 +144,7 @@ class Controller : public PeriodicRtThread
         uint16_t mTotalRefs;                /*!< Total number of references to be used */
         refData mReference;                 /*!< Current reference input and its data */
         refData mNextReference;             /*!< Next reference input and its data */
+        adcGains mMotorScale;               /*!< Struct containing the values to scale the ADC readings to units */
 
         //// State data
         quaternion mCurrentQuat;            /*!< Current state */

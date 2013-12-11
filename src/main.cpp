@@ -75,12 +75,12 @@ int main(int argc, char **argv)
         if (control.join())
         {
             cerr << "Thread joined" << endl;
-            cerr << "MAIN: Terminaning ... "<< endl;
+            cerr << "MAIN: Terminating ... "<< endl;
             return 0;
         } else
         {
             cerr << "Thread joining failed" << endl;
-            cerr << "MAIN: Terminaning ... "<< endl;
+            cerr << "MAIN: Terminating ... "<< endl;
             return 1;
         }
 

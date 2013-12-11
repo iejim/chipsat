@@ -88,7 +88,7 @@ void Controller::run()
 
     Matrix4f Tc3to4;
     Tc3to4 << 0.5,0,0.25,0.25,  0,0.5,0.25,-0.25,   -0.5,0,0.25,0.25,     0,-0.5,0.25,-0.25;
-
+    Matrix4f Qt;
     //For now
 //    mReference.q = quaternion(-0.034439, -0.54683, -0.836534, -0.00150478);
 //    (0.772131, 0.0352254, -0.0553593, 0.0.632067);
@@ -100,6 +100,7 @@ void Controller::run()
 //    mClock = now.tv_sec - start.tv_sec + (now.tv_usec - start.tv_usec)/1000.0;
     bool inSync = false;
     bool gotIMU = false;
+    bool gotReference = false;
     while (mKeepRunning){
 
         //Check if it is time to change reference values
@@ -110,12 +111,7 @@ void Controller::run()
             break;
         }
 
-        if (mNextReference.time == mClock){ //The clock *should* be updated every 20ms
-            mReference = mNextReference;
 
-            if(mReference.num < mTotalRefs) //Read only if there are any left
-                readNextReference();
-        }
         //Read IMU
 //        readIMU(mEuler, mCurrentRates, mImuTime);
 
@@ -144,8 +140,18 @@ void Controller::run()
         }
 
         gettimeofday(&now, NULL);
-        mClock = (now.tv_sec - start.tv_sec) + (now.tv_usec - start.tv_usec)/1000000.0;
+        mClock = (now.tv_sec - start.tv_sec) + (now.tv_usec - start.tv_usec)/1000000.0f;
         cerr << "Clock: " << mClock << endl;
+
+        cerr << "Check: " << std::abs(mClock - mNextReference.time) << endl;
+        if (std::abs(mClock - mNextReference.time) <= 0.011 ){ //
+            cerr << "Here!" << endl;
+            mReference = mNextReference;
+            gotReference = true;
+
+            if(mReference.num < mTotalRefs) //Read only if there are any left
+                readNextReference();
+        }
 
 //        if(gotIMU){
 
@@ -156,7 +162,11 @@ void Controller::run()
 
             //calculate quaternion error
             //The quaternion used here will eventually change to one coming from the trajectory generator
-            Matrix4f Qt;
+            if(gotReference)
+            {
+                cerr << "Using new ref" << endl;
+                gotReference = false;
+            }
             Qt << mReference.q(3),mReference.q(2),-mReference.q(1),mReference.q(0),
                   -mReference.q(2),mReference.q(3),mReference.q(0),mReference.q(1),
                   mReference.q(1),-mReference.q(0),mReference.q(3),mReference.q(2),
@@ -177,12 +187,12 @@ void Controller::run()
             Vector4f speedscmd =(Tc4+mSystem.Iw*mLastSpeed)*bIw; // check bIw
 
             //calculate required duty cycles
-            speedscmd = speedscmd*(80/618.7262);
+            speedscmd = speedscmd*(80/618.7262f);
             mDutyC = Vector4i((int)speedscmd(0), (int)speedscmd(1), (int)speedscmd(2), (int)speedscmd(3));  //if speedscmd is in rad/s
             mDutyC += Vector4i(10,10,10,10);
             sendDutyCycles(mDutyC);
 
-            readMotors(speedscmd, mAmps);
+//            readMotors(speedscmd, mAmps);
 //                cerr << "Angles: " << mEuler << endl << "Rates: " << mCurrentRates << endl;
 //                cerr << "Quaternion" << mCurrentQuat(0) << "," <<  mCurrentQuat(1)
 //                     << "," << mCurrentQuat(2) << "," << mCurrentQuat(3) << endl;
@@ -196,12 +206,10 @@ void Controller::run()
             if(mLogging)
                 logData();
 //        }
+            //TODO: Log even if it does not exit gracefully
+
             updateStates();
-
             waitPeriod();
-            //TODO I could use the system time for this (in case something doesn't work correctly)
-
-
 
     }
 
@@ -241,6 +249,9 @@ void Controller::readInputFile()
     float i0, i1, i2, i3, i4, i5, i6, i7, i8;
     mInputFile >> i0 >> i1 >> i2 >> i3 >> i4 >> i5 >> i6 >> i7 >> i8;
     mSystem.Inertia << i0, i1, i2, i3, i4, i5, i6, i7, i8;
+
+    //Read the ADC scaling parameters
+    mInputFile >> mMotorScale.vToRads >> mMotorScale.vToAmps;
 
     //Read the trajectory inputs (or references) along with timestamps
     mInputFile >> mTotalRefs; //Read how many lines have been set
@@ -297,7 +308,8 @@ void Controller::logData()
     //Save timestamp
     mLogBuf << toCSV(mClock);
     //Save calculated values
-    //mLogBuf << toCSV(mCurrentQuat(0)) << toCSV(mCurrentQuat(1)) << toCSV(mCurrentQuat(2)) << toCSV(mCurrentQuat(3));
+    mLogBuf << toCSV(mCurrentQuat(0)) << toCSV(mCurrentQuat(1)) << toCSV(mCurrentQuat(2)) << toCSV(mCurrentQuat(3));
+    mLogBuf << toCSV(mReference.q(0)) << toCSV(mReference.q(1)) << toCSV(mReference.q(2)) << toCSV(mReference.q(3));
     //mLogBuf << toCSV(mQuatError(0)) << toCSV(mQuatError(1)) << toCSV(mQuatError(2)) << toCSV(mQuatError(3));
     //mLogBuf << toCSV(mTorque(0)) << toCSV(mTorque(1)) << toCSV(mTorque(2)) << toCSV(mTorque(3));
     mLogBuf << toCSV(mDutyC(0)) << toCSV(mDutyC(1)) << toCSV(mDutyC(2)) << toCSV(mDutyC(3));
@@ -310,6 +322,7 @@ void Controller::logData()
 //    mLogBuf.flush();
     mLogBuf << endl;
     //sync(); //Synchronize ?
+
 }
 
 void Controller::saveLogData()
@@ -333,7 +346,6 @@ void Controller::sendDutyCycles(Vector4i dc)
 bool Controller::readIMU(vector &euler, vector &rates, float &timer)
 {
     //Wait to see if there is an IMU packet available
-    //TODO Is this
     if (mGX3.size()==0)
         return false;//Should work to synchronize the first time everything in run.
 
@@ -375,19 +387,18 @@ void Controller::readMotors(Vector4f &speedVec, Vector4f &currentVec)
 {
     float currents[4], speeds[4]; //Hold the current and speed readings
 
-    mMotors.getAnalogs(speeds, currents); //TODO Check the orded
+    mMotors.getAnalogs(speeds, currents);
 
     //Rearrange
-    //TODO perform the necessary conversions
-    speedVec << V_TO_RADS*speeds[0],
-                V_TO_RADS*speeds[1],
-                V_TO_RADS*speeds[2],
-                V_TO_RADS*speeds[3];
+    speedVec << mMotorScale.vToRads*speeds[0],
+                mMotorScale.vToRads*speeds[1],
+                mMotorScale.vToRads*speeds[2],
+                mMotorScale.vToRads*speeds[3];
 
-    currentVec << V_TO_CURR*currents[0],
-                V_TO_CURR*currents[1],
-                V_TO_CURR*currents[2],
-                V_TO_CURR*currents[3];
+    currentVec << mMotorScale.vToAmps*currents[0],
+                mMotorScale.vToAmps*currents[1],
+                mMotorScale.vToAmps*currents[2],
+                mMotorScale.vToAmps*currents[3];
 }
 
 bool Controller::joinIMU()
@@ -396,12 +407,12 @@ bool Controller::joinIMU()
     if (mGX3.join())
     {
         cerr << "IMU thread joined" << endl;
-        cerr << "IMU terminaning ... "<< endl;
+        cerr << "IMU terminated ... "<< endl;
         return 0;
     } else
     {
         cerr << "IMU thread joining failed" << endl;
-        cerr << "IMU terminaning ... "<< endl;
+        cerr << "IMU terminated ... "<< endl;
         return 1;
     }
 }
@@ -431,12 +442,12 @@ quaternion Controller::createQuaternion(vector euler)
     psi = euler(2);
 
     //Create roation matrix
-    M << cos(psi)*cos(theta),                           sin(psi)*cos(theta),                              -sin(theta),
+    M << cos(psi)*cos(theta),                           sin(psi)*cos(theta),                            -sin(theta),
         cos(psi)*sin(theta)*sin(phi)-sin(psi)*cos(phi), sin(psi)*sin(theta)*sin(phi)+cos(psi)*cos(phi), cos(theta)*sin(phi),
         cos(psi)*sin(theta)*cos(phi)+sin(psi)*sin(phi), sin(psi)*sin(theta)*cos(phi)-cos(psi)*sin(phi), cos(theta)*cos(phi);
 
     //Perform quaternion tests
-    Eigen::Array4f test;
+    Eigen::Array4f test; //Array, not vector
     test << M(0,0)+M(1,1)+M(2,2),
             M(0,0)-M(1,1)-M(2,2),
            -M(0,0)+M(1,1)-M(2,2),
@@ -445,7 +456,7 @@ quaternion Controller::createQuaternion(vector euler)
     test.maxCoeff(&i);
 
     float s;
-    Eigen::Vector4f q;
+    quaternion q;
 
     switch(i){
         case 0:
@@ -479,10 +490,7 @@ quaternion Controller::createQuaternion(vector euler)
 
     }
 
-    quaternion quat;
-    quat = q;
-
-    return quat;
+    return q;
 }
 
 quaternion Controller::integrateQ(quaternion in, quaternion old_in, quaternion old_out, float delta_time, float gain)
