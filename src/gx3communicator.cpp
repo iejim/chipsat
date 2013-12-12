@@ -161,7 +161,7 @@ void GX3Communicator::run()
                 {
                     mQueue.push(mPacketList[i]);
                     int s = mQueue.size();
-                    cerr << "P: " << s << endl;
+//                    cerr << "P: " << s << endl;
                     if (s>2)
                         throw std::runtime_error("Stuck");
                 }

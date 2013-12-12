@@ -72,7 +72,7 @@ int main(int argc, char **argv)
         cerr << "Start ..."  << endl;
         control.start();
 
-        if (control.join())
+        if (control.join()) //Three second timeout, in case any thread dies first
         {
             cerr << "Thread joined" << endl;
             cerr << "MAIN: Terminating ... "<< endl;

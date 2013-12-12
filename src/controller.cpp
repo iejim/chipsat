@@ -155,8 +155,8 @@ void Controller::run()
 
 //        if(gotIMU){
 
-            fixAngles(mEuler);
-            fixRates(mCurrentRates);
+            //fixAngles(mEuler);
+            //fixRates(mCurrentRates);
             readMotors(mSpeed, mAmps);
             mCurrentQuat = createQuaternion(mEuler);
 
@@ -213,6 +213,8 @@ void Controller::run()
 
     }
 
+
+    //TODO Try to check if mGX3 is still running, then save the data
 
     cerr << "CONTROLLER: Terminating " << endl;
     mDutyC = Vector4i(0, 0, 0, 0);
@@ -369,18 +371,19 @@ bool Controller::readIMU(vector &euler, vector &rates, float &timer)
 
 void Controller::fixAngles(vector& euler)
 {
-    //TODO Make this generic (by accepting bias and sign vectors?) for flexibility
+    //TODO Make this generic (by accepting a matrix?) for flexibility
     //i.e. euler(0) = bias(0) + sign(0)*euler(0);
     //This could actually be done with a matrix-vector multiplication
-    euler(0) = ((euler(0)>0)?M_PI:-M_PI) - euler(0); //Roll
+    euler(0) = -euler(0); //Roll
     euler(1) = -euler(1); //Pitch
-    euler(2) = -euler(2); //Yaw
+    euler(2) = ((euler(2)>0)?-M_PI:M_PI) + euler(2); //Yaw
 
 }
 
 void Controller::fixRates(vector& rates)
 {
     rates(0) = -rates(0);
+    rates(1) = -rates(1);
 
 }
 void Controller::readMotors(Vector4f &speedVec, Vector4f &currentVec)
@@ -404,7 +407,7 @@ void Controller::readMotors(Vector4f &speedVec, Vector4f &currentVec)
 bool Controller::joinIMU()
 {
     mGX3.stop();
-    if (mGX3.join())
+    if (mGX3.join(5000)) //Give it a timeout in case it died before joining
     {
         cerr << "IMU thread joined" << endl;
         cerr << "IMU terminated ... "<< endl;
