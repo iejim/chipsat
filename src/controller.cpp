@@ -152,11 +152,10 @@ void Controller::run()
             if(mReference.num < mTotalRefs) //Read only if there are any left
                 readNextReference();
         }
-
 //        if(gotIMU){
 
-            //fixAngles(mEuler);
-            //fixRates(mCurrentRates);
+            fixRates(mCurrentRates);
+            fixAngles(mEuler);
             readMotors(mSpeed, mAmps);
             mCurrentQuat = createQuaternion(mEuler);
 
@@ -184,7 +183,7 @@ void Controller::run()
             Vector4f Tc4 = Tc3to4*Tc3Comp;
 
             //calculate required speeds (rad/s)
-            Vector4f speedscmd =(Tc4+mSystem.Iw*mLastSpeed)*bIw; // check bIw
+            Vector4f speedscmd =(Tc4+mSystem.Iw*mLastSpeed)*bIw; // check bIw ?? forget b
 
             //calculate required duty cycles
             speedscmd = speedscmd*(80/618.7262f);
@@ -374,16 +373,28 @@ void Controller::fixAngles(vector& euler)
     //TODO Make this generic (by accepting a matrix?) for flexibility
     //i.e. euler(0) = bias(0) + sign(0)*euler(0);
     //This could actually be done with a matrix-vector multiplication
-    euler(0) = -euler(0); //Roll
+//    euler(0) = -euler(0); //Roll
+//   euler(1) = -euler(1)-M_PI_2; //Pitch
+//   euler(2) = ((euler(2)>0)?-M_PI:M_PI) + euler(2); //Yaw
+    if(euler(0)>0) //Roll
+            euler(0) = M_PI_2-euler(0);
+    else
+            euler(0) = -M_PI_2-euler(0);
+
     euler(1) = -euler(1); //Pitch
-    euler(2) = ((euler(2)>0)?-M_PI:M_PI) + euler(2); //Yaw
+
+    if(euler(2)>0) //Yaw
+            euler(2) = M_PI_2 - euler(2);
+    else
+            euler(2) = -M_PI_2 - euler(2);
+
 
 }
 
 void Controller::fixRates(vector& rates)
 {
     rates(0) = -rates(0);
-    rates(1) = -rates(1);
+//    rates(1) = -rates(1);
 
 }
 void Controller::readMotors(Vector4f &speedVec, Vector4f &currentVec)
