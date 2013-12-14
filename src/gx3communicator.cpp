@@ -50,7 +50,8 @@ void GX3Communicator::initialize()
      */
 
     SamplingSettings initSettings(SamplingSettings::Change,  mSamplingPeriod,
-                                  SamplingSettings::FlagDefault | SamplingSettings::FlagFloatLittleEndian);
+            SamplingSettings::FlagDefault | SamplingSettings::FlagFloatLittleEndian
+            | SamplingSettings::FlagDisableMagNorthComp);                             //SamplingSettings::FlagDefault | SamplingSettings::FlagFloatLittleEndian);
 //                                  | SamplingSettings::FlagEnableQuaternion);
 
     cerr << "GX3COMMUNICATOR: Initializing IMU " << endl;

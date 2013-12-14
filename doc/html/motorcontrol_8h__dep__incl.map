@@ -1,9 +1,0 @@
-<map id="G" name="G">
-<area shape="rect" id="node3" href="$datacollector_8hpp.html" title="examples/datacollector.hpp" alt="" coords="5,83,187,112"/>
-<area shape="rect" id="node5" href="$motorprogrammer_8hpp.html" title="examples/motorprogrammer.hpp" alt="" coords="12,160,220,189"/>
-<area shape="rect" id="node10" href="$kalmanfilter_8h.html" title="include/kalmanfilter.h" alt="" coords="261,83,405,112"/>
-<area shape="rect" id="node16" href="$motorcontrol_8cpp.html" title="src/motorcontrol.cpp" alt="" coords="429,83,571,112"/>
-<area shape="rect" id="node7" href="$motor-example_8cpp.html" title="examples/motor&#45;example.cpp" alt="" coords="20,237,212,267"/>
-<area shape="rect" id="node12" href="$kalmanfilter_8cpp.html" title="src/kalmanfilter.cpp" alt="" coords="255,160,391,189"/>
-<area shape="rect" id="node14" href="$main_8cpp.html" title="src/main.cpp" alt="" coords="415,160,511,189"/>
-</map>

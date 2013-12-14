@@ -1,6 +1,0 @@
-<map id="G" name="G">
-<area shape="rect" id="node5" href="$class_data_collector.html" title="Simple class which manages the motors and collects data at an periodic intervall." alt="" coords="5,160,107,189"/>
-<area shape="rect" id="node8" href="$class_my_thread.html" title="MyThread" alt="" coords="131,160,211,189"/>
-<area shape="rect" id="node10" href="$class_u_s_u_1_1_kalman_filter.html" title="Represents the Periodic Thread class for state estimation." alt="" coords="235,160,365,189"/>
-<area shape="rect" id="node2" href="$class_u_s_u_1_1_rt_thread.html" title="Abstract wrapper class for the pthread library with RT&#45;priority." alt="" coords="57,5,169,35"/>
-</map>

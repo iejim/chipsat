@@ -1,9 +1,0 @@
-<map id="G" name="G">
-<area shape="rect" id="node3" href="$threading-example_8cpp.html" title="examples/threading&#45;example.cpp" alt="" coords="5,83,219,112"/>
-<area shape="rect" id="node5" href="$sharedqueue_8h.html" title="include/sharedqueue.h" alt="" coords="243,83,395,112"/>
-<area shape="rect" id="node9" href="$kalmanfilter_8h.html" title="include/kalmanfilter.h" alt="" coords="367,237,511,267"/>
-<area shape="rect" id="node7" href="$gx3communicator_8h.html" title="include/gx3communicator.h" alt="" coords="220,160,401,189"/>
-<area shape="rect" id="node15" href="$gx3communicator_8cpp.html" title="src/gx3communicator.cpp" alt="" coords="172,237,343,267"/>
-<area shape="rect" id="node11" href="$kalmanfilter_8cpp.html" title="src/kalmanfilter.cpp" alt="" coords="300,315,436,344"/>
-<area shape="rect" id="node13" href="$main_8cpp.html" title="src/main.cpp" alt="" coords="460,315,556,344"/>
-</map>

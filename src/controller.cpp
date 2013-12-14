@@ -134,25 +134,24 @@ void Controller::run()
             {
                 usleep(100); //Give it some time for data to arrive to the queue
                 gotIMU = readIMU(mEuler, mCurrentRates, mImuTime);
-                cerr << ".";
+                //cerr << ".";
             }
-            cerr <<endl;
+            //cerr <<endl;
         }
 
         gettimeofday(&now, NULL);
         mClock = (now.tv_sec - start.tv_sec) + (now.tv_usec - start.tv_usec)/1000000.0f;
-        cerr << "Clock: " << mClock << endl;
+//        cerr << "Clock: " << mClock << endl;
 
-        cerr << "Check: " << std::abs(mClock - mNextReference.time) << endl;
+//        cerr << "Check: " << std::abs(mClock - mNextReference.time) << endl;
         if (std::abs(mClock - mNextReference.time) <= 0.011 ){ //
-            cerr << "Here!" << endl;
+//            cerr << "Here!" << endl;
             mReference = mNextReference;
             gotReference = true;
 
             if(mReference.num < mTotalRefs) //Read only if there are any left
                 readNextReference();
         }
-//        if(gotIMU){
 
             fixRates(mCurrentRates);
             fixAngles(mEuler);
@@ -163,7 +162,7 @@ void Controller::run()
             //The quaternion used here will eventually change to one coming from the trajectory generator
             if(gotReference)
             {
-                cerr << "Using new ref" << endl;
+//                cerr << "Using new ref" << endl;
                 gotReference = false;
             }
             Qt << mReference.q(3),mReference.q(2),-mReference.q(1),mReference.q(0),
@@ -192,9 +191,9 @@ void Controller::run()
             sendDutyCycles(mDutyC);
 
 //            readMotors(speedscmd, mAmps);
-//                cerr << "Angles: " << mEuler << endl << "Rates: " << mCurrentRates << endl;
-//                cerr << "Quaternion" << mCurrentQuat(0) << "," <<  mCurrentQuat(1)
-//                     << "," << mCurrentQuat(2) << "," << mCurrentQuat(3) << endl;
+                cerr << "Angles: " << mEuler << endl << "Rates: " << mCurrentRates << endl;
+                cerr << "Quaternion" << mCurrentQuat(0) << "," <<  mCurrentQuat(1)
+                     << "," << mCurrentQuat(2) << "," << mCurrentQuat(3) << endl;
 //                cerr << "Motor 0: " << "DC: " << mDutyC(0) << " "<< speedscmd(0) << " rad/s, " << mAmps(0) << " A" << endl;
 //                cerr << "Motor 1: " << "DC: " << mDutyC(1) << " "<< speedscmd(1) << " rad/s, " << mAmps(1) << " A" << endl;
 //                cerr << "Motor 2: " << "DC: " << mDutyC(2) << " "<< speedscmd(2) << " rad/s, " << mAmps(2) << " A" << endl;
@@ -377,16 +376,17 @@ void Controller::fixAngles(vector& euler)
 //   euler(1) = -euler(1)-M_PI_2; //Pitch
 //   euler(2) = ((euler(2)>0)?-M_PI:M_PI) + euler(2); //Yaw
     if(euler(0)>0) //Roll
-            euler(0) = M_PI_2-euler(0);
+            euler(0) = M_PI-euler(0);
     else
-            euler(0) = -M_PI_2-euler(0);
+            euler(0) = -M_PI-euler(0); //Roll
 
-    euler(1) = -euler(1); //Pitch
+//    euler(1) = -euler(1); //Pitch
+    euler(2) = -euler(2); //Yaw
 
-    if(euler(2)>0) //Yaw
-            euler(2) = M_PI_2 - euler(2);
-    else
-            euler(2) = -M_PI_2 - euler(2);
+//    if(euler(2)>0) //Yaw
+//            euler(2) = M_PI_2 - euler(2);
+//    else
+//            euler(2) = -M_PI_2 - euler(2);
 
 
 }
@@ -394,7 +394,7 @@ void Controller::fixAngles(vector& euler)
 void Controller::fixRates(vector& rates)
 {
     rates(0) = -rates(0);
-//    rates(1) = -rates(1);
+    rates(1) = -rates(1);
 
 }
 void Controller::readMotors(Vector4f &speedVec, Vector4f &currentVec)
@@ -451,9 +451,9 @@ quaternion Controller::createQuaternion(vector euler)
 {
     Eigen::Matrix3f M;
     float theta, phi, psi;
-    theta = euler(0);
-    phi = euler(1);
-    psi = euler(2);
+    phi = euler(0); //Roll
+    theta = euler(1); //Pitch
+    psi = euler(2); //Yaw
 
     //Create roation matrix
     M << cos(psi)*cos(theta),                           sin(psi)*cos(theta),                            -sin(theta),
@@ -503,8 +503,10 @@ quaternion Controller::createQuaternion(vector euler)
                 break;
 
     }
-
-    return q;
+    //float temp = q(0);
+    quaternion qa(q(1),q(2),q(3),q(0));
+    //q << q(1),q(2),q(3),temp; //the math above places the scalar first in q; we want it at the end
+    return qa;
 }
 
 quaternion Controller::integrateQ(quaternion in, quaternion old_in, quaternion old_out, float delta_time, float gain)
