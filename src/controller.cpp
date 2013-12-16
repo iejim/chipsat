@@ -94,13 +94,14 @@ void Controller::run()
 //    (0.772131, 0.0352254, -0.0553593, 0.0.632067);
 
 
-    ///This is whe  re the periodic features of the controller happen
 //    gettimeofday(&start, NULL);
 //    gettimeofday(&now, NULL);
 //    mClock = now.tv_sec - start.tv_sec + (now.tv_usec - start.tv_usec)/1000.0;
     bool inSync = false;
     bool gotIMU = false;
     bool gotReference = false;
+
+    ///This is where the periodic features of the controller happen
     while (mKeepRunning){
 
         //Check if it is time to change reference values
@@ -173,32 +174,36 @@ void Controller::run()
     //        Vector4f qe = Qt*qs;
             mQuatError = Qt*qs; //Save the error (as a quaternion)
 
-            //calculate required torque on each of 3 axes
+            //CONTROL LAW: calculate required torque on each of 3 axes
             Vector3f Tc3 =2*Kp*mQuatError*mQuatError(3);
+            //Tc=2*Kp*qe*qe(4)+Ki*qei+Kv*(w_star-w)+Ka*alpha_star+Td_hat+crossterm;
 
             //calculate required torque on each of 4 wheels
-
             Vector4f Tc3Comp(Tc3(0), Tc3(1), Tc3(2), 0.);
-            Vector4f Tc4 = Tc3to4*Tc3Comp;
+            mTorque = Tc3to4*Tc3Comp;
 
             //calculate required speeds (rad/s)
-            Vector4f speedscmd =(Tc4+mSystem.Iw*mLastSpeed)*bIw; // check bIw ?? forget b
+            mSpeedCmd = integrateQ(mTorque,mLastTorque,mLastSpeedCmd,(mImuTime-mLastImuTime),(1/mSystem.Iw));
+            //Vector4f mSpeed =(mTorque+mSystem.Iw*mLastSpeed)*bIw; // check bIw ?? forget b
+//            quaternion r(mCurrentRates(0),mCurrentRates(1),mCurrentRates(2),0);
+//            quaternion rold(mLastRates(0),mLastRates(1),mLastRates(2),0);
+//            mSpeedCmd = integrateQ(r,rold,mLastSpeedCmd,(mImuTime-mLastImuTime),(1));
 
             //calculate required duty cycles
-            speedscmd = speedscmd*(80/618.7262f);
-            mDutyC = Vector4i((int)speedscmd(0), (int)speedscmd(1), (int)speedscmd(2), (int)speedscmd(3));  //if speedscmd is in rad/s
+            mSpeedCmd = mSpeedCmd*(80/618.7262f);
+            mDutyC = Vector4i((int)mSpeedCmd(0), (int)mSpeedCmd(1), (int)mSpeedCmd(2), (int)mSpeedCmd(3));  //if mSpeed is in rad/s
             mDutyC += Vector4i(10,10,10,10);
             sendDutyCycles(mDutyC);
 
-//            readMotors(speedscmd, mAmps);
+//            readMotors(mSpeed, mAmps);
                 cerr << "Angles: " << mEuler << endl << "Rates: " << mCurrentRates << endl;
                 cerr << "Quaternion" << mCurrentQuat(0) << "," <<  mCurrentQuat(1)
                      << "," << mCurrentQuat(2) << "," << mCurrentQuat(3) << endl;
-//                cerr << "Motor 0: " << "DC: " << mDutyC(0) << " "<< speedscmd(0) << " rad/s, " << mAmps(0) << " A" << endl;
-//                cerr << "Motor 1: " << "DC: " << mDutyC(1) << " "<< speedscmd(1) << " rad/s, " << mAmps(1) << " A" << endl;
-//                cerr << "Motor 2: " << "DC: " << mDutyC(2) << " "<< speedscmd(2) << " rad/s, " << mAmps(2) << " A" << endl;
+//                cerr << "Motor 0: " << "DC: " << mDutyC(0) << " "<< mSpeed(0) << " rad/s, " << mAmps(0) << " A" << endl;
+//                cerr << "Motor 1: " << "DC: " << mDutyC(1) << " "<< mSpeed(1) << " rad/s, " << mAmps(1) << " A" << endl;
+//                cerr << "Motor 2: " << "DC: " << mDutyC(2) << " "<< mSpeed(2) << " rad/s, " << mAmps(2) << " A" << endl;
 //                cerr << "Motor 3: " << "DC: " << mDutyC(3) << " "<<
-//                speedscmd(3) << " rad/s, " << mAmps(3) << " A" << endl;
+//                mSpeed(3) << " rad/s, " << mAmps(3) << " A" << endl;
 
             //Save the data
             if(mLogging)
@@ -311,6 +316,7 @@ void Controller::logData()
     mLogBuf << toCSV(mCurrentQuat(0)) << toCSV(mCurrentQuat(1)) << toCSV(mCurrentQuat(2)) << toCSV(mCurrentQuat(3));
     mLogBuf << toCSV(mReference.q(0)) << toCSV(mReference.q(1)) << toCSV(mReference.q(2)) << toCSV(mReference.q(3));
     //mLogBuf << toCSV(mQuatError(0)) << toCSV(mQuatError(1)) << toCSV(mQuatError(2)) << toCSV(mQuatError(3));
+    mLogBuf << toCSV(mSpeedCmd(0)) << toCSV(mSpeedCmd(1)) << toCSV(mSpeedCmd(2)) << toCSV(mSpeedCmd(3));
     //mLogBuf << toCSV(mTorque(0)) << toCSV(mTorque(1)) << toCSV(mTorque(2)) << toCSV(mTorque(3));
     mLogBuf << toCSV(mDutyC(0)) << toCSV(mDutyC(1)) << toCSV(mDutyC(2)) << toCSV(mDutyC(3));
 //    mLogBuf.flush();
@@ -436,6 +442,7 @@ void Controller::updateStates()
 {
     mLastQuat = mCurrentQuat;
     mLastQuatError = mQuatError;
+    mLastSpeedCmd = mSpeedCmd;
     mLastEuler = mEuler;
     mLastRates = mCurrentRates;
     mLastSpeed = mSpeed;

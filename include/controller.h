@@ -149,6 +149,7 @@ class Controller : public PeriodicRtThread
         //// State data
         quaternion mCurrentQuat;            /*!< Current state */
         quaternion mQuatError;              /*!< Current error */
+        quaternion mSpeedCmd;               /*!< Current speed command (rad/s)*/
 
         //Sampled data
         vector mEuler;                      /*!< Current Euler angles */
@@ -159,6 +160,7 @@ class Controller : public PeriodicRtThread
         //Storage
         quaternion mLastQuat;               /*!< Last state */
         quaternion mLastQuatError;          /*!< Last error */
+        quaternion mLastSpeedCmd;           /*!< Last speed command (rad/s)*/
         vector mLastEuler;                  /*!< Last Euler angles */
         vector mLastRates;                  /*!< Last angular rates */
         float mLastImuTime;                 /*!< Last time stamp of the IMU packet */
