@@ -139,7 +139,7 @@ class Controller : public PeriodicRtThread
 
         //// System settings
         pivGains mPIV;                      /*!< Struct holding the gains for the PIV controller */
-        sysConsts mSystem;                  /*!< Struct holdin1g the system constants */
+        sysConsts mSystem;                  /*!< Struct holding the system constants */
         trajFFGains mFFGains;               /*!< Trajectory generator feed-forward gains */
         uint16_t mTotalRefs;                /*!< Total number of references to be used */
         refData mReference;                 /*!< Current reference input and its data */
@@ -147,9 +147,12 @@ class Controller : public PeriodicRtThread
         adcGains mMotorScale;               /*!< Struct containing the values to scale the ADC readings to units */
 
         //// State data
-        quaternion mCurrentQuat;            /*!< Current state */
-        quaternion mQuatError;              /*!< Current error */
-        quaternion mSpeedCmd;               /*!< Current speed command (rad/s)*/
+        quaternion mCurrentQuat;            /*!< Current state, measured */
+        quaternion mQuatError;              /*!< Current error, calculated */
+        quaternion mSpeedCmd;               /*!< Current speed command (rad/s), calculated */
+        quaternion mQuatStar;               /*!< Current quaternion command from trajectory generation, calculated */
+        vector mOmegaStar;                  /*!< Current speed command from trajectory generation, calculated */
+        vector mAlphaStar;                  /*!< Current acceleration command from trajectory generation, calculated */
 
         //Sampled data
         vector mEuler;                      /*!< Current Euler angles */
@@ -167,8 +170,8 @@ class Controller : public PeriodicRtThread
         Vector4f mLastSpeed;                /*!< Last motor speed state for ALL motors */
         Vector4f mAmps;                     /*!< Current motor current (Amps) state for ALL motors */
 
-
         //// Calculated quantities
+        vector mTc3;                        /*!< Current 3-axis torque
         Vector4f mTorque;                   /*!< Current motor torque state for ALL motors */
         Vector4i mDutyC;                    /*!< Current motor duty cycle */
 

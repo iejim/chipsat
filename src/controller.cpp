@@ -74,14 +74,15 @@ void Controller::run()
 
 
     /////--------CONTROLLER CODE------------------//create temporary variables before while
-//    float b = 1e-6; //SI units, average damping coefficent of wheels
-//    float Iw = 0.462; //lbm-in^2, mass moment of inertia of momentum wheel
-    float bIw = 1/(mSystem.b+mSystem.Iw); //come back and give number
-//    float wn=0.2; //choose natural damping frequency
 
-//    Matrix3f Inertia;
-//    Inertia << 102.322878, -0.035566, 0.315676, -0.035566, 103.65751, 0.006317, 0.315676, 0.006317, 159.537290; //lbm-in^2 inertia of tables
-    Matrix3x4 Kp;
+    //Trajectory Generation Initalization
+    mQuatStar = quaternion(0,0,0,0);
+    mOmegaStar = vector(0,0,0);
+    mAlphaStar = vector(0,0,0);
+
+    float bIw = 1/(mSystem.b+mSystem.Iw); //come back and give number
+
+    Matrix3x4 Kp;;
     Kp <<   mPIV.KP*2.2*mSystem.Inertia(0,0)*mSystem.wn*mSystem.wn,0,0,0,
             0,mPIV.KP*2.2*mSystem.Inertia(1,1)*mSystem.wn*mSystem.wn,0,0,
             0,0,mPIV.KP*2.2*mSystem.Inertia(2,2)*mSystem.wn*mSystem.wn,0;
@@ -175,11 +176,11 @@ void Controller::run()
             mQuatError = Qt*qs; //Save the error (as a quaternion)
 
             //CONTROL LAW: calculate required torque on each of 3 axes
-            Vector3f Tc3 =2*Kp*mQuatError*mQuatError(3);
+            mTc3 =2*Kp*mQuatError*mQuatError(3);
             //Tc=2*Kp*qe*qe(4)+Ki*qei+Kv*(w_star-w)+Ka*alpha_star+Td_hat+crossterm;
 
             //calculate required torque on each of 4 wheels
-            Vector4f Tc3Comp(Tc3(0), Tc3(1), Tc3(2), 0.);
+            Vector4f Tc3Comp(mTc3(0), mTc3(1), mTc3(2), 0.);
             mTorque = Tc3to4*Tc3Comp;
 
             //calculate required speeds (rad/s)
@@ -311,23 +312,42 @@ void Controller::logData()
     //if(!mLogFile.is_open())
     //    throw std::runtime_error("Log file is not open for writing");
     //Save timestamp
+    //1
     mLogBuf << toCSV(mClock);
     //Save calculated values
+    //2-5
     mLogBuf << toCSV(mCurrentQuat(0)) << toCSV(mCurrentQuat(1)) << toCSV(mCurrentQuat(2)) << toCSV(mCurrentQuat(3));
+    //6-9
     mLogBuf << toCSV(mReference.q(0)) << toCSV(mReference.q(1)) << toCSV(mReference.q(2)) << toCSV(mReference.q(3));
-    //mLogBuf << toCSV(mQuatError(0)) << toCSV(mQuatError(1)) << toCSV(mQuatError(2)) << toCSV(mQuatError(3));
+    //10-13
+    mLogBuf << toCSV(mQuatStar(0)) << toCSV(mQuatStar(1)) << toCSV(mQuatStar(2)) << toCSV(mQuatStar(3));
+    //14-16
+    mLogBuf << toCSV(mQuatOmega(0)) << toCSV(mQuatOmega(1)) << toCSV(mQuatOmega(2));
+    //17-19
+    mLogBuf << toCSV(mQuatAlphaStar(0)) << toCSV(mQuatAlphaStar(1)) << toCSV(mQuatAlphaStar(2));
+    //20-23
+    mLogBuf << toCSV(mQuatError(0)) << toCSV(mQuatError(1)) << toCSV(mQuatError(2)) << toCSV(mQuatError(3));
+    //24-26
+    mLogBuf << toCSV(mTc3(0)) << toCSV(mTc3(1)) << toCSV(mTc3(2));
+    //27-30
+    mLogBuf << toCSV(mTorque(0)) << toCSV(mTorque(1)) << toCSV(mTorque(2)) << toCSV(mTorque(3));
+    //31-34
     mLogBuf << toCSV(mSpeedCmd(0)) << toCSV(mSpeedCmd(1)) << toCSV(mSpeedCmd(2)) << toCSV(mSpeedCmd(3));
-    //mLogBuf << toCSV(mTorque(0)) << toCSV(mTorque(1)) << toCSV(mTorque(2)) << toCSV(mTorque(3));
+    //35-38
     mLogBuf << toCSV(mDutyC(0)) << toCSV(mDutyC(1)) << toCSV(mDutyC(2)) << toCSV(mDutyC(3));
-//    mLogBuf.flush();
+
     //Save readings
+    //39-42
     mLogBuf << toCSV(mImuTime) << toCSV(mEuler(0)) << toCSV(mEuler(1)) << toCSV(mEuler(2));
+    //43-45
     mLogBuf << toCSV(mCurrentRates(0)) << toCSV(mCurrentRates(1)) << toCSV(mCurrentRates(2));
+    //46-49
     mLogBuf << toCSV(mSpeed(0)) << toCSV(mSpeed(1)) << toCSV(mSpeed(2)) << toCSV(mSpeed(3));
+    //50-54
     mLogBuf << toCSV(mAmps(0)) << toCSV(mAmps(1)) << toCSV(mAmps(2)) << toCSV(mAmps(3));
-//    mLogBuf.flush();
+
     mLogBuf << endl;
-    //sync(); //Synchronize ?
+
 
 }
 
