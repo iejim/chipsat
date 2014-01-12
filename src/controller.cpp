@@ -322,9 +322,9 @@ void Controller::logData()
     //10-13
     mLogBuf << toCSV(mQuatStar(0)) << toCSV(mQuatStar(1)) << toCSV(mQuatStar(2)) << toCSV(mQuatStar(3));
     //14-16
-    mLogBuf << toCSV(mQuatOmega(0)) << toCSV(mQuatOmega(1)) << toCSV(mQuatOmega(2));
+    mLogBuf << toCSV(mOmegaStar(0)) << toCSV(mOmegaStar(1)) << toCSV(mOmegaStar(2));
     //17-19
-    mLogBuf << toCSV(mQuatAlphaStar(0)) << toCSV(mQuatAlphaStar(1)) << toCSV(mQuatAlphaStar(2));
+    mLogBuf << toCSV(mAlphaStar(0)) << toCSV(mAlphaStar(1)) << toCSV(mAlphaStar(2));
     //20-23
     mLogBuf << toCSV(mQuatError(0)) << toCSV(mQuatError(1)) << toCSV(mQuatError(2)) << toCSV(mQuatError(3));
     //24-26

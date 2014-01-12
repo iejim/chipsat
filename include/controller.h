@@ -171,7 +171,7 @@ class Controller : public PeriodicRtThread
         Vector4f mAmps;                     /*!< Current motor current (Amps) state for ALL motors */
 
         //// Calculated quantities
-        vector mTc3;                        /*!< Current 3-axis torque
+        vector mTc3;                        /*!< Current 3-axis torque */
         Vector4f mTorque;                   /*!< Current motor torque state for ALL motors */
         Vector4i mDutyC;                    /*!< Current motor duty cycle */
 
