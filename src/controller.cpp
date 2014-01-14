@@ -36,17 +36,9 @@ void Controller::initialize()
 
     //Motors
     mDutyC = Vector4i(0, 0, 0, 0);
-    sendDutyCycles(mDutyC); //Initialized motors to zero
+    sendDutyCycles(mDutyC); //Initialize motors to zero
 
     readInputFile();
-    //Gains
-    //mPGain = 1;
-    //mIGain = 1;
-    // etc, etc.
-
-    //Inputs (or something)
-    //readInput()
-
 
 }
 
@@ -63,17 +55,15 @@ void Controller::run()
 
     struct timeval start, now;
 
-
-//    int step = 10;
-//    int count  = 200;
-
     mKeepRunning = true;
 
     cerr << "Running... " << endl;
 
 
 
-    /////--------CONTROLLER CODE------------------//create temporary variables before while
+///------------------------- CONTROLLER CODE ----------------------------------
+
+///Create temporary variables before while loop
 
     //Trajectory Generation Initalization
     mQuatStar = quaternion(0,0,0,0);
@@ -87,22 +77,17 @@ void Controller::run()
             0,mPIV.KP*2.2*mSystem.Inertia(1,1)*mSystem.wn*mSystem.wn,0,0,
             0,0,mPIV.KP*2.2*mSystem.Inertia(2,2)*mSystem.wn*mSystem.wn,0;
 
+    //Matrix to convert Torque values from a 3-axis element vector to the 4-wheel model
     Matrix4f Tc3to4;
     Tc3to4 << 0.5,0,0.25,0.25,  0,0.5,0.25,-0.25,   -0.5,0,0.25,0.25,     0,-0.5,0.25,-0.25;
+
     Matrix4f Qt;
-    //For now
-//    mReference.q = quaternion(-0.034439, -0.54683, -0.836534, -0.00150478);
-//    (0.772131, 0.0352254, -0.0553593, 0.0.632067);
 
-
-//    gettimeofday(&start, NULL);
-//    gettimeofday(&now, NULL);
-//    mClock = now.tv_sec - start.tv_sec + (now.tv_usec - start.tv_usec)/1000.0;
     bool inSync = false;
     bool gotIMU = false;
     bool gotReference = false;
 
-    ///This is where the periodic features of the controller happen
+///This is where the periodic features of the controller happen
     while (mKeepRunning){
 
         //Check if it is time to change reference values
@@ -114,40 +99,34 @@ void Controller::run()
         }
 
 
-        //Read IMU
-//        readIMU(mEuler, mCurrentRates, mImuTime);
-
         if(!inSync){
         //Wait for the first IMU packet to arrive (as a way of synchronization)
             mFirstImuTime = 0.0;
             gotIMU = readIMU(mEuler, mCurrentRates, mFirstImuTime);
             while(!gotIMU){
-                //cerr << "." ;
+
                 usleep(100);
                 gotIMU = readIMU(mEuler, mCurrentRates, mFirstImuTime);
                 cerr << ",";
             }
             gettimeofday(&start, NULL);
             inSync = true;
-            //cerr << endl;
+
         }else {
             gotIMU = readIMU(mEuler, mCurrentRates, mImuTime);
             while(!gotIMU)
             {
                 usleep(100); //Give it some time for data to arrive to the queue
                 gotIMU = readIMU(mEuler, mCurrentRates, mImuTime);
-                //cerr << ".";
+
             }
-            //cerr <<endl;
+
         }
 
         gettimeofday(&now, NULL);
         mClock = (now.tv_sec - start.tv_sec) + (now.tv_usec - start.tv_usec)/1000000.0f;
-//        cerr << "Clock: " << mClock << endl;
 
-//        cerr << "Check: " << std::abs(mClock - mNextReference.time) << endl;
-        if (std::abs(mClock - mNextReference.time) <= 0.011 ){ //
-//            cerr << "Here!" << endl;
+        if (std::abs(mClock - mNextReference.time) <= 0.011 ){
             mReference = mNextReference;
             gotReference = true;
 
@@ -155,65 +134,59 @@ void Controller::run()
                 readNextReference();
         }
 
-            fixRates(mCurrentRates);
-            fixAngles(mEuler);
-            readMotors(mSpeed, mAmps);
-            mCurrentQuat = createQuaternion(mEuler);
+        fixRates(mCurrentRates);
+        fixAngles(mEuler);
+        readMotors(mSpeed, mAmps);
+        mCurrentQuat = createQuaternion(mEuler);
 
-            //calculate quaternion error
-            //The quaternion used here will eventually change to one coming from the trajectory generator
-            if(gotReference)
-            {
-//                cerr << "Using new ref" << endl;
-                gotReference = false;
-            }
-            Qt << mReference.q(3),mReference.q(2),-mReference.q(1),mReference.q(0),
-                  -mReference.q(2),mReference.q(3),mReference.q(0),mReference.q(1),
-                  mReference.q(1),-mReference.q(0),mReference.q(3),mReference.q(2),
-                  -mReference.q(0),-mReference.q(1),-mReference.q(2),mReference.q(3);
-            quaternion qs(-mCurrentQuat(0),-mCurrentQuat(1),-mCurrentQuat(2),-mCurrentQuat(3));
-    //        Vector4f qe = Qt*qs;
-            mQuatError = Qt*qs; //Save the error (as a quaternion)
+        //Calculate quaternion error
+//TODO The quaternion used here will eventually change to one coming from the trajectory generator
+        if(gotReference){
+            gotReference = false;
+        }
+        Qt << mReference.q(3),mReference.q(2),-mReference.q(1),mReference.q(0),
+              -mReference.q(2),mReference.q(3),mReference.q(0),mReference.q(1),
+              mReference.q(1),-mReference.q(0),mReference.q(3),mReference.q(2),
+              -mReference.q(0),-mReference.q(1),-mReference.q(2),mReference.q(3);
 
-            //CONTROL LAW: calculate required torque on each of 3 axes
-            mTc3 =2*Kp*mQuatError*mQuatError(3);
-            //Tc=2*Kp*qe*qe(4)+Ki*qei+Kv*(w_star-w)+Ka*alpha_star+Td_hat+crossterm;
+        quaternion qs(-mCurrentQuat(0),-mCurrentQuat(1),-mCurrentQuat(2),-mCurrentQuat(3));
 
-            //calculate required torque on each of 4 wheels
-            Vector4f Tc3Comp(mTc3(0), mTc3(1), mTc3(2), 0.);
-            mTorque = Tc3to4*Tc3Comp;
+        mQuatError = Qt*qs; //Save the error (as a quaternion)
 
-            //calculate required speeds (rad/s)
-            mSpeedCmd = integrateQ(mTorque,mLastTorque,mLastSpeedCmd,(mImuTime-mLastImuTime),(1/mSystem.Iw));
-            //Vector4f mSpeed =(mTorque+mSystem.Iw*mLastSpeed)*bIw; // check bIw ?? forget b
-//            quaternion r(mCurrentRates(0),mCurrentRates(1),mCurrentRates(2),0);
-//            quaternion rold(mLastRates(0),mLastRates(1),mLastRates(2),0);
-//            mSpeedCmd = integrateQ(r,rold,mLastSpeedCmd,(mImuTime-mLastImuTime),(1));
+//CONTROL LAW: calculate required torque on each of 3 axes
+        mTc3 =2*Kp*mQuatError*mQuatError(3);
+        //Tc=2*Kp*qe*qe(4)+Ki*qei+Kv*(w_star-w)+Ka*alpha_star+Td_hat+crossterm;
 
-            //calculate required duty cycles
-            mSpeedCmd = mSpeedCmd*(80/618.7262f);
-            mDutyC = Vector4i((int)mSpeedCmd(0), (int)mSpeedCmd(1), (int)mSpeedCmd(2), (int)mSpeedCmd(3));  //if mSpeed is in rad/s
-            mDutyC += Vector4i(10,10,10,10);
-            sendDutyCycles(mDutyC);
+        //Calculate required torque on each of 4 wheels
+        Vector4f Tc3Comp(mTc3(0), mTc3(1), mTc3(2), 0.);
+        mTorque = Tc3to4*Tc3Comp;
 
-//            readMotors(mSpeed, mAmps);
-                cerr << "Angles: " << mEuler << endl << "Rates: " << mCurrentRates << endl;
-                cerr << "Quaternion" << mCurrentQuat(0) << "," <<  mCurrentQuat(1)
-                     << "," << mCurrentQuat(2) << "," << mCurrentQuat(3) << endl;
-//                cerr << "Motor 0: " << "DC: " << mDutyC(0) << " "<< mSpeed(0) << " rad/s, " << mAmps(0) << " A" << endl;
-//                cerr << "Motor 1: " << "DC: " << mDutyC(1) << " "<< mSpeed(1) << " rad/s, " << mAmps(1) << " A" << endl;
-//                cerr << "Motor 2: " << "DC: " << mDutyC(2) << " "<< mSpeed(2) << " rad/s, " << mAmps(2) << " A" << endl;
-//                cerr << "Motor 3: " << "DC: " << mDutyC(3) << " "<<
-//                mSpeed(3) << " rad/s, " << mAmps(3) << " A" << endl;
+        //Calculate required speeds (rad/s)
+        mSpeedCmd = integrateQ(mTorque,mLastTorque,mLastSpeedCmd,(mImuTime-mLastImuTime),(1/mSystem.Iw));
 
-            //Save the data
-            if(mLogging)
-                logData();
-//        }
-            //TODO: Log even if it does not exit gracefully
+        //Calculate required duty cycles
+//TODO Make this number a macro (#define) or a variable
+        mSpeedCmd = mSpeedCmd*(80/618.7262f); //This number is part of the Motor Controller configuration
+        mDutyC = Vector4i((int)mSpeedCmd(0), (int)mSpeedCmd(1), (int)mSpeedCmd(2), (int)mSpeedCmd(3));  //if mSpeed is in rad/s
+        mDutyC += Vector4i(10,10,10,10);
+        sendDutyCycles(mDutyC);
 
-            updateStates();
-            waitPeriod();
+        cerr << "Angles: " << mEuler << endl << "Rates: " << mCurrentRates << endl;
+        cerr << "Quaternion" << mCurrentQuat(0) << "," <<  mCurrentQuat(1)
+             << "," << mCurrentQuat(2) << "," << mCurrentQuat(3) << endl;
+//        cerr << "Motor 0: " << "DC: " << mDutyC(0) << " "<< mSpeed(0) << " rad/s, " << mAmps(0) << " A" << endl;
+//        cerr << "Motor 1: " << "DC: " << mDutyC(1) << " "<< mSpeed(1) << " rad/s, " << mAmps(1) << " A" << endl;
+//        cerr << "Motor 2: " << "DC: " << mDutyC(2) << " "<< mSpeed(2) << " rad/s, " << mAmps(2) << " A" << endl;
+//        cerr << "Motor 3: " << "DC: " << mDutyC(3) << " "<< mSpeed(3) << " rad/s, " << mAmps(3) << " A" << endl;
+
+        //Save the data
+        if(mLogging)
+            logData();
+
+//TODO: Log even if it does not exit gracefully
+
+        updateStates();
+        waitPeriod();
 
     }
 
@@ -240,8 +213,8 @@ void Controller::readInputFile()
         return;
     }
 
-
-//    //Read PID gains (KP, KI, KD)
+//This should no longer be supported
+//    Read PID gains (KP, KI, KD)
 //    mInputFile >> mPID.KP >> mPID.KI >> mPID.KD;
 
     //Read PIV gains (KP, KI, KVff, KAff)
@@ -266,12 +239,7 @@ void Controller::readInputFile()
     readNextReference();
 
 }
-//50.0 0.0 0.0
-//0.0 0.0
-//0.000001 0.462 0.2 .25 .25
-//102.322878 -0.035566 0.315676 -0.035566 103.65751 0.006317 0.315676 0.006317 159.537290
-//1
-//1 0.0 -0.034439 -0.54683 -0.836534 -0.00150478
+
 
 void Controller::readNextReference()
 {
@@ -309,12 +277,14 @@ void Controller::setLogFile(const char* logFile)
 
 void Controller::logData()
 {
-    //if(!mLogFile.is_open())
-    //    throw std::runtime_error("Log file is not open for writing");
+
     //Save timestamp
-    //1
+
+    //1 <- CSV index (MATLAB style)
     mLogBuf << toCSV(mClock);
+
     //Save calculated values
+
     //2-5
     mLogBuf << toCSV(mCurrentQuat(0)) << toCSV(mCurrentQuat(1)) << toCSV(mCurrentQuat(2)) << toCSV(mCurrentQuat(3));
     //6-9
@@ -395,24 +365,17 @@ bool Controller::readIMU(vector &euler, vector &rates, float &timer)
 
 void Controller::fixAngles(vector& euler)
 {
-    //TODO Make this generic (by accepting a matrix?) for flexibility
-    //i.e. euler(0) = bias(0) + sign(0)*euler(0);
-    //This could actually be done with a matrix-vector multiplication
-//    euler(0) = -euler(0); //Roll
-//   euler(1) = -euler(1)-M_PI_2; //Pitch
-//   euler(2) = ((euler(2)>0)?-M_PI:M_PI) + euler(2); //Yaw
+//TODO Make this generic (by accepting a matrix?) for flexibility
+//i.e. euler(0) = bias(0) + sign(0)*euler(0);
+//This could actually be done with a matrix-vector multiplication
+
     if(euler(0)>0) //Roll
             euler(0) = M_PI-euler(0);
     else
             euler(0) = -M_PI-euler(0); //Roll
 
-//    euler(1) = -euler(1); //Pitch
     euler(2) = -euler(2); //Yaw
 
-//    if(euler(2)>0) //Yaw
-//            euler(2) = M_PI_2 - euler(2);
-//    else
-//            euler(2) = -M_PI_2 - euler(2);
 
 
 }
@@ -530,9 +493,10 @@ quaternion Controller::createQuaternion(vector euler)
                 break;
 
     }
-    //float temp = q(0);
+
+    //The math above places the scalar first in q; we want it at the end
     quaternion qa(q(1),q(2),q(3),q(0));
-    //q << q(1),q(2),q(3),temp; //the math above places the scalar first in q; we want it at the end
+
     return qa;
 }
 

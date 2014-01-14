@@ -20,9 +20,8 @@ using namespace Eigen;
 namespace USU
 {
 
-//#define V_TO_RADS 157.0010928631499 // 5997.0/4.0*2.0*M_PI/60.0
-//#define V_TO_CURR 2.522522522522 // 9.0/3.996
-#define TIMER_TO_S 62500.0f
+
+#define TIMER_TO_S 62500.0f /*! Constant to convert from IMU timestamp to seconds */
 
 #define toCSV(name) name << ','
 
@@ -98,6 +97,7 @@ class Controller : public PeriodicRtThread
 
         void readMotors(Vector4f &speeds, Vector4f &currents); /*!< Reads the motors and return the scaled values */
 
+//TODO Eventually, this function will have its own file and could be called from within run()
 //        void controlLaw(); /*!< Implements the control law using the class variables*/
 
         void readNextReference(); /*!< Reads a new reference from the input file */
@@ -137,7 +137,7 @@ class Controller : public PeriodicRtThread
         bool mUseInput;                     /*!< Flag to know if we're using an input file */
         bool mLogging;                      /*!< Flag to know if we are saving data */
 
-        //// System settings
+        /// System settings
         pivGains mPIV;                      /*!< Struct holding the gains for the PIV controller */
         sysConsts mSystem;                  /*!< Struct holding the system constants */
         trajFFGains mFFGains;               /*!< Trajectory generator feed-forward gains */
@@ -146,7 +146,7 @@ class Controller : public PeriodicRtThread
         refData mNextReference;             /*!< Next reference input and its data */
         adcGains mMotorScale;               /*!< Struct containing the values to scale the ADC readings to units */
 
-        //// State data
+        /// State data
         quaternion mCurrentQuat;            /*!< Current state, measured */
         quaternion mQuatError;              /*!< Current error, calculated */
         quaternion mSpeedCmd;               /*!< Current speed command (rad/s), calculated */
@@ -154,13 +154,13 @@ class Controller : public PeriodicRtThread
         vector mOmegaStar;                  /*!< Current speed command from trajectory generation, calculated */
         vector mAlphaStar;                  /*!< Current acceleration command from trajectory generation, calculated */
 
-        //Sampled data
+        /// Sampled data
         vector mEuler;                      /*!< Current Euler angles */
         vector mCurrentRates;               /*!< Current angular rates */
         Vector4f mSpeed;                    /*!< Current motor speed (rad/s) state for ALL motors */
         float mImuTime;                     /*!< Time stamp of the IMU packet */
 
-        //Storage
+        /// Storage
         quaternion mLastQuat;               /*!< Last state */
         quaternion mLastQuatError;          /*!< Last error */
         quaternion mLastSpeedCmd;           /*!< Last speed command (rad/s)*/
@@ -170,12 +170,12 @@ class Controller : public PeriodicRtThread
         Vector4f mLastSpeed;                /*!< Last motor speed state for ALL motors */
         Vector4f mAmps;                     /*!< Current motor current (Amps) state for ALL motors */
 
-        //// Calculated quantities
+        /// Calculated quantities
         vector mTc3;                        /*!< Current 3-axis torque */
         Vector4f mTorque;                   /*!< Current motor torque state for ALL motors */
         Vector4i mDutyC;                    /*!< Current motor duty cycle */
 
-        //Storage
+        /// Storage
         Vector4f mLastTorque;               /*!< Last motor torque state for ALL motors */
         Vector4f mLastAmps;                 /*!< Last motor current (Amps) state for ALL motors */
         Vector4i mLastDutyC;                /*!< Last motor duty cycle */
