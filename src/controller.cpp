@@ -153,16 +153,19 @@ void Controller::run()
         mCurrentQuat = createQuaternion(mEuler);
 
         //Calculate quaternion error
-//TODO The quaternion used here will eventually change to one coming from the trajectory generator
         if(gotReference){
             gotReference = false;
         }
+
+//TODO: Call the trajectory generation function
+        //
+
         Qt << mReference.q(3),mReference.q(2),-mReference.q(1),mReference.q(0),
               -mReference.q(2),mReference.q(3),mReference.q(0),mReference.q(1),
               mReference.q(1),-mReference.q(0),mReference.q(3),mReference.q(2),
-              -mReference.q(0),-mReference.q(1),-mReference.q(2),mReference.q(3);
+              -mReference.q(0),-mReference.q(1),-mReference.q(2),-mReference.q(3);
 
-        quaternion qs(-mCurrentQuat(0),-mCurrentQuat(1),-mCurrentQuat(2),mCurrentQuat(3));
+        quaternion qs(-mCurrentQuat(0),-mCurrentQuat(1),-mCurrentQuat(2),-mCurrentQuat(3));
 
         mQuatError = Qt*qs; //Save the error (as a quaternion)
 
@@ -565,7 +568,11 @@ quaternion Controller::createQuaternion(vector euler)
     //The math above places the scalar first in q; we want it at the end
     quaternion qa(q(1),q(2),q(3),q(0));
 
+    //Check that qa(4) is positive, which is the convention we will use here (remember qa=-qa)
+    if (qa(4)<0)
+        qa=-qa;
     return qa;
+
 }
 
 quaternion Controller::integrateQ(quaternion in, quaternion old_in, quaternion old_out, float delta_time, float gain)
