@@ -38,7 +38,7 @@ PROJECT_NUMBER         =
 # for a project that appears at the top of each page and should give viewer 
 # a quick idea about the purpose of the project. Keep the description short.
 
-PROJECT_BRIEF          = Custom Heading Identification Platform for Satellites at USU
+PROJECT_BRIEF          = "Custom Heading Identification Platform for Satellites at USU"
 
 # With the PROJECT_LOGO tag one can specify an logo or icon that is 
 # included in the documentation. The maximum height of the logo should not 
@@ -722,12 +722,13 @@ RECURSIVE              = YES
 
 EXCLUDE                = build \
                          obj \
-                         .git/ \
-                         include/Eigen/\
-                         examplesJan/\
-                         examples/\
-                         bin\
-                         doc/
+                         .git \
+                         include/Eigen \
+                         include/tclap \
+                         examplesJan \
+                         examples \
+                         bin \
+                         
 
 # The EXCLUDE_SYMLINKS tag can be used to select whether or not files or 
 # directories that are symbolic links (a Unix file system feature) are excluded 

@@ -24,6 +24,10 @@ Controller::Controller(int priority, unsigned int period_us, const char* imuseri
     mStopTime = 0.0;
 }
 
+/*!
+    In this function, the IMU can be setup with the necessary message(s) and modes and
+    the motors are usually set to start at 0 RPM. This is also were the input file is read.
+*/
 void Controller::initialize()
 {
     //Here the settings for the controller are initialized
@@ -42,6 +46,14 @@ void Controller::initialize()
 
 }
 
+/*!
+
+    This is the function called when the system creates the thread.
+    The Control Law runs in the loop created here.
+
+    This function starts the IMU before the loop is started.
+    On exit, the motors are stopped and the data is saved to the output file.
+*/
 void Controller::run()
 {
     //This is where the controller magic begins
@@ -63,7 +75,7 @@ void Controller::run()
 
 ///------------------------- CONTROLLER CODE ----------------------------------
 
-///Create temporary variables before while loop
+/// Temporary variables for the controller are created before while loop.
 
     //Trajectory Generation Initalization
     mQuatStar = quaternion(0,0,0,0);
@@ -87,11 +99,10 @@ void Controller::run()
     bool gotIMU = false;
     bool gotReference = false;
 
-///This is where the periodic features of the controller happen
+/// In this while loop is where the periodic features of the controller happen.
     while (mKeepRunning){
 
-        //Check if it is time to change reference values
-        //The first reference on the input file is already stored in mNextReference
+        //Check if it's time to stop the program
         if (mStopTime <= mClock)
         {
             mKeepRunning = false;
@@ -126,6 +137,8 @@ void Controller::run()
         gettimeofday(&now, NULL);
         mClock = (now.tv_sec - start.tv_sec) + (now.tv_usec - start.tv_usec)/1000000.0f;
 
+        //Check if it is time to change reference values
+        //The first reference on the input file is already stored in mNextReference
         if (std::abs(mClock - mNextReference.time) <= 0.011 ){
             mReference = mNextReference;
             gotReference = true;
@@ -153,7 +166,7 @@ void Controller::run()
 
         mQuatError = Qt*qs; //Save the error (as a quaternion)
 
-//CONTROL LAW: calculate required torque on each of 3 axes
+/// CONTROL LAW: calculate required torque on each of 3 axes
         mTc3 =2*Kp*mQuatError*mQuatError(3);
         //Tc=2*Kp*qe*qe(4)+Ki*qei+Kv*(w_star-w)+Ka*alpha_star+Td_hat+crossterm;
 
@@ -192,7 +205,7 @@ void Controller::run()
 
 
     //TODO Try to check if mGX3 is still running, then save the data
-
+/// After the loop stops, the motors are stopped, and the log data is saved.
     cerr << "CONTROLLER: Terminating " << endl;
     mDutyC = Vector4i(0, 0, 0, 0);
     sendDutyCycles(mDutyC); //Stop the motors
@@ -201,19 +214,24 @@ void Controller::run()
 
 }
 
+/*!
+    This function should be called after specifying a file with @ref setInputFile.
+    The file is expected to include all values; the data is not validated.
 
+    Only the first reference is mandatory, more can be added one per line
+    and UPDATING the value for the total references.
+
+    Refer to the source code for the order.
+*/
 void Controller::readInputFile()
 {
-    //Read the input file from here
-    //Probably one line at a time
-    //and store it somewhere
 
     if (!mInputFile.is_open()){
         throw std::runtime_error("No input file has been set"); //Is this going to work if mInputFile hasn't been correctly set? It should.
         return;
     }
 
-//This should no longer be supported
+/// This is would only be used when a PID controller is used
 //    Read PID gains (KP, KI, KD)
 //    mInputFile >> mPID.KP >> mPID.KI >> mPID.KD;
 
@@ -226,6 +244,7 @@ void Controller::readInputFile()
     mInputFile >> mSystem.b >> mSystem.Iw >> mSystem.wn >> mSystem.hDotMax >> mSystem.hMax;
 
     float i0, i1, i2, i3, i4, i5, i6, i7, i8;
+    //Read the Moment of Inertia matrix
     mInputFile >> i0 >> i1 >> i2 >> i3 >> i4 >> i5 >> i6 >> i7 >> i8;
     mSystem.Inertia << i0, i1, i2, i3, i4, i5, i6, i7, i8;
 
@@ -235,12 +254,24 @@ void Controller::readInputFile()
     //Read the trajectory inputs (or references) along with timestamps
     mInputFile >> mTotalRefs; //Read how many lines have been set
     mInputFile >> mStopTime;  //Read the running time limit
-    //Read the first line
+
+    //Read the first reference line
     readNextReference();
 
 }
 
+/*!
+    This function saves the next Reference Command on the input file into @ref mNextReference.
+    It should be called after the controller populates (or overwrites) @ref mReference, unless
+    the current reference stored in @ref mNextReference is to be skipped.
 
+    The function will only reads, it does not check which reference (index) is next. If the
+    file cannot be read any further, it should return nothing and @ref mReference might stay the
+    same. It is up to the Controller to know which reference is being used (using mTotalRefs).
+
+    The data is read as-is and is not validated; it is stored in a @ref RefData struct.
+    Refer to the source code for the order.
+*/
 void Controller::readNextReference()
 {
     //Read one line from the input file to create the next reference
@@ -257,6 +288,12 @@ void Controller::readNextReference()
 
 }
 
+/*!
+    The specified filename will be used as the input with the settings the system
+    This function should be called before @ref initialize.
+    \param [in] inputFile C-String with the full name of the input file, e.g: "input.txt"
+
+*/
 void Controller::setInputFile(const char* inputFile)
 {
     mInputFile.open(inputFile, std::fstream::in);
@@ -267,6 +304,10 @@ void Controller::setInputFile(const char* inputFile)
 
 }
 
+/*!
+    For the data to be saved, this function should be called before @ref run.
+    \param [in] logFile C-String with the full name of the log file, e.g: "data.csv"
+*/
 void Controller::setLogFile(const char* logFile)
 {
     mLogFile.open(logFile);
@@ -275,6 +316,24 @@ void Controller::setLogFile(const char* logFile)
     mLogging= true;
 }
 
+/*!
+    The data generated and sampled by the controller on each loop iteration is
+    saved into memory so it can be _later_ written to the log file.
+    This function can be called from within the Control Law loop.
+
+    The data is stored in the RAM memory because writing to the SD Card
+    can take too much time and interrupt the program's execution.
+    During this write time, the program will _STOP_ the execution of the controller,
+    which is _dangerous_.
+
+    The amount of data that can be stored is only limited by the amount of
+    RAM memory installed. However, the data stored is mostly floating-point
+    numbers (many digits) and can take up space very fast. Running the
+    program for 90 seconds can easily generate more than 1MB of data.
+    This should not be a problem for many systems, but should be taken into
+    account when running for a long time.
+
+*/
 void Controller::logData()
 {
 
@@ -321,6 +380,15 @@ void Controller::logData()
 
 }
 
+/*!
+    This function will save the data stored in the memory buffer @ref mLogBuf into
+    the file specified with @ref setLogFile. The data is saved as it is formatted
+    in @ref logData.
+
+    This function _must_ be called after the Control loop has been stopped since
+    it calls the system function sync() to ensure the program will wait for all
+    the data to be written to the SD Card.
+*/
 void Controller::saveLogData()
 {
     if(!mLogFile.is_open())
