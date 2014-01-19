@@ -162,7 +162,7 @@ void Controller::run()
               mReference.q(1),-mReference.q(0),mReference.q(3),mReference.q(2),
               -mReference.q(0),-mReference.q(1),-mReference.q(2),mReference.q(3);
 
-        quaternion qs(-mCurrentQuat(0),-mCurrentQuat(1),-mCurrentQuat(2),-mCurrentQuat(3));
+        quaternion qs(-mCurrentQuat(0),-mCurrentQuat(1),-mCurrentQuat(2),mCurrentQuat(3));
 
         mQuatError = Qt*qs; //Save the error (as a quaternion)
 
