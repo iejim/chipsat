@@ -24,7 +24,7 @@ function d = readCSV(filename)
     
         
     rpm = data(:,46:49);
-    amps = data(:,50:54);
+    amps = data(:,50:53);
     
     d = struct('time', time,...
         'roll', roll,'pitch', pitch, 'yaw', yaw,...
