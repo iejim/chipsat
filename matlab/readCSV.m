@@ -7,7 +7,7 @@ function d = readCSV(filename)
     quatstar = data(:,10:13);
     omegastar = data(:,14:16);
     alphastar = data(:,17:19);
-    error = data(:,20-23);
+    error = data(:,20:23);
     tc3 = data(:,24:26);
     torque = data(:,27:30);
     

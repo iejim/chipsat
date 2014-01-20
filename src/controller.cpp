@@ -565,12 +565,14 @@ quaternion Controller::createQuaternion(vector euler)
 
     }
 
+    //Check that the scalar is positive, which is the convention we will use here (remember qa=-qa)
     //The math above places the scalar first in q; we want it at the end
-    quaternion qa(q(1),q(2),q(3),q(0));
+    quaternion qa;
+    if (q(0)<0)
+        qa << -q(1),-q(2),-q(3),-q(0);
+    else
+        qa << q(1),q(2),q(3),q(0);
 
-    //Check that qa(4) is positive, which is the convention we will use here (remember qa=-qa)
-    if (qa(4)<0)
-        qa=-qa;
     return qa;
 
 }
