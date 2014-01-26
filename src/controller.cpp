@@ -7,6 +7,7 @@ using std::cout;
 using std::cerr;
 using std::endl;
 using namespace USU;
+#define RAD2RPM 763.9437f
 
 /////// Controller class
 
@@ -81,6 +82,7 @@ void Controller::run()
     mQuatStar = quaternion(0,0,0,0);
     mOmegaStar = vector(0,0,0);
     mAlphaStar = vector(0,0,0);
+    float speed2dc = RAD2RPM/mSystem.motorSpeedMax;
 
 //    float bIw = 1/(mSystem.b+mSystem.Iw); //come back and give number
 
@@ -91,9 +93,9 @@ void Controller::run()
 
     //Matrix to convert Torque values from a 3-axis element vector to the 4-wheel model
     Matrix4f Tc3to4;
-    Tc3to4 << 0.5,0,0.25,0.25,  0,0.5,0.25,-0.25,   -0.5,0,0.25,0.25,     0,-0.5,0.25,-0.25;
+//    Tc3to4 << 0.5,0,0.25,0.25,  0,0.5,0.25,-0.25,   -0.5,0,0.25,0.25,     0,-0.5,0.25,-0.25;
 //correct Tc3to4 conversion matrix below:
-//    Tc3to4 << -0.25,-0.25,0.25,0.25,    -0.25,0.25,0.25,-0.25,  0.25,-0.25,0.25,-0.25,  0.25,0.25,0.25,0.25;
+    Tc3to4 << -0.25,-0.25,0.25,0.25,    -0.25,0.25,0.25,-0.25,  0.25,-0.25,0.25,-0.25,  0.25,0.25,0.25,0.25;
 
 
     Matrix4f Qt;
@@ -182,14 +184,13 @@ void Controller::run()
         mTorque = Tc3to4*Tc3Comp;
 
         //Calculate required speeds (rad/s)
-        mSpeedCmd = integrateQ(mTorque,mLastTorque,mLastSpeedCmd,(mImuTime-mLastImuTime),(1/mSystem.Iw));
+        mSpeedCmd = integrateQ(mTorque,mLastTorque,mLastSpeedCmd,(mImuTime-mLastImuTime),(1/mSystem.Iw)); //units rad/s
 
         //Calculate required duty cycles
-//TODO Make this number a macro (#define) or a variable
-        quaternion DC = mSpeedCmd*(80/618.7262f); //This number is part of the Motor Controller configuration
+        quaternion DC = mSpeedCmd*speed2dc;
         mDutyC = Vector4i((int)DC(0), (int)DC(1), (int)DC(2), (int)DC(3));  //if mSpeed is in rad/s
 
-
+        //Adding 10%DC bias
         mDutyC += Vector4i(mDutyC(0)>0?10:-10,
                            mDutyC(1)>0?10:-10,
                            mDutyC(2)>0?10:-10,
@@ -260,6 +261,7 @@ void Controller::readInputFile()
     //Read the Moment of Inertia matrix
     mInputFile >> i0 >> i1 >> i2 >> i3 >> i4 >> i5 >> i6 >> i7 >> i8;
     mSystem.Inertia << i0, i1, i2, i3, i4, i5, i6, i7, i8;
+    mInputFile >> mSystem.motorSpeedMax;
 
     //Read the ADC scaling parameters
     mInputFile >> mMotorScale.vToRads >> mMotorScale.vToAmps;
@@ -654,6 +656,7 @@ quaternion Controller::integrateQ(quaternion in, quaternion old_in, quaternion o
     //y[k] = y[k-1] + KI*dt/2*(in[k]+in[k-1]);
     quaternion q;
     q = old_out + gain*delta_time/2*(in+old_in);
+    cerr << "spd " << q(0) << " , " << q(1) << " , " << q(2) << " , " << q(3); //look at output
     return q;
 }
 
