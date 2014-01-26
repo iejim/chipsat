@@ -82,7 +82,7 @@ void Controller::run()
     mOmegaStar = vector(0,0,0);
     mAlphaStar = vector(0,0,0);
 
-    float bIw = 1/(mSystem.b+mSystem.Iw); //come back and give number
+//    float bIw = 1/(mSystem.b+mSystem.Iw); //come back and give number
 
     Matrix3x4 Kp;;
     Kp <<   mPIV.KP*2.2*mSystem.Inertia(0,0)*mSystem.wn*mSystem.wn,0,0,0,
@@ -163,11 +163,12 @@ void Controller::run()
         Qt << mReference.q(3),mReference.q(2),-mReference.q(1),mReference.q(0),
               -mReference.q(2),mReference.q(3),mReference.q(0),mReference.q(1),
               mReference.q(1),-mReference.q(0),mReference.q(3),mReference.q(2),
-              -mReference.q(0),-mReference.q(1),-mReference.q(2),-mReference.q(3);
+              -mReference.q(0),-mReference.q(1),-mReference.q(2),mReference.q(3);
 
         quaternion qs(-mCurrentQuat(0),-mCurrentQuat(1),-mCurrentQuat(2),-mCurrentQuat(3));
 
         mQuatError = Qt*qs; //Save the error (as a quaternion)
+
 
 /// CONTROL LAW: calculate required torque on each of 3 axes
         mTc3 =2*Kp*mQuatError*mQuatError(3);
@@ -182,9 +183,15 @@ void Controller::run()
 
         //Calculate required duty cycles
 //TODO Make this number a macro (#define) or a variable
-        mSpeedCmd = mSpeedCmd*(80/618.7262f); //This number is part of the Motor Controller configuration
-        mDutyC = Vector4i((int)mSpeedCmd(0), (int)mSpeedCmd(1), (int)mSpeedCmd(2), (int)mSpeedCmd(3));  //if mSpeed is in rad/s
-        mDutyC += Vector4i(10,10,10,10);
+        quaternion DC = mSpeedCmd*(80/618.7262f); //This number is part of the Motor Controller configuration
+        mDutyC = Vector4i((int)DC(0), (int)DC(1), (int)DC(2), (int)DC(3));  //if mSpeed is in rad/s
+
+
+        mDutyC += Vector4i(mDutyC(0)>0?10:-10,
+                           mDutyC(1)>0?10:-10,
+                           mDutyC(2)>0?10:-10,
+                           mDutyC(3)>0?10:-10);
+
         sendDutyCycles(mDutyC);
 
         cerr << "Angles: " << mEuler << endl << "Rates: " << mCurrentRates << endl;

@@ -122,7 +122,7 @@ class Controller : public PeriodicRtThread
     private:
 
         void readInputFile();               /*!< \brief Reads the input file with the system settings. */
-        bool joinIMU();
+        bool joinIMU();                     /*!< \brief Joins the IMU thread and waits for its termination. */
         void updateStates();                /*!< \brief Updates the members representing "Last" (previous) state. */
 
         GX3Communicator mGX3;               //!< Class for accessing the 3DM-GX3.
