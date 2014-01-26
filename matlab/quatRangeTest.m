@@ -14,8 +14,7 @@ angleref=[0,0,0*179.99*pi/180];
 qreff=EulertoQ(angleref);
 qref=ones(length(qmeas),1)*qreff;
 
-% calculate quaternion error (with the restriction that qe is always
-% positive
+% calculate quaternion error (with restriction that qe is always positive)
 qe=calcQuatError(qref,qmeas);
 
 % convert qe to degrees
