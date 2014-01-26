@@ -1,4 +1,4 @@
-function d = readCSV(filename)
+function d = readCSV32(filename)
     data = load(filename);
     
     quat = data(:,2:5);
