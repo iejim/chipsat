@@ -49,7 +49,7 @@ struct SysConsts{
     float Iw;           /*!< lbm-in^2, mass moment of inertia of momentum wheel */
     float wn;           /*!< Natural damping frequency */
     Matrix3f Inertia;   /*!< Moment of Inertia matrix (3x3)*/
-    float motorSpeedMax /*!< Controller max speed at 90% duty cycle - controller min speed at 10% duty cycle */
+    float motorSpeedMax; /*!< Controller max speed at 90% duty cycle - controller min speed at 10% duty cycle */
     float hDotMax;      /*!< Wheel torque saturation */
     float hMax;         /*!< Wheel momentum saturation */
 };
