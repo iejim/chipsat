@@ -1,5 +1,15 @@
+%% Don't use this anymore;
+% Needs to be run on a file that had no manipulation on the measured angles
+% output, being represented in the first graph; then the math to "fix" it,
+% represented by the second graph.
+% This was the test to make sure the 2nd graph matches the actual movement
+% that took place during the test, which the 1st graph with measurements
+% reports incorrectly
+
+
 %%
-d = readCSV('tia-6.csv');
+
+d = readCSV32('tia/tia-6.csv');
 
 %% Fixed
 roll_f = ((d.roll<0)*(-1)*pi)+((d.roll>0)*pi)-d.roll;

@@ -2,9 +2,12 @@
 % File: Fuzz-1.csv, Fuzz-4.csv
 % Motors are off. Free drifting
 %% Load
-d = readCSV32('fuzz/fuzz-14.csv');
-%d4 = readCSV('fuzz/fuzz-4.csv');
+% d = readCSV32('fuzz/fuzz-14.csv');
+% d4 = readCSV('fuzz/fuzz-4.csv');
+d4 = readCSV32('fuzz/fuzz-1.csv');
+% d4 = readCSV32('fuzz/fuzz-1.csv');
 %Rate of change of the drift
+d=d4;
 drift_rate = diff(d.yaw);
 drift_rate = [drift_rate(1); drift_rate]/0.02;
 
