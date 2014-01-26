@@ -31,6 +31,12 @@ for a=1:length(d6.time)
     yt = [yt; y*180/pi];
 end
 
+%% Plot movement
+
+figure(1)
+plot(d6.time, yq, d6.time, ye, d6.time, yt)
+legend('State', 'Error', 'Reference')
+grid on
 %%
 %Concatenate
 res = [d6.ref, yt, d6.quat, d6.yaw*180/pi, d6.time, qe, ye, yq-yt];

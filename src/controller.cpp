@@ -401,6 +401,11 @@ void Controller::saveLogData()
     cerr<< "Writing to file. Please wait...." << endl;
     sync();
 }
+/*!
+    Sends the specified duty cycles commands to all motors.
+
+    \param [in] dc A four integer vector with commands for motors 0-3
+*/
 void Controller::sendDutyCycles(Vector4i dc)
 {
     mMotors.setMotor(0, dc(0));
@@ -409,12 +414,30 @@ void Controller::sendDutyCycles(Vector4i dc)
     mMotors.setMotor(3, dc(3));
 
 }
+/*!
+    Reads the data from an IMU packet stored in the Queue shared between @ref mGX3
+    and the controller thread. It reads only the latest packet in the Queue and
+    extracts the data into the passed arguments. The time from the IMU is normalized
+    to the program's running time.
 
+    As a debug tool, the IMU time and post-process Shared Queue size are printed to
+    standard error (cerr). The size should be zero, otherwise packets where skipped,
+    which means some delay in the controller happened.
+
+    The data order is handled as Roll, Pitch, Yaw.
+
+    \param [out] euler The vector used to store the Euler angles (rads)
+    \param [out] rates The vector used to store the Angular Rates (rad/s)
+    \param [out] timer The variable to store the timestamp of the packet
+            in seconds since the first packet received.(s)
+
+    \return false if the Shared Queue is empty.
+*/
 bool Controller::readIMU(vector &euler, vector &rates, float &timer)
 {
     //Wait to see if there is an IMU packet available
     if (mGX3.size()==0)
-        return false;//Should work to synchronize the first time everything in run.
+        return false;//Should work to synchronize the first time everything is run.
 
     packet_ptr pack;
     pack  = mGX3.front();
@@ -434,6 +457,14 @@ bool Controller::readIMU(vector &euler, vector &rates, float &timer)
 
 }
 
+/*!
+    Transforms the IMU Euler Angle readings to match the platform's coordinate system.
+    This assumes the IMU is installed in its default position in the center of the table.
+    There is the possibility to expand this function by accepting a rotation matrix.
+
+    \param [in|out] euler The euler angles extracted from an IMU packet to be rewritten
+                            relative to the table's reference frame.
+*/
 void Controller::fixAngles(vector& euler)
 {
 //TODO Make this generic (by accepting a matrix?) for flexibility
@@ -451,12 +482,30 @@ void Controller::fixAngles(vector& euler)
 
 }
 
+/*!
+    Transforms the IMU Angular Rates readings to match the platform's coordinate system.
+    This assumes the IMU is installed in its default position in the center of the table.
+    There is the possibility to expand this function by accepting a rotation matrix.
+
+    \param [in|out] rates The angular rates extracted from an IMU packet to be rewritten
+                            relative to the table's reference frame.
+*/
 void Controller::fixRates(vector& rates)
 {
     rates(0) = -rates(0);
     rates(1) = -rates(1);
 
 }
+
+/*!
+    Samples the angular speed and current readings from the motor controllers. These values
+    are read in Volts and converted the appropiate units using the user-defined Motor
+    parameters in the input file.
+
+    \param [out] speedVec Four-element vector to hold the speed of each motor (rad/s)
+    \param [out] currentVec Four-element vector to hold the current used by each motor (A)
+    \sa AdcGains, mMotorScale
+*/
 void Controller::readMotors(Vector4f &speedVec, Vector4f &currentVec)
 {
     float currents[4], speeds[4]; //Hold the current and speed readings
@@ -475,8 +524,17 @@ void Controller::readMotors(Vector4f &speedVec, Vector4f &currentVec)
                 mMotorScale.vToAmps*currents[3];
 }
 
+/*!
+    This function will stop execution of the controller thread and wait for the IMU communicator
+    thread to terminate. A timeout of 5ms is given to the IMU thread to terminate in order to
+    prevent the system from hanging if anything goes wrong during the IMU termination process.
+
+    \return Wether the IMU thread was successfully joined before termination.
+    \sa GX3Communicator
+*/
 bool Controller::joinIMU()
 {
+
     mGX3.stop();
     if (mGX3.join(5000)) //Give it a timeout in case it died before joining
     {
@@ -491,7 +549,9 @@ bool Controller::joinIMU()
     }
 }
 
-
+/*!
+    Updates the internal variables to store the current values for the next iteration.
+*/
 void Controller::updateStates()
 {
     mLastQuat = mCurrentQuat;

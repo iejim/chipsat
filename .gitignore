@@ -27,3 +27,6 @@ obj
 
 # Backup files
 *.*~
+
+# Matlab save files
+*.asv

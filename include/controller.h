@@ -62,7 +62,7 @@ struct RefData{
 
 /*! \brief Struct containing the motor conversion values from voltages. */
 struct AdcGains{
-    float vToRads;  /*!< V to Radians */
+    float vToRads;  /*!< V to Radian/s */
     float vToAmps;  /*!< V to Amps */
 };
 
