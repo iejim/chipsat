@@ -5,7 +5,8 @@ close all;clear all;clc;
 
 %%
 % d=readCSV32('fuzz/fuzz-14.csv');
-d=readCSV('dime/dime-9.csv');
+% d=readCSV('dime/dime-9.csv');
+d=readCSV('blue/blue-4.csv');
 
 % convert reference command from quaternion to euler angles
 d.refangles=QtoEuler(d.ref);
