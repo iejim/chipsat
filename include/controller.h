@@ -112,7 +112,7 @@ class Controller : public PeriodicRtThread
         static quaternion createQuaternion(vector euler); /*!< \brief Creates a quaternion based on euler angles */
 
         /*! \brief Performs quaternion vector integration. */
-        static quaternion integrateQ(quaternion input, quaternion old_input, quaternion old_output, float delta_time, float gain  = 1);
+        static quaternion integrateQ(quaternion in, quaternion old_in, quaternion old_out, float delta_time, float gain  = 1);
 
         static quaternion multiplyQ(quaternion q1, quaternion q2); /*!< \brief Multiply two quaternion vectors */
 
