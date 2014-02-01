@@ -6,7 +6,7 @@ close all;clear all;clc;
 %%
 % d=readCSV32('fuzz/fuzz-14.csv');
 % d=readCSV('dime/dime-9.csv');
-d=readCSV('blue/blue-4.csv');
+d=readCSV('blue/blue-1.csv');
 
 % convert reference command from quaternion to euler angles
 d.refangles=QtoEuler(d.ref);
@@ -23,11 +23,18 @@ grid on;
 a=axis;
 axis([a(1),a(2),a(3)-5*pi/180,a(4)+5*pi/180]);
 legend('meas','ref','error');
+xlabel('time (s)');
+ylabel('Degrees');
+title('Position (Yaw)');
 
 figure;
 % plot motor command input speeds vs. measured output speeds
 subplot(2,4,1)
 plot(d.time,d.speedcmd(:,1)*(619/7262/80),'r',d.time,d.rpm(:,1)*pi/30,'b');grid on;legend('cmd','meas');
+xlabel('time (s)');
+ylabel('speed (rad/s)');
+title('Momentum Wheels');
+
 subplot(2,4,2)
 plot(d.time,d.speedcmd(:,2)*(619/7262/80),'r',d.time,d.rpm(:,2)*pi/30,'b');grid on;
 subplot(2,4,3)
@@ -38,6 +45,8 @@ plot(d.time,d.speedcmd(:,4)*(619/7262/80),'r',d.time,d.rpm(:,4)*pi/30,'b');grid 
 % plot duty cycles
 subplot(2,4,5)
 plot(d.time,d.dc(:,1),'g');grid on;legend('dc');
+xlabel('time (s)');
+ylabel('duty cycle');
 subplot(2,4,6)
 plot(d.time,d.dc(:,2),'g');grid on;
 subplot(2,4,7)
@@ -49,6 +58,9 @@ plot(d.time,d.dc(:,4),'g');grid on;
 figure
 subplot(1,4,1)
 plot(d.time,d.torque(:,1),'k');grid on;legend('torques');
+xlabel('time (s)');
+ylabel('N-m');
+title('Torques');
 subplot(1,4,2)
 plot(d.time,d.torque(:,2),'k');grid on;
 subplot(1,4,3)
