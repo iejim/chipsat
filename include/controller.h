@@ -13,6 +13,12 @@
 
 #define _USE_MATH_DEFINES
 #include <cmath>
+#include <unistd.h>
+#include <sys/time.h>
+
+using std::cout;
+using std::cerr;
+using std::endl;
 
 using namespace Eigen;
 
@@ -101,7 +107,7 @@ class Controller : public PeriodicRtThread
         void readMotors(Vector4f &speeds, Vector4f &currents); /*!< \brief Reads the motors and return the scaled values */
 
 //TODO Eventually, this function will have its own file and could be called from within run()
-//        void controlLaw(); /*!< Implements the control law using the class variables*/
+        void controlLaw(); /*!< Implements the control law using the class variables*/
 
         void readNextReference(); /*!< \brief Reads the next Reference Command line from the input file. */
 
@@ -176,11 +182,13 @@ class Controller : public PeriodicRtThread
         Vector4f mAmps;                     //!< Current motor current (Amps) state for ALL motors.
 
         // Calculated quantities
+        quaternion mQuatErrorI;             //!< Integrated error, calculated.
         vector mTc3;                        //!< Current 3-axis torque.
         Vector4f mTorque;                   //!< Current motor torque state for ALL motors.
         Vector4i mDutyC;                    //!< Current motor duty cycle.
 
         // Storage
+        quaternion mLastQuatErrorI;         //!< Last integrated current error.
         Vector4f mLastTorque;               //!< Last motor torque state for ALL motors.
         Vector4f mLastAmps;                 //!< Last motor current (Amps) state for ALL motors.
         Vector4i mLastDutyC;                //!< Last motor duty cycle.
