@@ -167,7 +167,6 @@ void Controller::run()
         readMotors(mSpeed, mAmps);
         mCurrentQuat = createQuaternion(mEuler);
 
-        //Calculate quaternion error
         if(gotReference){
             gotReference = false;
         }
@@ -175,6 +174,7 @@ void Controller::run()
 //TODO: Call the trajectory generation function
         //
 
+        //Calculate quaternion error
         Qt << mReference.q(3),mReference.q(2),-mReference.q(1),mReference.q(0),
               -mReference.q(2),mReference.q(3),mReference.q(0),mReference.q(1),
               mReference.q(1),-mReference.q(0),mReference.q(3),mReference.q(2),
@@ -184,10 +184,12 @@ void Controller::run()
 
         mQuatError = Qt*qs; //Save the error (as a quaternion)
 
+        mQuatErrorI = integrateQ(mQuatError,mLastQuatError,mLastQuatErrorI, m(ImuTime-mLast))
 
 /// CONTROL LAW: calculate required torque on each of 3 axes
         mTc3 =2*Kp*mQuatError*mQuatError(3);
-        //Tc=2*Kp*qe*qe(4)+Ki*qei+Kv*(w_star-w)+Ka*alpha_star+Td_hat+crossterm;
+//        mTc3=2*Kp*mQuatError*mQuatError(3)+Ki*
+        //Tc=2*Kp*qe*qe(3)+Ki*qei+Kv*(w_star-w)+Ka*alpha_star+Td_hat+crossterm;
 
         //Calculate required torque on each of 4 wheels
         Vector4f Tc3Comp(mTc3(0), mTc3(1), mTc3(2), 0.);
@@ -195,7 +197,7 @@ void Controller::run()
 
         //Calculate required speeds (rad/s)
         mSpeedCmd = integrateQ(mTorque,mLastTorque,mLastSpeedCmd,(mImuTime-mLastImuTime),(1/mSystem.Iw)); //units rad/s
-
+        //
         //Calculate required duty cycles
         quaternion DC = mSpeedCmd*speed2dc;
         mDutyC = Vector4i((int)DC(0), (int)DC(1), (int)DC(2), (int)DC(3));  //if mSpeed is in rad/s
@@ -666,7 +668,7 @@ quaternion Controller::integrateQ(quaternion in, quaternion old_in, quaternion o
     //y[k] = y[k-1] + KI*dt/2*(in[k]+in[k-1]);
     quaternion q;
     q = old_out + gain*delta_time/2*(in+old_in);
-    cerr << "spd " << q(0) << " , " << q(1) << " , " << q(2) << " , " << q(3); //look at output
+//    cerr << "spd " << q(0) << " , " << q(1) << " , " << q(2) << " , " << q(3); //look at output
     return q;
 }
 

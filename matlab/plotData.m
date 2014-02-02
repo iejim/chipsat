@@ -6,12 +6,19 @@ close all;clear all;clc;
 %%
 % d=readCSV32('fuzz/fuzz-14.csv');
 % d=readCSV('dime/dime-9.csv');
-d=readCSV('blue/blue-1.csv');
+d=readCSV('blue/blue-5.csv');
 
 % convert reference command from quaternion to euler angles
 d.refangles=QtoEuler(d.ref);
 % convert quat. error to angles error
 d.errorangles=QtoEuler(d.error);
+
+% convert duty cycles back to rad/s
+d.dc2radps = zeros(size(d.dc));
+for i=1:length(d.dc2radps)
+    d.dc2radps(i,:) = d.dc(i,:)-10*sign(d.dc(i,:));
+end
+    d.dc2radps = d.dc2radps*5000/80*pi/30;
 
 % compare position reference, measured, and calculated error
 figure;
@@ -30,17 +37,24 @@ title('Position (Yaw)');
 figure;
 % plot motor command input speeds vs. measured output speeds
 subplot(2,4,1)
-plot(d.time,d.speedcmd(:,1)*(619/7262/80),'r',d.time,d.rpm(:,1)*pi/30,'b');grid on;legend('cmd','meas');
+plot(d.time,d.speedcmd(:,1),'r',d.time,d.speedmeas(:,1)*pi/30,'b');grid on;legend('cmd','meas'); % used to mult. speedcmd **(619/7262/80)
+hold on;
+plot(d.time,d.dc2radps(:,1),'k--');
 xlabel('time (s)');
 ylabel('speed (rad/s)');
 title('Momentum Wheels');
-
 subplot(2,4,2)
-plot(d.time,d.speedcmd(:,2)*(619/7262/80),'r',d.time,d.rpm(:,2)*pi/30,'b');grid on;
+plot(d.time,d.speedcmd(:,2),'r',d.time,d.speedmeas(:,2)*pi/30,'b');grid on;
+hold on;
+plot(d.time,d.dc2radps(:,2),'k--');
 subplot(2,4,3)
-plot(d.time,d.speedcmd(:,3)*(619/7262/80),'r',d.time,d.rpm(:,3)*pi/30,'b');grid on;
+plot(d.time,d.speedcmd(:,3),'r',d.time,d.speedmeas(:,3)*pi/30,'b');grid on;
+hold on;
+plot(d.time,d.dc2radps(:,3),'k--');
 subplot(2,4,4)
-plot(d.time,d.speedcmd(:,4)*(619/7262/80),'r',d.time,d.rpm(:,4)*pi/30,'b');grid on;
+plot(d.time,d.speedcmd(:,4),'r',d.time,d.speedmeas(:,4)*pi/30,'b');grid on;
+hold on;
+plot(d.time,d.dc2radps(:,4),'k--');
 
 % plot duty cycles
 subplot(2,4,5)
