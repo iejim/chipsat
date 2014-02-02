@@ -81,10 +81,11 @@ class Controller : public PeriodicRtThread
         /** Default constructor */
         Controller(int priority, unsigned int period_us, const char* imuserial = "/dev/ttyO4", const char* i2cDevice = "/dev/i2c-3");
 
+        /*! \brief Initializes the settings and values for the controller (IMU, Gains, Motors, etc). */
+        void initialize();
 
-        void initialize(); /*!< \brief Initializes the settings and values for the controller (IMU, Gains, Motors, etc). */
-
-        virtual void run(); /*!< \brief This is where the Control Law is run. */
+        /*! \brief This is where the Control Law is run. */
+        virtual void run();
 
         /*! \brief Stops the loop in the thread.
 
@@ -92,36 +93,50 @@ class Controller : public PeriodicRtThread
         */
         void stop() { mKeepRunning = false; }
 
-        void setInputFile(const char* inputFile); /*!< \brief Opens the specified input file so it can be read. */
+        /*! \brief Opens the specified input file so it can be read. */
+        void setInputFile(const char* inputFile);
 
-        void setLogFile(const char* logFile); /*!<  \brief Opens the specified file so the CSV log data can be saved. */
+        /*!  \brief Opens the specified file so the CSV log data can be saved. */
+        void setLogFile(const char* logFile);
 
-        void sendDutyCycles(Vector4i dc); /*!< \brief Sets the duty cycle for all motors */
+        /*! \brief Sets the duty cycle for all motors */
+        void sendDutyCycles(Vector4i dc);
 
+        /*! \brief Recovers the last data packet sent by the IMU */
         bool readIMU(vector &euler, vector &rates, float &timer);
 
-        void fixAngles(vector &euler); /*!< \brief Fix the rates vector in case the position of the IMU requires it */
+        /*! \brief Fix the rates vector in case the position of the IMU requires it */
+        void fixAngles(vector &euler);
 
-        void fixRates(vector &rates); /*!< \brief Fix the rates vector in case the position of the IMU requires it */
+        /*! \brief Fix the rates vector in case the position of the IMU requires it */
+        void fixRates(vector &rates);
 
-        void readMotors(Vector4f &speeds, Vector4f &currents); /*!< \brief Reads the motors and return the scaled values */
+        /*! \brief Reads the motors and return the scaled values */
+        void readMotors(Vector4f &speeds, Vector4f &currents);
 
-//TODO Eventually, this function will have its own file and could be called from within run()
-        void controlLaw(); /*!< Implements the control law using the class variables*/
+        /*! \brief Implements the control law structure and logic using the class variables */
+        void controlLaw();
 
-        void readNextReference(); /*!< \brief Reads the next Reference Command line from the input file. */
+        /*! \brief Reads the next Reference Command line from the input file. */
+        void readNextReference();
 
-        void logData(); /*!< \brief Stores the CSV runtime data in memory for saving. */
+        /*! \brief Stores the CSV runtime data in memory for saving. */
+        void logData();
 
-        void saveLogData(); /*! \brief Writes the log data to the CSV log file. */
+        /*! \brief Writes the log data to the CSV log file. */
+        void saveLogData();
 
-        static quaternion createQuaternion(vector euler); /*!< \brief Creates a quaternion based on euler angles */
+        /*! \brief Creates a quaternion based on euler angles */
+        static quaternion createQuaternion(vector euler);
 
         /*! \brief Performs quaternion vector integration. */
         static quaternion integrateQ(quaternion in, quaternion old_in, quaternion old_out, float delta_time, float gain  = 1);
 
-        static quaternion multiplyQ(quaternion q1, quaternion q2); /*!< \brief Multiply two quaternion vectors */
+        /*! \brief Multiply two quaternion vectors */
+        static quaternion multiplyQ(quaternion q1, quaternion q2);
 
+        /*! \brief Performs First-order filtering based on the supplied time constant */
+        static quatertion firstOrderFilterQ(quaternion in, quaternion old_in, quaternion old_out, float delta_time, float w_c  = 2*pi);
 
         /** Default destructor */
         ~Controller();
