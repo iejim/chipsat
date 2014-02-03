@@ -6,40 +6,45 @@ using namespace USU;
 void Controller::controlLaw()
 {
 
-
     /// Temporary variables for the controller are created before while loop.
-
 
     //Trajectory Generation Initalization
     mQuatStar = quaternion(0,0,0,0);
     mOmegaStar = vector(0,0,0);
     mAlphaStar = vector(0,0,0);
+    float angle;
+    vector axis;
+    quaternion time;
+    quaternion q0;
+    //To go from rad/s to duty cycle for the speed command
     float speed2dc = RAD2RPM/mSystem.motorSpeedMax;
 
-//    float bIw = 1/(mSystem.b+mSystem.Iw); //come back and give number
-
-    Matrix3x4 Kp;;
+    //Define PIV gains
+    Matrix3x4 Kp;
     Kp <<   mPIV.KP*2.2*mSystem.Inertia(0,0)*mSystem.wn*mSystem.wn,0,0,0,
             0,mPIV.KP*2.2*mSystem.Inertia(1,1)*mSystem.wn*mSystem.wn,0,0,
             0,0,mPIV.KP*2.2*mSystem.Inertia(2,2)*mSystem.wn*mSystem.wn,0;
 
-    Matrix3x4 Kv;;
+    Matrix3x4 Kv;
     Kv <<   mPIV.KI*1.9*mSystem.Inertia(0,0)*mSystem.wn*mSystem.wn,0,0,0,
             0,mPIV.KI*1.9*mSystem.Inertia(1,1)*mSystem.wn*mSystem.wn,0,0,
             0,0,mPIV.KI*1.9*mSystem.Inertia(2,2)*mSystem.wn*mSystem.wn,0;
 
-    Matrix3x4 Ki;;
+    Matrix3x4 Ki;
     Ki <<   mPIV.KP*1*mSystem.Inertia(0,0)*mSystem.wn*mSystem.wn,0,0,0,
             0,mPIV.KP*1*mSystem.Inertia(1,1)*mSystem.wn*mSystem.wn,0,0,
             0,0,mPIV.KP*1*mSystem.Inertia(2,2)*mSystem.wn*mSystem.wn,0;
 
     //Matrix to convert Torque values from a 3-axis element vector to the 4-wheel model
     Matrix4f Tc3to4;
-//    Tc3to4 << 0.5,0,0.25,0.25,  0,0.5,0.25,-0.25,   -0.5,0,0.25,0.25,     0,-0.5,0.25,-0.25;
-//correct Tc3to4 conversion matrix below:
+    //correct Tc3to4 conversion matrix below:
     Tc3to4 << -0.25,-0.25,0.25,0.25,    -0.25,0.25,0.25,-0.25,  0.25,-0.25,0.25,-0.25,  0.25,0.25,0.25,0.25;
 
+    //Matrix to convert from 4-wheel model to 3-axis (to calculate h, h_dot, crossterm)
+    Matrix3x4 Tc4to3;
+    Tc4to3 << -1, -1, 1, 1,    -1, 1, -1, 1,   1, 1, 1, 1;
 
+    //Declare matrix for quaternion error calculation
     Matrix4f Qt;
 
     //Flags
@@ -60,7 +65,6 @@ void Controller::controlLaw()
             break;
         }
 
-
         if(!inSync){
         //Wait for the first IMU packet to arrive (as a way of synchronization)
             mFirstImuTime = 0.0;
@@ -80,10 +84,15 @@ void Controller::controlLaw()
             {
                 usleep(100); //Give it some time for data to arrive to the queue
                 gotIMU = readIMU(mEuler, mCurrentRates, mImuTime);
-
             }
-
         }
+
+        fixRates(mCurrentRates);
+        filterRates(mFiltRates);
+        fixAngles(mEuler);
+        readMotors(mSpeed, mAmps);
+        filterMotors(mFiltSpeed, mFiltAmps);
+        mCurrentQuat = createQuaternion(mEuler);
 
         gettimeofday(&now, NULL);
         mClock = (now.tv_sec - start.tv_sec) + (now.tv_usec - start.tv_usec)/1000000.0f;
@@ -96,19 +105,16 @@ void Controller::controlLaw()
 
             if(mReference.num < mTotalRefs) //Read only if there are any left
                 readNextReference();
-        }
-
-        fixRates(mCurrentRates);
-        fixAngles(mEuler);
-        readMotors(mSpeed, mAmps);
-        mCurrentQuat = createQuaternion(mEuler);
+        //step one of trajectory generation: get tstart,q0 and calculate qe, ANGLE,AXIS,TIME
+        trajectorySetup(q0, angle, axis, time);
+       }
 
         if(gotReference){
             gotReference = false;
         }
 
-//TODO: Call the trajectory generation function
-        //
+        // Call the trajectory generation function
+        trajectoryGenerator(q0,angle,axis,time);
 
         //Calculate quaternion error
         Qt << mReference.q(3),mReference.q(2),-mReference.q(1),mReference.q(0),
@@ -123,9 +129,13 @@ void Controller::controlLaw()
         mQuatErrorI = integrateQ(mQuatError,mLastQuatError,mLastQuatErrorI, (mImuTime-mLastImuTime));
 
 /// CONTROL LAW: calculate required torque on each of 3 axes
-        mTc3 =2*Kp*mQuatError*mQuatError(3);
-//        mTc3=2*Kp*mQuatError*mQuatError(3)+Ki*
-        //Tc=2*Kp*qe*qe(3)+Ki*qei+Kv*(w_star-w)+Ka*alpha_star+Td_hat+crossterm;
+
+        //Calculate torque crossterm (combines table + wheels)
+        Matrix3x3 wcross << 0, -w(3), w(1), w(2), 0, -w(0), -w(1), w(2), 0;
+        vector hw = Iw*Tc4to3*mFiltSpeed;
+        vector crossterm = wcross*(Inertia*mFiltRates+hw)
+//        mTc3 =2*Kp*mQuatError*mQuatError(3);  // P controller, first generation of testing
+        Tc=2*Kp*mQuatError*mQuatError(3)+Ki*mQuatErrorI+Kv*(mOmegaStar-mFiltRates)+Ka*mAlphaStar+crossterm;
 
         //Calculate required torque on each of 4 wheels
         Vector4f Tc3Comp(mTc3(0), mTc3(1), mTc3(2), 0.);
@@ -133,7 +143,7 @@ void Controller::controlLaw()
 
         //Calculate required speeds (rad/s)
         mSpeedCmd = integrateQ(mTorque,mLastTorque,mLastSpeedCmd,(mImuTime-mLastImuTime),(1/mSystem.Iw)); //units rad/s
-        //
+
         //Calculate required duty cycles
         quaternion DC = mSpeedCmd*speed2dc;
         mDutyC = Vector4i((int)DC(0), (int)DC(1), (int)DC(2), (int)DC(3));  //if mSpeed is in rad/s
