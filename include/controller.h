@@ -58,6 +58,8 @@ struct SysConsts{
     float motorSpeedMax; /*!< Controller max speed at 90% duty cycle - controller min speed at 10% duty cycle */
     float hDotMax;      /*!< Wheel torque saturation */
     float hMax;         /*!< Wheel momentum saturation */
+    float Amax;         /*!< Table maximum acceleration */
+    float Vmax;         /*!< Table maximum velocity */
 };
 
 /*! \brief Struct to store position reference information. */
@@ -72,6 +74,8 @@ struct AdcGains{
     float vToRads;  /*!< V to Radian/s */
     float vToAmps;  /*!< V to Amps */
 };
+
+
 
 
 
@@ -116,6 +120,12 @@ class Controller : public PeriodicRtThread
 
         /*! \brief Implements the control law structure and logic using the class variables */
         void controlLaw();
+
+        /*! \brief Trajectory setup outputs TIME, etc. used by trajtory generator*/
+        void  trajectorySetup(float tstart, quaternion reference, quaternion qinit, quaternion &q0, float &angle, vector &axis, vector4f &time);
+
+        /*! \brief trajectory generator outputs mQuatStar, mOmegaStar, mAlphaStar*/
+        void trajectoryGenerator(quaternion q0, float angle, vector axis, vector4f time);
 
         /*! \brief Reads the next Reference Command line from the input file. */
         void readNextReference();
