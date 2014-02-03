@@ -22,7 +22,7 @@ end
     d.dc2radps = d.dc2radps*5000/80*pi/30;
     
 % calculate torque from current used by wheels
-d.torque_curr = -d.amps*36.9e-3; % (Nm)
+d.torque_curr = -d.amps*36.9e-3*10; % (Nm)
 
 % compare position reference, measured, and calculated error
 figure;
