@@ -116,10 +116,13 @@ class Controller : public PeriodicRtThread
         void fixRates(vector &rates);
 
         /*! \brief Filter the angular rates in order to clean it up a bit. */
-        void filterRates();
+        void filterRates(vector &out_rates);
 
         /*! \brief Reads the motors and return the scaled values */
         void readMotors(Vector4f &speeds, Vector4f &currents);
+
+        /*! \brief Filter the angular rates in order to clean it up a bit. */
+        void filterMotors(quaternion &out_speed, quaternion &out_amps);
 
         /*! \brief Implements the control law structure and logic using the class variables. */
         void controlLaw();
@@ -204,21 +207,27 @@ class Controller : public PeriodicRtThread
 
         // Sampled data
         vector mEuler;                      //!< Current Euler angles.
-        vector mCurrentRates;               //!< Current angular rates, after filtering.
-        vector mRawRates;                   //!< Holds the unfiltered IMU angular rates readings.
+        vector mCurrentRates;               //!< Holds the unfiltered IMU angular rates readings.
+        vector mFiltRates;                  //!< Current angular rates, after filtering.
         Vector4f mSpeed;                    //!< Current motor speed (rad/s) state for ALL motors.
+        Vector4f mFiltSpeed;                //!< Current motor speed after filtering.
         float mImuTime;                     //!< Time stamp of the IMU packet.
+        Vector4f mAmps;                     //!< Current motor current (Amps) state for ALL motors.
+        Vector4f mFiltAmps;                 //!< Current motor amps after filtering.
+
 
         // Storage
         quaternion mLastQuat;               //!< Last state.
         quaternion mLastQuatError;          //!< Last error.
         quaternion mLastSpeedCmd;           //!< Last speed command (rad/s).
         vector mLastEuler;                  //!< Last Euler angles.
-        vector mLastRates;                  //!< Last angular rates.
-        vector mLastRawRates;               //!< Last unfiltered IMU angular rates readings.
+        vector mLastRates;                  //!< Last angular rates, from.
+        vector mLastFiltRates;              //!< Last filtered angular rates readings.
         float mLastImuTime;                 //!< Last time stamp of the IMU packet.
         Vector4f mLastSpeed;                //!< Last motor speed state for ALL motors.
-        Vector4f mAmps;                     //!< Current motor current (Amps) state for ALL motors.
+        Vector4f mLastAmps;                 //!< Last motor current (Amps) state for ALL motors.
+        Vector4f mLastFiltSpeed;            //!< Last filtered motor speed.
+        Vector4f mLastFiltAmps;             //!< Last filtered motor current.
 
         // Calculated quantities
         quaternion mQuatErrorI;             //!< Integrated error, calculated.
@@ -229,7 +238,6 @@ class Controller : public PeriodicRtThread
         // Storage
         quaternion mLastQuatErrorI;         //!< Last integrated current error.
         Vector4f mLastTorque;               //!< Last motor torque state for ALL motors.
-        Vector4f mLastAmps;                 //!< Last motor current (Amps) state for ALL motors.
         Vector4i mLastDutyC;                //!< Last motor duty cycle.
 
 

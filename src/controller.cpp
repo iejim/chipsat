@@ -377,9 +377,9 @@ void Controller::fixRates(vector& rates)
     of the table's rotational speed. The cutoff frequency was selected to be 1Hz.
 
 */
-void Controller::filterRates()
+void Controller::filterRates(vector &out_rates)
 {
-    mCurrentRates = firstOrderFilterV(mRawRates,mLastRawRates, mLastRates, mImuTime-mLastImuTime);
+    out_rates = firstOrderFilterV(mCurrentRates, mLastRates, mLastFiltRates, mImuTime-mLastImuTime);
 }
 
 /*!
@@ -407,6 +407,16 @@ void Controller::readMotors(Vector4f &speedVec, Vector4f &currentVec)
                 mMotorScale.vToAmps*currents[1],
                 mMotorScale.vToAmps*currents[2],
                 mMotorScale.vToAmps*currents[3];
+}
+
+/*!
+    Performs a low-pass filter of the angular rates so we can use it as a cleaner measure
+    of the table's rotational speed. The cutoff frequency was selected to be 1Hz.
+*/
+void Controller::filterMotors(quaternion &out_speed, quaternion &out_amps)
+{
+    out_speed = firstOrderFilterQ(mSpeed, mLastSpeed, mLastFiltSpeed, mImuTime-mLastImuTime);
+    out_amps = firstOrderFilterQ(mAmps, mLastAmps, mLastFiltAmps, mImuTime-mLastImuTime);
 }
 
 /*!
