@@ -17,7 +17,7 @@ Controller::Controller(int priority, unsigned int period_us, const char* imuseri
     mReference = {0, 0.0f, quaternion(0.0f,0.0f,0.0f,0.0f)};
     mNextReference = {0, 0.0f, quaternion(0.0f,0.0f,0.0f,0.0f)};
     mPIV = {0.0f, 0.0f, 0.0f};
-    mFFGains = {0.0, 0.0};
+    mFFGains = {vector(0.0f,0.0f,0.0f), vector(0.0f,0.0f,0.0f)};
     mFirstImuTime = 0.0;
     mStopTime = 0.0;
 }
@@ -109,10 +109,16 @@ void Controller::readInputFile()
     //Read PIV gains (KP, KI, KVff, KAff)
     mInputFile >> mPIV.KP >> mPIV.KI >> mPIV.KV;
     //Read Trajectory Gen FF gains
-    mInputFile >> mFFGains.KVff >>  mFFGains.KAff;
+    float k0, k1, k2;
+    mInputFile >> k0 >> k1 >> k2;
+    mFFGains.KVff << k0, k1, k2;
+
+    mInputFile >> k0 >> k1 >> k2;
+    mFFGains.KAff << k0, k1, k2;
+
 
     //Read the system constants
-    mInputFile >> mSystem.b >> mSystem.Iw >> mSystem.wn >> mSystem.hDotMax >> mSystem.hMax;
+    mInputFile >> mSystem.b >> mSystem.Iw >> mSystem.wn >> mSystem.hDotMax >> mSystem.hMax >> mSystem.Amax >> mSystem.Vmax;
 
     float i0, i1, i2, i3, i4, i5, i6, i7, i8;
     //Read the Moment of Inertia matrix
@@ -367,6 +373,16 @@ void Controller::fixRates(vector& rates)
 }
 
 /*!
+    Performs a low-pass filter of the angular rates so we can use it as a cleaner measure
+    of the table's rotational speed. The cutoff frequency was selected to be 1Hz.
+
+*/
+void Controller::filterRates()
+{
+    mCurrentRates = firstOrderFilterV(mRawRates,mLastRawRates, mLastRates, mImuTime-mLastImuTime);
+}
+
+/*!
     Samples the angular speed and current readings from the motor controllers. These values
     are read in Volts and converted the appropiate units using the user-defined Motor
     parameters in the input file.
@@ -431,6 +447,7 @@ void Controller::updateStates()
     mLastSpeed = mSpeed;
     mLastImuTime = mImuTime;
 
+    mLastQuatErrorI = mQuatErrorI;
     mLastTorque = mTorque;
     mLastAmps = mAmps;
     mLastDutyC = mDutyC;
@@ -506,6 +523,10 @@ quaternion Controller::createQuaternion(vector euler)
 
 }
 
+/*!
+    Implements the discrete trapezoidal integration of a quaternion. The discrete integrator is based
+    on the Bilinear Transformation of an integrator.
+*/
 quaternion Controller::integrateQ(quaternion in, quaternion old_in, quaternion old_out, float delta_time, float gain)
 {
     //Implements discrete trapezoidal integration
@@ -517,6 +538,9 @@ quaternion Controller::integrateQ(quaternion in, quaternion old_in, quaternion o
     return q;
 }
 
+/*!
+    Implements the multiplication of two quaternions.
+*/
 quaternion Controller::multiplyQ(quaternion q1, quaternion q2)
 {
 
@@ -532,7 +556,64 @@ quaternion Controller::multiplyQ(quaternion q1, quaternion q2)
 
 }
 
+/*!
+    This filter implements a generic discrete first-order filter:
+      az + a
+     --------
+       z - b
+ */
+float firstOrderFilterF(float in, float old_in, float old_out, float a, float b)
+{
+    return b*old_out + a*(in-old_in);
+}
+/*!
+    This filter implements the Discrete Bilinear Transformation of a first-order, continuous LTI low-pass filter:
+        w_c
+     -------
+     s  + w_c
 
+    This function is designed to be used on different filter by specifying the 3dB cufoff frequency and sampling time.
+    If the sampling time between calls changes, the function will not behave correcty for it won't follow Discrete Systems rules.
+
+    The center frequency defaults to 2*PI (1Hz).
+ */
+quaternion firstOrderFilterQ(quaternion in, quaternion old_in, quaternion old_out, float sampling_time, float w_c)
+{
+    float tf = 2.0/sampling_time;
+    float a = w_c/(tf +w_c);
+    float b = (tf - w_c)/(2.0/tf+w_c);
+    quaternion q;
+    q << firstOrderFilterF(in(0), old_in(0), old_out(0), a,b),
+         firstOrderFilterF(in(1), old_in(1), old_out(1), a,b),
+         firstOrderFilterF(in(2), old_in(2), old_out(2), a,b),
+         firstOrderFilterF(in(3), old_in(3), old_out(3), a,b);
+
+    return q;
+}
+
+/*!
+    This filter implements the Discrete Bilinear Transformation of a first-order, continuous LTI low-pass filter:
+        w_c
+     -------
+     s  + w_c
+
+    This function is designed to be used on different filter by specifying the 3dB cufoff frequency and sampling time.
+    If the sampling time between calls changes, the function will not behave correcty for it won't follow Discrete Systems rules.
+
+    The center frequency defaults to 2*PI (1Hz).
+ */
+vector firstOrderFilterV(vector in, vector old_in, vector old_out, float sampling_time, float w_c)
+{
+    float tf = 2.0/sampling_time;
+    float a = w_c/(tf +w_c);
+    float b = (tf - w_c)/(2.0/tf+w_c);
+    vector v;
+    v << firstOrderFilterF(in(0), old_in(0), old_out(0), a,b),
+         firstOrderFilterF(in(1), old_in(1), old_out(1), a,b),
+         firstOrderFilterF(in(2), old_in(2), old_out(2), a,b);
+
+    return v;
+}
 
 Controller::~Controller()
 {
