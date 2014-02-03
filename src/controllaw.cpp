@@ -25,15 +25,15 @@ void Controller::controlLaw()
             0,mPIV.KP*2.2*mSystem.Inertia(1,1)*mSystem.wn*mSystem.wn,0,0,
             0,0,mPIV.KP*2.2*mSystem.Inertia(2,2)*mSystem.wn*mSystem.wn,0;
 
-    Matrix3x4 Kv;
-    Kv <<   mPIV.KI*1.9*mSystem.Inertia(0,0)*mSystem.wn*mSystem.wn,0,0,0,
-            0,mPIV.KI*1.9*mSystem.Inertia(1,1)*mSystem.wn*mSystem.wn,0,0,
-            0,0,mPIV.KI*1.9*mSystem.Inertia(2,2)*mSystem.wn*mSystem.wn,0;
-
     Matrix3x4 Ki;
     Ki <<   mPIV.KP*1*mSystem.Inertia(0,0)*mSystem.wn*mSystem.wn,0,0,0,
             0,mPIV.KP*1*mSystem.Inertia(1,1)*mSystem.wn*mSystem.wn,0,0,
             0,0,mPIV.KP*1*mSystem.Inertia(2,2)*mSystem.wn*mSystem.wn,0;
+
+    matrix Kv;
+    Kv <<   mPIV.KI*1.9*mSystem.Inertia(0,0)*mSystem.wn*mSystem.wn,0,0,
+            0,mPIV.KI*1.9*mSystem.Inertia(1,1)*mSystem.wn*mSystem.wn,0,
+            0,0,mPIV.KI*1.9*mSystem.Inertia(2,2)*mSystem.wn*mSystem.wn;
 
     //Matrix to convert Torque values from a 3-axis element vector to the 4-wheel model
     Matrix4f Tc3to4;
@@ -44,7 +44,10 @@ void Controller::controlLaw()
     Matrix3x4 Tc4to3;
     Tc4to3 << -1, -1, 1, 1,    -1, 1, -1, 1,   1, 1, 1, 1;
 
-    //Declare matrix for quaternion error calculation
+    //Matrix to perform cross product
+    matrix wcross;
+
+    //Matrix used to calculate quaternion error
     Matrix4f Qt;
 
     //Flags
@@ -117,6 +120,8 @@ void Controller::controlLaw()
         trajectoryGenerator(q0,angle,axis,time);
 
         //Calculate quaternion error
+
+        //Declare matrix for quaternion error calculation
         Qt << mReference.q(3),mReference.q(2),-mReference.q(1),mReference.q(0),
               -mReference.q(2),mReference.q(3),mReference.q(0),mReference.q(1),
               mReference.q(1),-mReference.q(0),mReference.q(3),mReference.q(2),
@@ -131,11 +136,12 @@ void Controller::controlLaw()
 /// CONTROL LAW: calculate required torque on each of 3 axes
 
         //Calculate torque crossterm (combines table + wheels)
-        Matrix3x3 wcross << 0, -w(3), w(1), w(2), 0, -w(0), -w(1), w(2), 0;
-        vector hw = Iw*Tc4to3*mFiltSpeed;
-        vector crossterm = wcross*(Inertia*mFiltRates+hw)
+
+        wcross << 0, -mFiltRates(3), mFiltRates(1), mFiltRates(2), 0, -mFiltRates(0), -mFiltRates(1), mFiltRates(2), 0;
+        vector hw = mSystem.Iw*Tc4to3*mFiltSpeed;
+        vector crossterm = wcross*(mSystem.Inertia*mFiltRates+hw);
 //        mTc3 =2*Kp*mQuatError*mQuatError(3);  // P controller, first generation of testing
-        Tc=2*Kp*mQuatError*mQuatError(3)+Ki*mQuatErrorI+Kv*(mOmegaStar-mFiltRates)+Ka*mAlphaStar+crossterm;
+        mTc3=2*Kp*mQuatError*mQuatError(3)+Ki*mQuatErrorI+Kv*(mOmegaStar-mFiltRates)+mFFGains.KAff(2)*mAlphaStar+crossterm;
 
         //Calculate required torque on each of 4 wheels
         Vector4f Tc3Comp(mTc3(0), mTc3(1), mTc3(2), 0.);

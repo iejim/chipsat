@@ -454,12 +454,15 @@ void Controller::updateStates()
     mLastSpeedCmd = mSpeedCmd;
     mLastEuler = mEuler;
     mLastRates = mCurrentRates;
+    mLastFiltRates = mFiltRates;
     mLastSpeed = mSpeed;
+    mLastFiltSpeed = mFiltSpeed;
     mLastImuTime = mImuTime;
 
     mLastQuatErrorI = mQuatErrorI;
     mLastTorque = mTorque;
     mLastAmps = mAmps;
+    mLastFiltAmps = mFiltAmps;
     mLastDutyC = mDutyC;
 
 }

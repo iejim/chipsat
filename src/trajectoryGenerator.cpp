@@ -6,7 +6,7 @@ void Controller::trajectoryGenerator(quaternion q0, float angle, vector axis, qu
 {
 
     // angle is "yoda_max" from previous function; angle amount need to move
-    float x0, a0, v0;
+    float x0, a0, v0, dt;
     float yoda, yodadot, yodadot2;
 
     if (mImuTime< time(0)){// initialization
@@ -18,15 +18,15 @@ void Controller::trajectoryGenerator(quaternion q0, float angle, vector axis, qu
         dt=mImuTime-time(0);
         x0=0;
         v0=0;
-        a0=Amax;
+        a0=mSystem.Amax;
         yoda=x0+v0*dt+a0*dt*dt/2; // position
         yodadot=v0+a0*dt; // speed
         yodadot2=a0; // accel
     }
     else if (mImuTime< time(2)){
         dt=mImuTime-time(1);
-        x0=Amax*(time(1)-time(0))*(time(1)-time(0))/2;
-        v0=Vmax;
+        x0=mSystem.Amax*(time(1)-time(0))*(time(1)-time(0))/2;
+        v0=mSystem.Vmax;
         a0=0;
         yoda=x0+v0*dt+a0*dt*dt/2;
         yodadot=v0+a0*dt;
@@ -34,9 +34,9 @@ void Controller::trajectoryGenerator(quaternion q0, float angle, vector axis, qu
     }
     else if (mImuTime< time(3)){
         dt=mImuTime-time(2);
-        x0=Amax*(time(1)-time(0))*(time(1)-time(0)/2+Vmax*(time(2)-time(1));
-        v0=Vmax;
-        a0=-Amax;
+        x0=mSystem.Amax*(time(1) - time(0))*(time(1)-time(0))/2 + mSystem.Vmax*(time(2)-time(1));
+        v0=mSystem.Vmax;
+        a0=-mSystem.Amax;
         yoda=x0+v0*dt+a0*dt*dt/2;
         yodadot=v0+a0*dt;
         yodadot2=a0;
@@ -47,9 +47,9 @@ void Controller::trajectoryGenerator(quaternion q0, float angle, vector axis, qu
         yodadot2=0;
     }
     quaternion q;
-    q << sin(yoda/2)*E(0),
-         sin(yoda/2)*E(1),
-         sin(yoda/2)*E(2),
+    q << sin(yoda/2)*axis(0),
+         sin(yoda/2)*axis(1),
+         sin(yoda/2)*axis(2),
          cos(yoda/2);
 
     Matrix4f Q;
@@ -59,21 +59,22 @@ void Controller::trajectoryGenerator(quaternion q0, float angle, vector axis, qu
             -q(0),-q(1),-q(2),q(3);
 
     mQuatStar=Q*q0;
-    mOmegarStar=yodadot*axis;
+    mOmegaStar=yodadot*axis;
     mAlphaStar=yodadot2*axis;
 
-    return
+    return;
 
 }
 
-void Controller::trajectorySetup(quaternion &q0, float &angle, vector &axis, quaternion &time);
+void Controller::trajectorySetup(quaternion &q0, float &angle, vector &axis, quaternion &time)
 {
     // "Inputs": tstart = 'mImuTime' when mReference changes in input file;
             // q0 = 'mCurrentQuat' when mReference changes in input file;
             // qf = 'mReference' when mReference changes in input file;
 
     // Calculate difference qe between current position and mReference
-    Matrix4f Q << mReference.q(3),mReference.q(2),-mReference.q(1),mReference.q(0),
+    Matrix4f Q;
+    Q << mReference.q(3),mReference.q(2),-mReference.q(1),mReference.q(0),
                 -mReference.q(2),mReference.q(3),mReference.q(0),mReference.q(1),
                 mReference.q(1),-mReference.q(0),mReference.q(3),mReference.q(2),
                 -mReference.q(0),-mReference.q(1),-mReference.q(2),mReference.q(3);
@@ -87,15 +88,15 @@ void Controller::trajectorySetup(quaternion &q0, float &angle, vector &axis, qua
     axis = vector(qe(0),qe(1),qe(2))/sin(angle/2);
 
     time(0)=mImuTime;                 // Start time for maneuver (sec)
-    if (angle > Vmax*Vmax/Amax){       // Trapezoidal trajectory
-        time(1)=time(0)+Vmax/Amax;      // End of acceleration (sec)
-        time(2)=time(1)+(angle-Vmax*Vmax/Amax)/Vmax;    // End of vel (sec)
-        time(3)=time(2)+Vmax/Amax;      // End of deceleration (sec)
+    if (angle > mSystem.Vmax*mSystem.Vmax/mSystem.Amax){       // Trapezoidal trajectory
+        time(1)=time(0)+mSystem.Vmax/mSystem.Amax;      // End of acceleration (sec)
+        time(2)=time(1)+(angle-mSystem.Vmax*mSystem.Vmax/mSystem.Amax)/mSystem.Vmax;    // End of vel (sec)
+        time(3)=time(2)+mSystem.Vmax/mSystem.Amax;      // End of deceleration (sec)
     }
     else{                                // Max accel/decel
-        time(1)=time(0)+sqrt(angle/Amax);   // End of acceleration (sec)
+        time(1)=time(0)+sqrt(angle/mSystem.Amax);   // End of acceleration (sec)
         time(2)=time(1);                // No constant vel time
-        time(3)=time(2)+sqrt(angle/Amax); // Max accel/decel
+        time(3)=time(2)+sqrt(angle/mSystem.Amax); // Max accel/decel
     }
 
 }
