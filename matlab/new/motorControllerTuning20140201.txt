@@ -1,0 +1,22 @@
+%% Motor controller tuning
+%% 2/1/2014
+
+Motor 0
+	Speed: P gain (1137), Integral Time Constant (54.7ms), IxR Factor (500), IxR Time Constant (40ms)
+	
+	Current: P gain (179), Integral Time constant (512microsec)
+	
+Motor 1
+	Speed: P gain (1112), Integral Time Constant (52.2ms), IxR Factor (500), IxR Time Constant (39ms)
+	
+	Current: P gain (170), Integral Time constant (521microsec)
+	
+Motor 2
+	Speed: P gain (1122), Integral Time Constant (53.5ms), IxR Factor (500), IxR Time Constant (40ms)
+	
+	Current: P gain (180), Integral Time constant (493microsec)
+	
+Motor 3
+	Speed: P gain (1161), Integral Time Constant (56.5ms), IxR Factor (500), IxR Time Constant (42ms)
+	
+	Current: P gain (175), Integral Time constant (513microsec)
