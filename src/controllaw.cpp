@@ -119,8 +119,7 @@ void Controller::controlLaw()
         // Call the trajectory generation function
         trajectoryGenerator(q0,angle,axis,time);
 
-        //Calculate quaternion error
-
+        //Calculate quaternion error:
         //Declare matrix for quaternion error calculation
         Qt << mReference.q(3),mReference.q(2),-mReference.q(1),mReference.q(0),
               -mReference.q(2),mReference.q(3),mReference.q(0),mReference.q(1),
@@ -137,11 +136,11 @@ void Controller::controlLaw()
 
         //Calculate torque crossterm (combines table + wheels)
 
-        wcross << 0, -mFiltRates(3), mFiltRates(1), mFiltRates(2), 0, -mFiltRates(0), -mFiltRates(1), mFiltRates(2), 0;
+        wcross << 0, -mFiltRates(2), mFiltRates(1), mFiltRates(2), 0, -mFiltRates(0), -mFiltRates(1), mFiltRates(0), 0;
         vector hw = mSystem.Iw*Tc4to3*mFiltSpeed;
         vector crossterm = wcross*(mSystem.Inertia*mFiltRates+hw);
 //        mTc3 =2*Kp*mQuatError*mQuatError(3);  // P controller, first generation of testing
-        mTc3=2*Kp*mQuatError*mQuatError(3)+Ki*mQuatErrorI+Kv*(mOmegaStar-mFiltRates)+mFFGains.KAff(2)*mAlphaStar+crossterm;
+        mTc3=2*Kp*mQuatError*mQuatError(3);//+Ki*mQuatErrorI+Kv*(mOmegaStar-mFiltRates)+mFFGains.KAff(2)*mAlphaStar+crossterm;
 
         //Calculate required torque on each of 4 wheels
         Vector4f Tc3Comp(mTc3(0), mTc3(1), mTc3(2), 0.);

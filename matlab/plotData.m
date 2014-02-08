@@ -6,7 +6,8 @@ close all;clear all;clc;
 %%
 % d=readCSV32('fuzz/fuzz-14.csv');
 % d=readCSV('dime/dime-9.csv');
-d=readCSV('blue/blue-5.csv');
+% d=readCSV('blue/blue-5.csv');
+d = readCSV('surf/surf-1d.csv');
 
 % convert reference command from quaternion to euler angles
 d.refangles=QtoEuler(d.ref);
@@ -22,8 +23,13 @@ end
     d.dc2radps = d.dc2radps*5000/80*pi/30;
     
 % calculate torque from current used by wheels
-d.torque_curr = -d.amps*36.9e-3*10; % (Nm)
+d.torque_curr = d.amps*36.9e-3;%*10; % (Nm)
 
+Iw=1.352e-4;
+b=1e-6;
+calc_torque = diff(d.speedcmd)/0.02;
+calc_torque = [zeros(1,4);calc_torque]+b.*d.speedcmd;
+%%
 % compare position reference, measured, and calculated error
 figure;
 plot(d.time,d.yaw.*180/pi,'b',d.time,d.refangles(:,3).*180/pi,'r')
@@ -90,4 +96,6 @@ hold on; plot(d.time,d.torque_curr(:,3),'b');
 subplot(1,4,4)
 plot(d.time,d.torque(:,4),'k');grid on;
 hold on; plot(d.time,d.torque_curr(:,4),'b');
+
+
 

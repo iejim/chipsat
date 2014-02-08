@@ -1,10 +1,7 @@
-
 #include "controller.h"
-
-
+#include "trajectoryGenerator.cpp"
 
 using namespace USU;
-
 
 /////// Controller class
 
@@ -592,9 +589,12 @@ float Controller::firstOrderFilterF(float in, float old_in, float old_out, float
  */
 quaternion Controller::firstOrderFilterQ(quaternion in, quaternion old_in, quaternion old_out, float sampling_time, float w_c)
 {
+    if (sampling_time == 0) // First iteration
+        return in;
+
     float tf = 2.0/sampling_time;
     float a = w_c/(tf +w_c);
-    float b = (tf - w_c)/(2.0/tf+w_c);
+    float b = (tf - w_c)/(tf+w_c);
     quaternion q;
     q << firstOrderFilterF(in(0), old_in(0), old_out(0), a,b),
          firstOrderFilterF(in(1), old_in(1), old_out(1), a,b),
@@ -617,9 +617,12 @@ quaternion Controller::firstOrderFilterQ(quaternion in, quaternion old_in, quate
  */
 vector Controller::firstOrderFilterV(vector in, vector old_in, vector old_out, float sampling_time, float w_c)
 {
+    if (sampling_time == 0) // First iteration
+        return in;
+
     float tf = 2.0/sampling_time;
     float a = w_c/(tf +w_c);
-    float b = (tf - w_c)/(2.0/tf+w_c);
+    float b = (tf - w_c)/(tf+w_c);
     vector v;
     v << firstOrderFilterF(in(0), old_in(0), old_out(0), a,b),
          firstOrderFilterF(in(1), old_in(1), old_out(1), a,b),
