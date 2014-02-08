@@ -575,7 +575,7 @@ quaternion Controller::multiplyQ(quaternion q1, quaternion q2)
      --------
        z - b
  */
-float firstOrderFilterF(float in, float old_in, float old_out, float a, float b)
+float Controller::firstOrderFilterF(float in, float old_in, float old_out, float a, float b)
 {
     return b*old_out + a*(in-old_in);
 }
@@ -590,7 +590,7 @@ float firstOrderFilterF(float in, float old_in, float old_out, float a, float b)
 
     The center frequency defaults to 2*PI (1Hz).
  */
-quaternion firstOrderFilterQ(quaternion in, quaternion old_in, quaternion old_out, float sampling_time, float w_c)
+quaternion Controller::firstOrderFilterQ(quaternion in, quaternion old_in, quaternion old_out, float sampling_time, float w_c)
 {
     float tf = 2.0/sampling_time;
     float a = w_c/(tf +w_c);
@@ -615,7 +615,7 @@ quaternion firstOrderFilterQ(quaternion in, quaternion old_in, quaternion old_ou
 
     The center frequency defaults to 2*PI (1Hz).
  */
-vector firstOrderFilterV(vector in, vector old_in, vector old_out, float sampling_time, float w_c)
+vector Controller::firstOrderFilterV(vector in, vector old_in, vector old_out, float sampling_time, float w_c)
 {
     float tf = 2.0/sampling_time;
     float a = w_c/(tf +w_c);

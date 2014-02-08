@@ -24,7 +24,7 @@ obj
 *.cbp
 *.layout
 *.save
-
+*.cscope_file_list
 # Backup files
 *.*~
 
