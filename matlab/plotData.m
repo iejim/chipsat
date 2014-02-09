@@ -8,7 +8,7 @@ close all;clear all;clc;
 % d=readCSV('dime/dime-9.csv');
 % d=readCSV('blue/blue-5.csv');
 % d = readCSV('surf/surf-1d.csv');
-d = readCSV('shark/shark-1b.csv');
+d = readCSV('shark/shark-6.csv');
 
 % convert from quaternion to euler angles
 d.refangles=QtoEuler(d.ref); % input reference
