@@ -119,12 +119,17 @@ void Controller::controlLaw()
         // Call the trajectory generation function
         trajectoryGenerator(q0,angle,axis,time);
 
+        quaternion q;
+//        q = mReference.q;
+        q = mQuatStar;
+
+
         //Calculate quaternion error:
         //Declare matrix for quaternion error calculation
-        Qt << mReference.q(3),mReference.q(2),-mReference.q(1),mReference.q(0),
-              -mReference.q(2),mReference.q(3),mReference.q(0),mReference.q(1),
-              mReference.q(1),-mReference.q(0),mReference.q(3),mReference.q(2),
-              -mReference.q(0),-mReference.q(1),-mReference.q(2),mReference.q(3);
+        Qt << q(3),q(2),-q(1),q(0),
+              -q(2),q(3),q(0),q(1),
+              q(1),-q(0),q(3),q(2),
+              -q(0),-q(1),-q(2),q(3);
 
         quaternion qs(-mCurrentQuat(0),-mCurrentQuat(1),-mCurrentQuat(2),mCurrentQuat(3));
 
@@ -143,7 +148,7 @@ void Controller::controlLaw()
         mTc3=2*Kp*mQuatError*mQuatError(3);//+Ki*mQuatErrorI+Kv*(mOmegaStar-mFiltRates)+mFFGains.KAff(2)*mAlphaStar+crossterm;
 
         //Calculate required torque on each of 4 wheels
-        Vector4f Tc3Comp(mTc3(0), mTc3(1), mTc3(2), 0.);
+        Vector4f Tc3Comp(mTc3(0), mTc3(1), mTc3(2), 0.3);
         mTorque = Tc3to4*Tc3Comp;
 
         //Calculate required speeds (rad/s)
