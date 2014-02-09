@@ -118,7 +118,7 @@ void Controller::controlLaw()
 
         // Call the trajectory generation function
         trajectoryGenerator(q0,angle,axis,time);
-
+/// Use following 3 lines to choose if using trajectory generation or not
         quaternion q;
 //        q = mReference.q;
         q = mQuatStar;

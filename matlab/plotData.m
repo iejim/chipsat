@@ -8,7 +8,7 @@ close all;clear all;clc;
 % d=readCSV('dime/dime-9.csv');
 % d=readCSV('blue/blue-5.csv');
 % d = readCSV('surf/surf-1d.csv');
-d = readCSV('shark/shark-1.csv');
+d = readCSV('shark/shark-1b.csv');
 
 % convert from quaternion to euler angles
 d.refangles=QtoEuler(d.ref); % input reference
@@ -43,8 +43,8 @@ Inertia =   [0.029943767017920 -1.040803424000000e-05 9.237942464000000e-05;
 d.rates = [d.r_dot,d.p_dot,d.y_dot];
 
 % filter coefficients
-a=0.05912; %0.01241;
-b=0.8818; %0.9752;
+a=0.01241;%0.05912
+b=0.9752; %0.8818
 
 rdot_filt = filter([a, a],[1, -b],d.r_dot);
 pdot_filt = filter([a, a],[1, -b],d.p_dot);
@@ -134,19 +134,19 @@ hold on; plot(d.time,d.torque_curr(:,4),'b');
 
 % plot the command and measured torques of the table
 figure();
-subplot(3,1,1)
-plot(d.time,d.torqueSC_calc(:,1),'b');
-hold on;plot(d.time,d.tc3(:,1),'r');
-grid on;xlabel('time (sec)');ylabel('Roll torque (Nm)');
-legend('meas','cmd');
-title('Torque Command vs. Extrapolated from Measured Gyro Speeds');
-
-subplot(3,1,2)
-plot(d.time,d.torqueSC_calc(:,2),'b');
-hold on;plot(d.time,d.tc3(:,2),'r');
-grid on;xlabel('time (sec)');ylabel('Pitch torque (Nm)');
-
-subplot(3,1,3)
+% subplot(3,1,1)
+% plot(d.time,d.torqueSC_calc(:,1),'b');
+% hold on;plot(d.time,d.tc3(:,1),'r');
+% grid on;xlabel('time (sec)');ylabel('Roll torque (Nm)');
+% legend('meas','cmd');
+% title('Torque Command vs. Extrapolated from Measured Gyro Speeds');
+% 
+% subplot(3,1,2)
+% plot(d.time,d.torqueSC_calc(:,2),'b');
+% hold on;plot(d.time,d.tc3(:,2),'r');
+% grid on;xlabel('time (sec)');ylabel('Pitch torque (Nm)');
+% 
+% subplot(3,1,3)
 plot(d.time,d.torqueSC_calc(:,3),'b');
 hold on;plot(d.time,d.tc3(:,3),'r');
 grid on;xlabel('time (sec)');ylabel('Yaw torque (Nm)');

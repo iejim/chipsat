@@ -34,8 +34,9 @@ void Controller::trajectoryGenerator(quaternion q0, float angle, vector axis, qu
     }
     else if (mImuTime< time(3)){
         dt=mImuTime-time(2);
-        x0=mSystem.Amax*(time(1) - time(0))*(time(1)-time(0))/2 + mSystem.Vmax*(time(2)-time(1));
-        v0=mSystem.Vmax;
+        x0=mSystem.Amax*(time(1)-time(0))*(time(1)-time(0))/2 + mSystem.Vmax*(time(2)-time(1));
+//        v0=mSystem.Vmax
+        v0=mSystem.Amax*(time(1)-time(0));
         a0=-mSystem.Amax;
         yoda=x0+v0*dt+a0*dt*dt/2;
         yodadot=v0+a0*dt;
