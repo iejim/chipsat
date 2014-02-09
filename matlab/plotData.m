@@ -8,7 +8,8 @@ close all;clear all;clc;
 % d=readCSV('dime/dime-9.csv');
 % d=readCSV('blue/blue-5.csv');
 % d = readCSV('surf/surf-1d.csv');
-d = readCSV('shark/shark-6.csv');
+% d = readCSV('shark/shark-6.csv');
+d = readCSV('sail/sail-1.csv');
 
 % convert from quaternion to euler angles
 d.refangles=QtoEuler(d.ref); % input reference
@@ -70,36 +71,66 @@ figure;
 plot(d.time,d.yaw.*180/pi,'b',d.time,d.refangles(:,3).*180/pi,'r',d.time,d.refstar(:,3)*180/pi,'g')
 hold on;
 plot(d.time,d.errorangles(:,3).*180/pi,'k');
-grid on;
 % axis([min(d.time),max(d.time)+5,min([min(d.yaw),min(d.refangles)])-5*pi/180,max([max(d.yaw),max(d.refangles)])+5*pi/180]);
 a=axis;
 axis([a(1),a(2),a(3)-5*pi/180,a(4)+5*pi/180]);
 legend('meas','ref','refstar','error');
-xlabel('time (s)');
-ylabel('Degrees');
+grid on;xlabel('time (s)'); ylabel('Degrees');
 title('Position (Yaw)');
 
+% compare table speed command (from trajectory generator) vs. measured
 figure;
-% plot motor command input speeds vs. measured output speeds
+plot(d.time,d.omegastar(:,3),'r');
+hold on; plot(d.time,ydot_filt,'b');
+grid on;xlabel('time (sec)');ylabel('speed (rad/s)');
+legend('star','meas'); title('Table Speed');
+
+% compare table acceleration command vs. measured
+figure;
+plot(d.time,d.alphastar(:,3),'r');
+hold on; plot(d.time,alpha_y,'b');
+grid on;xlabel('time (sec)');ylabel('speed (rad/s^2)');
+legend('star','meas'); title('Table Acceleration');
+
+% plot the table torque command (3axis, from controller) vs
+% measured-calculated
+figure();
+% subplot(3,1,1)
+% plot(d.time,d.torqueSC_calc(:,1),'b');
+% hold on;plot(d.time,d.tc3(:,1),'r');
+% grid on;xlabel('time (sec)');ylabel('Roll torque (Nm)');
+% legend('meas','cmd');
+% title('Torque Command vs. Extrapolated from Measured Gyro Speeds');
+% 
+% subplot(3,1,2)
+% plot(d.time,d.torqueSC_calc(:,2),'b');
+% hold on;plot(d.time,d.tc3(:,2),'r');
+% grid on;xlabel('time (sec)');ylabel('Pitch torque (Nm)');
+% 
+% subplot(3,1,3)
+plot(d.time,d.tc3(:,3),'r');
+hold on;plot(d.time,d.torqueSC_calc(:,3),'b');
+grid on;xlabel('time (sec)');ylabel('Yaw torque (Nm)');% title('Torque Command vs. Extrapolated from Measured Gyro Speeds');
+legend('cmd','meas');
+title('Torque Command vs. Extrapolated from Measured Gyro Speeds');
+
+% plot motor speed input command (4) vs. measured (4)
+figure;
 subplot(2,4,1)
-plot(d.time,d.speedcmd(:,1),'r',d.time,d.speedmeas(:,1),'b');grid on;legend('cmd','meas'); % used to mult. speedcmd **(619/7262/80)
-hold on;
-plot(d.time,d.dc2radps(:,1),'k--');
-xlabel('time (s)');
-ylabel('speed (rad/s)');
-title('Momentum Wheels');
+plot(d.time,d.speedcmd(:,1),'r',d.time,d.speedmeas(:,1),'b');
+hold on; plot(d.time,d.dc2radps(:,1),'k--'); grid on;% used to mult. speedcmd **(619/7262/80)
+xlabel('time (s)');ylabel('speed (rad/s)');
+title('Momentum Wheel Speeds');
 subplot(2,4,2)
 plot(d.time,d.speedcmd(:,2),'r',d.time,d.speedmeas(:,2),'b');grid on;
-hold on;
-plot(d.time,d.dc2radps(:,2),'k--');
+hold on; plot(d.time,d.dc2radps(:,2),'k--');
 subplot(2,4,3)
 plot(d.time,d.speedcmd(:,3),'r',d.time,d.speedmeas(:,3),'b');grid on;
-hold on;
-plot(d.time,d.dc2radps(:,3),'k--');
+hold on; plot(d.time,d.dc2radps(:,3),'k--');
 subplot(2,4,4)
 plot(d.time,d.speedcmd(:,4),'r',d.time,d.speedmeas(:,4),'b');grid on;
-hold on;
-plot(d.time,d.dc2radps(:,4),'k--');
+hold on; plot(d.time,d.dc2radps(:,4),'k--');
+grid on;legend('cmd','meas','calcfromDC');
 
 % plot duty cycles
 subplot(2,4,5)
@@ -132,21 +163,3 @@ subplot(1,4,4)
 plot(d.time,d.torque(:,4),'k');grid on;
 hold on; plot(d.time,d.torque_curr(:,4),'b');
 
-% plot the command and measured torques of the table
-figure();
-% subplot(3,1,1)
-% plot(d.time,d.torqueSC_calc(:,1),'b');
-% hold on;plot(d.time,d.tc3(:,1),'r');
-% grid on;xlabel('time (sec)');ylabel('Roll torque (Nm)');
-% legend('meas','cmd');
-% title('Torque Command vs. Extrapolated from Measured Gyro Speeds');
-% 
-% subplot(3,1,2)
-% plot(d.time,d.torqueSC_calc(:,2),'b');
-% hold on;plot(d.time,d.tc3(:,2),'r');
-% grid on;xlabel('time (sec)');ylabel('Pitch torque (Nm)');
-% 
-% subplot(3,1,3)
-plot(d.time,d.torqueSC_calc(:,3),'b');
-hold on;plot(d.time,d.tc3(:,3),'r');
-grid on;xlabel('time (sec)');ylabel('Yaw torque (Nm)');
