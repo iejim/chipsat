@@ -159,9 +159,9 @@ void Controller::controlLaw()
         //Limit the speed command
         mSpeedCmd = quaternion(
                             std::abs(mSpeedCmd(0))<maxSpeedCmd ? mSpeedCmd(0) : std::copysignf(maxSpeedCmd,mSpeedCmd(0)),
-                            std::abs(mSpeedCmd(1))<maxSpeedCmd ? mSpeedCmd(0) : std::copysignf(maxSpeedCmd,mSpeedCmd(1)),
-                            std::abs(mSpeedCmd(2))<maxSpeedCmd ? mSpeedCmd(0) : std::copysignf(maxSpeedCmd,mSpeedCmd(2)),
-                            std::abs(mSpeedCmd(3))<maxSpeedCmd ? mSpeedCmd(0) : std::copysignf(maxSpeedCmd,mSpeedCmd(3)));
+                            std::abs(mSpeedCmd(1))<maxSpeedCmd ? mSpeedCmd(1) : std::copysignf(maxSpeedCmd,mSpeedCmd(1)),
+                            std::abs(mSpeedCmd(2))<maxSpeedCmd ? mSpeedCmd(2) : std::copysignf(maxSpeedCmd,mSpeedCmd(2)),
+                            std::abs(mSpeedCmd(3))<maxSpeedCmd ? mSpeedCmd(3) : std::copysignf(maxSpeedCmd,mSpeedCmd(3)));
 
         //Calculate required duty cycles
         quaternion DC = mSpeedCmd*speed2dc;
