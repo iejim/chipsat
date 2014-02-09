@@ -5,12 +5,12 @@
 % d = readCSV32('fuzz/fuzz-14.csv');
 %d = readCSV('blue/blue-5.csv');
 % d = readCSV('surf/surf-1d.csv');
-d = readCSV('shark/shark-1c.csv');
+d = readCSV('sail/sail-1.csv');
 L = length(d.time);
 %Change to false to disable trajectory generation
 useTrajectory = 1;
 
-mPIV.KP = 20.0; mPIV.KI = 0.0; mPIV.KV = 0.0;
+mPIV.KP = 1.0; mPIV.KI = 0.0; mPIV.KV = 2.0;
 mFFGains.KVff = 0.0; mFFGains.KAff =0.0;
 mSystem.b = 1e-6;
 mSystem.Iw = 1.35e-4;
@@ -32,12 +32,18 @@ Kp =    [mPIV.KP*2.2*mSystem.Inertia(1,1)*mSystem.wn*mSystem.wn,0,0,0;
         0,mPIV.KP*2.2*mSystem.Inertia(2,2)*mSystem.wn*mSystem.wn,0,0;
         0,0,mPIV.KP*2.2*mSystem.Inertia(3,3)*mSystem.wn*mSystem.wn,0;];
     
+Kv =   [mPIV.KV*1.9*mSystem.Inertia(1,1)*mSystem.wn*mSystem.wn,0,0;
+        0,mPIV.KV*1.9*mSystem.Inertia(2,2)*mSystem.wn*mSystem.wn,0;
+        0,0,mPIV.KV*1.9*mSystem.Inertia(3,3)*mSystem.wn*mSystem.wn];
+    
 Tc3to4 =    [-0.25,-0.25,0.25,0.25;
              -0.25,0.25,0.25,-0.25;
              0.25,-0.25,0.25,-0.25;
              0.25,0.25,0.25,0.25;];
 
 delta_time = d.time(2);
+
+ydot = filter([0.05912, 0.05910],[1, -0.8818],d.y_dot);
 %% Calculate the error
 
 % Quaternion structure
@@ -56,9 +62,10 @@ time = [0;0;0;0];
 for a=1:length(d.time)
     % Trajectory generation stuff
     if (a>=2) && useTrajectory && ~isequal(d.ref(a,:),d.ref(a-1,:)) %Changed reference, perform trajectory calculation
-        espRef = EulertoQ([0,0,45]*pi/180);
+%         espRef = EulertoQ([0,0,45]*pi/180);
+          espRef = d.ref(a,:);
        [q0, angle, ax, time]= trajectorySetup(d.quat(a,:), espRef, Amax, Vmax);
-       time = time+d.time(a)
+       time = time+d.time(a);
     end
     
     if useTrajectory
@@ -86,14 +93,17 @@ end
 %Save the trajectory generator output in angles
 refStar=QtoEuler(mQuatStar)*180/pi; % trajectory reference command
 %% Controller
-Torque = zeros(length(d.time),4);
-SpeedCmd = zeros(length(d.time),4);
+Torque = zeros(L,4);
+SpeedCmd = zeros(L,4);
+Vcmd = zeros(3,L);
 a =1;
-mTc3 =2*Kp*qe(a,:)'*qe(a,4);
+Vcmd(:,a) = Kv*(mOmegaStar(a,:)'-ydot(a,:)');
+mTc3 =2*Kp*qe(a,:)'*qe(a,4)+Vcmd(:,a);
 Tc3Comp = [mTc3(1), mTc3(2), mTc3(3), 0.]';
 Torque(a,:) = (Tc3to4*Tc3Comp)';
 for a=2:length(d.time)
-    mTc3 =2*Kp*qe(a,:)'*qe(a,4);
+    Vcmd(:,a) = Kv*(mOmegaStar(a,:)'-ydot(a,:)');
+    mTc3 =2*Kp*qe(a,:)'*qe(a,4)+Vcmd(:,a);
     Tc3Comp = [mTc3(1), mTc3(2), mTc3(3), 0.]';
     Torque(a,:) = (Tc3to4*Tc3Comp)';
     SpeedCmd(a,:) = SpeedCmd(a-1,:)+(Torque(a,:)+Torque(a-1,:))*(delta_time/mSystem.Iw)/2;
@@ -126,7 +136,7 @@ if useTrajectory
     legend('State', 'Error', 'Reference', 'Trajectory')
     hold off
     
-    figure(2)
+    figure(3)
     subplot(211)
     plot(d.time, mOmegaStar(:,3))
     title('Speed')
@@ -141,42 +151,42 @@ if useTrajectory
 end
 
 %% Plot Command
-% 
-% figure(2)
-% clf
-% subplot(241)
-% plot(d.time, SpeedCmd(:,1), d.time, d.speedcmd(:,1))
-% axis tight, grid on
-% title('Speed Command')
-% subplot(242)
-% plot(d.time, SpeedCmd(:,2), d.time, d.speedcmd(:,2))
-% axis tight, grid on
-% subplot(243)
-% plot(d.time, SpeedCmd(:,3), d.time, d.speedcmd(:,3))
-% axis tight, grid on
-% subplot(244)
-% plot(d.time, SpeedCmd(:,4), d.time, d.speedcmd(:,4))
-% axis tight, grid on
-% legend('Sim','CSV')
-% 
-% 
-% subplot(245), hold on
-% plot(d.time, Torque(:,1),'k', d.time, d.torque(:,1),'r')
-% plot(d.time,torquecmd(:,1),'Color',[0,200/255,0])
-% title('Torque'), grid on
-% axis tight
-% subplot(246), hold on
-% plot(d.time, Torque(:,2),'k', d.time, d.torque(:,2),'r')
-% plot(d.time,torquecmd(:,2),'Color',[0,200/255,0])
-% axis tight, grid on
-% subplot(247), hold on
-% plot(d.time, Torque(:,3),'k', d.time, d.torque(:,3),'r')
-% plot(d.time,torquecmd(:,3),'Color',[0,200/255,0])
-% axis tight, grid on
-% subplot(248), hold on
-% plot(d.time, Torque(:,4),'k', d.time, d.torque(:,4),'r')
-% plot(d.time,torquecmd(:,4),'Color',[0,200/255,0])
-% axis tight, grid on
-% legend('Sim','CSV', 'From Speed Cmd')
+
+figure(2)
+clf
+subplot(241)
+plot(d.time, SpeedCmd(:,1), d.time, d.speedcmd(:,1))
+axis tight, grid on
+title('Speed Command')
+subplot(242)
+plot(d.time, SpeedCmd(:,2), d.time, d.speedcmd(:,2))
+axis tight, grid on
+subplot(243)
+plot(d.time, SpeedCmd(:,3), d.time, d.speedcmd(:,3))
+axis tight, grid on
+subplot(244)
+plot(d.time, SpeedCmd(:,4), d.time, d.speedcmd(:,4))
+axis tight, grid on
+legend('Sim','CSV')
+
+
+subplot(245), hold on
+plot(d.time, Torque(:,1),'k', d.time, d.torque(:,1),'r')
+plot(d.time,torquecmd(:,1),'Color',[0,200/255,0])
+title('Torque'), grid on
+axis tight
+subplot(246), hold on
+plot(d.time, Torque(:,2),'k', d.time, d.torque(:,2),'r')
+plot(d.time,torquecmd(:,2),'Color',[0,200/255,0])
+axis tight, grid on
+subplot(247), hold on
+plot(d.time, Torque(:,3),'k', d.time, d.torque(:,3),'r')
+plot(d.time,torquecmd(:,3),'Color',[0,200/255,0])
+axis tight, grid on
+subplot(248), hold on
+plot(d.time, Torque(:,4),'k', d.time, d.torque(:,4),'r')
+plot(d.time,torquecmd(:,4),'Color',[0,200/255,0])
+axis tight, grid on
+legend('Sim','CSV', 'From Speed Cmd')
 
 

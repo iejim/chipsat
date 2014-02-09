@@ -29,14 +29,14 @@ void Controller::controlLaw()
             0,0,mPIV.KP*2.2*mSystem.Inertia(2,2)*mSystem.wn*mSystem.wn,0;
 
     Matrix3x4 Ki;
-    Ki <<   mPIV.KP*1*mSystem.Inertia(0,0)*mSystem.wn*mSystem.wn,0,0,0,
-            0,mPIV.KP*1*mSystem.Inertia(1,1)*mSystem.wn*mSystem.wn,0,0,
-            0,0,mPIV.KP*1*mSystem.Inertia(2,2)*mSystem.wn*mSystem.wn,0;
+    Ki <<   mPIV.KI*1*mSystem.Inertia(0,0)*mSystem.wn*mSystem.wn,0,0,0,
+            0,mPIV.KI*1*mSystem.Inertia(1,1)*mSystem.wn*mSystem.wn,0,0,
+            0,0,mPIV.KI*1*mSystem.Inertia(2,2)*mSystem.wn*mSystem.wn,0;
 
     matrix Kv;
-    Kv <<   mPIV.KI*1.9*mSystem.Inertia(0,0)*mSystem.wn*mSystem.wn,0,0,
-            0,mPIV.KI*1.9*mSystem.Inertia(1,1)*mSystem.wn*mSystem.wn,0,
-            0,0,mPIV.KI*1.9*mSystem.Inertia(2,2)*mSystem.wn*mSystem.wn;
+    Kv <<   mPIV.KV*1.9*mSystem.Inertia(0,0)*mSystem.wn*mSystem.wn,0,0,
+            0,mPIV.KV*1.9*mSystem.Inertia(1,1)*mSystem.wn*mSystem.wn,0,
+            0,0,mPIV.KV*1.9*mSystem.Inertia(2,2)*mSystem.wn*mSystem.wn;
 
     //Matrix to convert Torque values from a 3-axis element vector to the 4-wheel model
     Matrix4f Tc3to4;
