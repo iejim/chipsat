@@ -148,7 +148,7 @@ void Controller::controlLaw()
         mTc3=2*Kp*mQuatError*mQuatError(3);//+Ki*mQuatErrorI+Kv*(mOmegaStar-mFiltRates)+mFFGains.KAff(2)*mAlphaStar+crossterm;
 
         //Calculate required torque on each of 4 wheels
-        Vector4f Tc3Comp(mTc3(0), mTc3(1), mTc3(2), 0.3);
+        Vector4f Tc3Comp(mTc3(0), mTc3(1), mTc3(2), 0);
         mTorque = Tc3to4*Tc3Comp;
 
         //Calculate required speeds (rad/s)
