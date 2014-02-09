@@ -1,7 +1,8 @@
 #include "controller.h"
 
 using namespace USU;
-#define RAD2RPM 763.9437f
+#define DC_RANGE 80.0f /*< Motor Duty Cycle Variation 10-90%*/
+#define RAD2RPM 9.54929f // 30/pi
 
 void Controller::controlLaw()
 {
@@ -17,7 +18,9 @@ void Controller::controlLaw()
     quaternion time;
     quaternion q0;
     //To go from rad/s to duty cycle for the speed command
-    float speed2dc = RAD2RPM/mSystem.motorSpeedMax;
+    float speed2dc = DC_RANGE*RAD2RPM/mSystem.motorSpeedMax;
+    //Maximum speed command to request from the motors
+    float maxSpeedCmd = mSystem.motorSpeedMax/RAD2RPM;
 
     //Define PIV gains
     Matrix3x4 Kp;
@@ -153,6 +156,12 @@ void Controller::controlLaw()
 
         //Calculate required speeds (rad/s)
         mSpeedCmd = integrateQ(mTorque,mLastTorque,mLastSpeedCmd,(mImuTime-mLastImuTime),(1/mSystem.Iw)); //units rad/s
+        //Limit the speed command
+        mSpeedCmd = quaternion(
+                            std::abs(mSpeedCmd(0))<maxSpeedCmd ? mSpeedCmd(0) : std::copysignf(maxSpeedCmd,mSpeedCmd(0)),
+                            std::abs(mSpeedCmd(1))<maxSpeedCmd ? mSpeedCmd(0) : std::copysignf(maxSpeedCmd,mSpeedCmd(1)),
+                            std::abs(mSpeedCmd(2))<maxSpeedCmd ? mSpeedCmd(0) : std::copysignf(maxSpeedCmd,mSpeedCmd(2)),
+                            std::abs(mSpeedCmd(3))<maxSpeedCmd ? mSpeedCmd(0) : std::copysignf(maxSpeedCmd,mSpeedCmd(3)));
 
         //Calculate required duty cycles
         quaternion DC = mSpeedCmd*speed2dc;
