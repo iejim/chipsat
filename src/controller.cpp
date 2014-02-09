@@ -1,4 +1,6 @@
 #include "controller.h"
+
+//Include this file here to make sure it is compiled correctly
 #include "trajectoryGenerator.cpp"
 
 using namespace USU;
@@ -464,6 +466,15 @@ void Controller::updateStates()
 
 }
 
+/*!
+    Uses the given euler angles vector to create a quaternion vector.
+    The quaternion behaves as a regular 4-element vector, with the scalar on the last position.
+    The math was taken from the 3DM-GX3 Command Guide. They put the scalar first, but we change
+    it to the end before returning.
+
+    \param [in] euler   A 3-axis euler angles vector [roll, pitch, yaw].
+    \param [out] qa     A quaternion with scalar last [i, j, k, s].
+*/
 quaternion Controller::createQuaternion(vector euler)
 {
     Eigen::Matrix3f M;
@@ -631,6 +642,9 @@ vector Controller::firstOrderFilterV(vector in, vector old_in, vector old_out, f
     return v;
 }
 
+/*!
+    Makes sure the file streams get closed when destroying the instance.
+*/
 Controller::~Controller()
 {
     if(mInputFile.is_open())
