@@ -9,7 +9,7 @@ close all;clear all;clc;
 % d=readCSV('blue/blue-5.csv');
 % d = readCSV('surf/surf-1d.csv');
 % d = readCSV('shark/shark-6.csv');
-d = readCSV('sail/sail-1.csv');
+d = readCSV('sail/sail-25.csv');
 
 % convert from quaternion to euler angles
 d.refangles=QtoEuler(d.ref); % input reference
@@ -50,6 +50,7 @@ b=0.9752; %0.8818
 rdot_filt = filter([a, a],[1, -b],d.r_dot);
 pdot_filt = filter([a, a],[1, -b],d.p_dot);
 ydot_filt = filter([a, a],[1, -b],d.y_dot);
+filtRates=[rdot_filt,pdot_filt,ydot_filt];
 
 alpha_r = [0;diff(rdot_filt)]./0.02;
 alpha_p = [0;diff(pdot_filt)]./0.02;
@@ -64,6 +65,19 @@ d.torqueSC_calc = d.alpha*Inertia;
 %     Torque(a,:) = (Tc3to4*Tc3Comp)';
 %     SpeedCmd(a,:) = SpeedCmd(a-1,:)+(Torque(a,:)+Torque(a-1,:))*(delta_time/mSystem.Iw)/2;
 % end
+
+%% calculate cross term
+a=0.05912;
+b=0.8818;
+speedfilt = filter([a,a],[1,-b],d.speedmeas);
+
+Tc4to3 = [-1, -1, 1, 1;    -1, 1, -1, 1;   1, 1, 1, 1];
+for i=1:size(ydot_filt,1)
+    w = [filtRates(i,1);filtRates(i,2);filtRates(i,3)];
+    wcross =[ 1, -w(3), w(2); w(3), 0, -w(1); -w(2), w(1), 0];
+    h = Iw*Tc4to3*speedfilt(i,:)';
+    crossterm(i,:) = [wcross*(Inertia*w+h)]';
+end
 
 %%
 % compare position reference, measured, and calculated error
@@ -113,6 +127,12 @@ hold on;plot(d.time,d.torqueSC_calc(:,3),'b');
 grid on;xlabel('time (sec)');ylabel('Yaw torque (Nm)');% title('Torque Command vs. Extrapolated from Measured Gyro Speeds');
 legend('cmd','meas');
 title('Torque Command vs. Extrapolated from Measured Gyro Speeds');
+
+% plot crossterm values (that may or not contribue to Tc3), depending on
+% control law used
+figure;plot(d.time,crossterm(:,1),'r',d.time,crossterm(:,2),'b',d.time,crossterm(:,3),'k');
+grid on;xlabel('time (sec)');ylabel('torque (Nm)');
+legend('roll x','pitch y','yaw z');title('Crossterm Values');
 
 % plot motor speed input command (4) vs. measured (4)
 figure;
