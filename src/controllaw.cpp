@@ -148,7 +148,7 @@ void Controller::controlLaw()
         vector hw = mSystem.Iw*Tc4to3*mFiltSpeed;
         vector crossterm = wcross*(mSystem.Inertia*mFiltRates+hw);
 //        mTc3 =2*Kp*mQuatError*mQuatError(3);  // P controller, first generation of testing
-        mTc3=2*Kp*mQuatError*mQuatError(3)+Kv*(mOmegaStar-mFiltRates);//+Ki*mQuatErrorI+mFFGains.KAff(2)*mAlphaStar+crossterm;
+        mTc3=2*Kp*mQuatError*mQuatError(3)+Kv*(mOmegaStar-mFiltRates)+mFFGains.KAff(2)*mAlphaStar+crossterm;//+Ki*mQuatErrorI;
 
         //Calculate required torque on each of 4 wheels
         Vector4f Tc3Comp(mTc3(0), mTc3(1), mTc3(2), 0);
