@@ -5,20 +5,20 @@
 % d = readCSV32('fuzz/fuzz-14.csv');
 %d = readCSV('blue/blue-5.csv');
 % d = readCSV('surf/surf-1d.csv');
-d = readCSV('sail/sail-1.csv');
+d = readCSV('sail/sail-28.csv');
 L = length(d.time);
 %Change to false to disable trajectory generation
-useTrajectory = 1;
+useTrajectory = 0;
 
-mPIV.KP = 1.0; mPIV.KI = 0.0; mPIV.KV = 2.0;
-mFFGains.KVff = 0.0; mFFGains.KAff =0.0;
+mPIV.KP = 1; mPIV.KI = 0.0; mPIV.KV = 0.01;
+mFFGains.KVff = 0.0; mFFGains.KAff =0.01;
 mSystem.b = 1e-6;
 mSystem.Iw = 1.35e-4;
 mSystem.wn = 0.2;
 mSystem.hDotMax = .25;
 mSystem.hMax = .25;
-Vmax = 2.0;
-Amax = 1.5*Vmax;
+Vmax = 0.2;
+Amax = 0.3; %1.5*Vmax;
 
 
 mSystem.Inertia =   [0.029943767017920 -1.040803424000000e-05 9.237942464000000e-05;
@@ -59,18 +59,35 @@ angle = 0;
 ax = [0;0;0];
 time = [0;0;0;0];
 
+inTraj = 0;
+
 for a=1:length(d.time)
     % Trajectory generation stuff
     if (a>=2) && useTrajectory && ~isequal(d.ref(a,:),d.ref(a-1,:)) %Changed reference, perform trajectory calculation
-%         espRef = EulertoQ([0,0,45]*pi/180);
+%         espRef = EulertoQ([0,0,20]*pi/180);
           espRef = d.ref(a,:);
-       [q0, angle, ax, time]= trajectorySetup(d.quat(a,:), espRef, Amax, Vmax);
+          inTraj = 1;
+       [q0, angle, ax, time] = trajectorySetup(d.quat(a,:), espRef, Amax, Vmax);
        time = time+d.time(a);
     end
     
-    if useTrajectory
-        [mQuatStar(a,:), mOmegaStar(a,:),mAlphaStar(a,:)] = trajectoryGenerator(q0, angle, ax, time, Amax, Vmax, d.time(a));
+    if useTrajectory && ~inTraj % Should not run if the above just ran
+        espRef = d.ref(a,:);
+         inTraj = 1;
+       [q0, angle, ax, time] = trajectorySetup(d.quat(a,:), d.ref(a,:), Amax, Vmax);
+       time = time+d.time(a);
     end
+    
+    if useTrajectory && inTraj
+        [mQuatStar(a,:), mOmegaStar(a,:),mAlphaStar(a,:)] = trajectoryGenerator(q0, angle, ax, time, Amax, Vmax, d.time(a));
+        if (a>=2) && mOmegaStar(a,3)~= mOmegaStar(a-1,3) && mOmegaStar(a,3) == 0 %When it changes back to zero from the down ramp
+            inTraj = 0;
+        end
+    else
+        mQuatStar(a,:) = d.ref(a,:);
+    end
+    
+    
     
     Qt = [d.ref(a, 4), d.ref(a, 3), -d.ref(a, 2), d.ref(a, 1);
           -d.ref(a, 3), d.ref(a, 4), d.ref(a, 1), d.ref(a, 2);
@@ -97,12 +114,12 @@ Torque = zeros(L,4);
 SpeedCmd = zeros(L,4);
 Vcmd = zeros(3,L);
 a =1;
-Vcmd(:,a) = Kv*(mOmegaStar(a,:)'-ydot(a,:)');
+Vcmd(:,a) = Kv*(mOmegaStar(a,:)'-ydot(a,:)')+mFFGains.KAff*mAlphaStar(a,:)';
 mTc3 =2*Kp*qe(a,:)'*qe(a,4)+Vcmd(:,a);
 Tc3Comp = [mTc3(1), mTc3(2), mTc3(3), 0.]';
 Torque(a,:) = (Tc3to4*Tc3Comp)';
 for a=2:length(d.time)
-    Vcmd(:,a) = Kv*(mOmegaStar(a,:)'-ydot(a,:)');
+    Vcmd(:,a) = Kv*(mOmegaStar(a,:)'-ydot(a,:)')+mFFGains.KAff*mAlphaStar(a,:)';
     mTc3 =2*Kp*qe(a,:)'*qe(a,4)+Vcmd(:,a);
     Tc3Comp = [mTc3(1), mTc3(2), mTc3(3), 0.]';
     Torque(a,:) = (Tc3to4*Tc3Comp)';
