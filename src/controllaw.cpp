@@ -57,6 +57,7 @@ void Controller::controlLaw()
     bool inSync = false;
     bool gotIMU = false;
     bool gotReference = false;
+    bool inTraj = false;
 
     // For calculating time values
     struct timeval start, now;
@@ -113,18 +114,36 @@ void Controller::controlLaw()
                 readNextReference();
         //step one of trajectory generation: get tstart,q0 and calculate qe, ANGLE,AXIS,TIME
         trajectorySetup(q0, angle, axis, time);
+        inTraj = true;
        }
 
         if(gotReference){
             gotReference = false;
         }
 
+        if (!inTraj){
+            trajectorySetup(q0, angle, axis, time);
+            inTraj = true;
+        }
         // Call the trajectory generation function
-        trajectoryGenerator(q0,angle,axis,time);
+        if (inTraj){
+            vector oldOmega = mOmegaStar;
+            trajectoryGenerator(q0,angle,axis,time);
+
+            if ((mOmegaStar(0)!=oldOmega(0)) && (mOmegaStar(1)!=oldOmega(1)) && (mOmegaStar(2)!=oldOmega(2))){
+                if ((mOmegaStar(0)==0.0) && (mOmegaStar(1)=0.0 ) && (mOmegaStar(2)==0.0)) //Means we are done
+                    inTraj = false;
+            }
+
+        } else {
+            mQuatStar = mReference.q;
+        }
+
 /// Use following 3 lines to choose if using trajectory generation or not
         quaternion q;
 //        q = mReference.q;
         q = mQuatStar;
+
 
 
         //Calculate quaternion error:
