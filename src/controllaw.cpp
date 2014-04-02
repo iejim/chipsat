@@ -130,7 +130,8 @@ void Controller::controlLaw()
             vector oldOmega = mOmegaStar;
             trajectoryGenerator(q0,angle,axis,time);
 
-            if ((mOmegaStar(0)!=oldOmega(0)) && (mOmegaStar(1)!=oldOmega(1)) && (mOmegaStar(2)!=oldOmega(2))){
+            if ((mOmegaStar(0)!=oldOmega(0)) || (mOmegaStar(1)!=oldOmega(1)) || (mOmegaStar(2)!=oldOmega(2))){
+
                 if ((mOmegaStar(0)==0.0) && (mOmegaStar(1)=0.0 ) && (mOmegaStar(2)==0.0)) //Means we are done
                     inTraj = false;
             }
