@@ -585,7 +585,7 @@ quaternion Controller::multiplyQ(quaternion q1, quaternion q2)
  */
 float Controller::firstOrderFilterF(float in, float old_in, float old_out, float a, float b)
 {
-    return b*old_out + a*(in-old_in);
+    return b*old_out + a*(in+old_in);
 }
 /*!
     This filter implements the Discrete Bilinear Transformation of a first-order, continuous LTI low-pass filter:

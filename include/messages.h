@@ -38,11 +38,7 @@ const uint8_t MAG_VEC                         = 0xC7; /*!< Magnetometer Vector *
 const uint8_t ACC_ANG_ORIENTATION_MAT         = 0xC8; /*!< Acceleration, Angular Rate & Orientation Matrix */
 const uint8_t WRITE_ACC_BIAS_CORRECTION       = 0xC9; /*!< Write Accel Bias Correction */
 const uint8_t WRITE_GYRO_BIAS_CORRECTION      = 0xCA; /*!< Write Gyro Bias Correction */
-const uint8_t ACC_ANG_MAG_VEC                 = 0xCB; /*!< PC,BEAGLEBONE BLACK,1GHZ,
-USB,512MB RAM,uSD CARD SLOT	2176149	2	$44.95	$89.90
-Subtotal:	$89.90
-Shipping:	$3.35
-Total for this Order:	$93.25Acceleration, Angular Rate & Magnetometer Vector */
+const uint8_t ACC_ANG_MAG_VEC                 = 0xCB; /*!< Angular Rate & Magnetometer Vector */
 const uint8_t ACC_ANG_MAG_VEC_ORIENTATION_MAT = 0xCC; /*!< Acceleration, Angular Rate & Magnetometer Vectors & Orientation Matrix */
 const uint8_t CAPTURE_GYRO_BIAS               = 0xCD; /*!< Capture Gyro Bias */
 const uint8_t EULER_ANGLES                    = 0xCE; /*!< Euler Angles */
@@ -1131,7 +1127,7 @@ private:
 //    packet_ptr mPacketList;
 
 };
-/*! @}*/
+/*! @} */
 
 }
 #endif // MESSAGES_H
