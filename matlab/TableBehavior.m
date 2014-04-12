@@ -1,7 +1,8 @@
 %% Plot the table behavior
 
 %d = readCSV('surf/surf-1d.csv');
-d = readCSV('shark/shark-1d.csv');
+% d = readCSV('shark/shark-1d.csv');
+d = readCSV('sail/sail-4.csv');
 
 % Controller values
 mPIV.KP = 25.0; mPIV.KI = 0.0; mPIV.KV = 0.0;

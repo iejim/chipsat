@@ -3,7 +3,8 @@
 L = length(d.time);
 Fs = 50; %Sampling rate in hertz
 
-Y = fft(d.y_dot)/L; % Get the FFT and normalize
+% Y = fft(d.y_dot)/L; % Get the FFT and normalize
+Y = fft(d.speedmeas)/L; % Get the FFT and normalize
 FFT = abs(Y(1:floor(L/2)));
 
 freqs = [0:1/(floor(L/2)-1):1]*Fs/2;

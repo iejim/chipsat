@@ -1,0 +1,15 @@
+mPIV.KP mPIV.KI mPIV.KV
+mFFGains.Kvff(0) mFFGains.Kvff(1) mFFGains.Kvff(2)
+mFFGains.KAff(0) mFFGains.KAff(1) mFFGains.KAff(2)
+mSystem.b mSystem.Iw mSystem.wn mSystem.hDotMax mSystem.hMax
+mSystem.Amax mSystem.Vmax
+mSystem.Inertia(0) mSystem.Inertia(1) mSystem.Inertia(2) 
+mSystem.Inertia(3) mSystem.Inertia(4) mSystem.Inertia(5) 
+mSystem.Inertia(6) mSystem.Inertia(7) mSystem.Inertia(8)
+mSystem.motorSpeedMax
+mMotorScale.vToRads mMotorScale.vToAmps
+mTotalRefs mStopTime
+1 mNextReference.time mNextReference.q(0) mNextReference.q(1) mNextReference.q(2) mNextReference.q(3)
+2 mNextReference.time mNextReference.q(0) mNextReference.q(1) mNextReference.q(2) mNextReference.q(3)
+
+

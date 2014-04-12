@@ -9,7 +9,8 @@ close all;clear all;clc;
 % d=readCSV('blue/blue-5.csv');
 % d = readCSV('surf/surf-1d.csv');
 % d = readCSV('shark/shark-6.csv');
-d = readCSV('sail/sail-25.csv');
+% d = readCSV('shark/shark-3.csv');
+d = readCSV('sail/sail-14.csv');
 
 % convert from quaternion to euler angles
 d.refangles=QtoEuler(d.ref); % input reference
@@ -90,7 +91,7 @@ a=axis;
 axis([a(1),a(2),a(3)-5*pi/180,a(4)+5*pi/180]);
 legend('meas','ref','refstar','error');
 grid on;xlabel('time (s)'); ylabel('Degrees');
-title('Position (Yaw)');
+title('Table Position (Yaw)');
 
 % compare table speed command (from trajectory generator) vs. measured
 figure;
@@ -126,7 +127,7 @@ plot(d.time,d.tc3(:,3),'r');
 hold on;plot(d.time,d.torqueSC_calc(:,3),'b');
 grid on;xlabel('time (sec)');ylabel('Yaw torque (Nm)');% title('Torque Command vs. Extrapolated from Measured Gyro Speeds');
 legend('cmd','meas');
-title('Torque Command vs. Extrapolated from Measured Gyro Speeds');
+title('Torque Command vs. Torque Extrapolated from Measured Gyro Speeds');
 
 % plot crossterm values (that may or not contribue to Tc3), depending on
 % control law used
@@ -172,7 +173,7 @@ hold on; plot(d.time,d.torque_curr(:,1),'b');
 grid on;legend('cmd','meas');
 xlabel('time (s)');
 ylabel('N-m');
-title('Command Torque vs. Torque Calculated from Measured Current');
+title('Wheel Command Torque vs. Torque Calculated from Measured Current');
 subplot(1,4,2)
 plot(d.time,d.torque(:,2),'k');grid on;
 hold on; plot(d.time,d.torque_curr(:,2),'b');
